@@ -1,0 +1,156 @@
+Tạo và triển khai module Dịch vụ (Services).
+
+Tạo và triển khai module Hợp đồng (Contracts) – bao gồm cả bảng phụ nếu cần.
+
+Tạo và triển khai module Thanh toán (Payments).
+
+Tích hợp module Chữ ký số (nếu có yêu cầu).
+
+Phân quyền và bảo mật các route cho Admin, Staff và Khách hàng.
+
+Tự tay tạo giao diện cho từng chức năng (form, danh sách, chi tiết…).
+
+Kiểm tra kỹ các chức năng và bảo mật.
+
+
+
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* Reset & font */
+    body, html {
+      margin: 0;
+      padding: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f4f7f9;
+      color: #333;
+    }
+    /* Header */
+    header {
+      background: #667eea;
+      padding: 1rem;
+      color: #fff;
+      text-align: center;
+    }
+    /* Layout container */
+    .container {
+      display: flex;
+      min-height: calc(100vh - 70px);
+    }
+    /* Sidebar menu */
+    .sidebar {
+      width: 250px;
+      background: #2d3748;
+      color: #fff;
+      padding: 1rem;
+    }
+    .sidebar h2 {
+      font-size: 1.2rem;
+      margin-bottom: 1rem;
+    }
+    .sidebar ul {
+      list-style: none;
+      padding: 0;
+    }
+    .sidebar li {
+      margin-bottom: 0.5rem;
+    }
+    .sidebar a {
+      color: #cbd5e0;
+      text-decoration: none;
+      display: block;
+      padding: 0.5rem;
+      border-radius: 4px;
+      transition: background 0.3s;
+    }
+    .sidebar a:hover {
+      background: #4a5568;
+      color: #fff;
+    }
+    /* Logout button style */
+    .logout-button {
+      background: #e53e3e;
+      color: #fff;
+      border: none;
+      padding: 0.5rem 1rem;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .logout-button:hover {
+      background: #c53030;
+    }
+    /* Content area */
+    .content {
+      flex: 1;
+      padding: 2rem;
+    }
+    .card {
+      background: #fff;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .card h2 {
+      margin-top: 0;
+      font-size: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Dashboard</h1>
+    <p>Chào mừng, {{ auth()->user()->name }}! </p>
+  </header>
+  <div class="container">
+    <div class="sidebar">
+      <h2>Menu</h2>
+      <ul>
+        @if(auth()->user()->role == 'admin')
+          <li><a href="{{ route('admin.users.index') }}">Quản lý khách hàng & nhân viên</a></li>
+          <li><a href="{{ route('admin.contracts.index') }}">Quản lý hợp đồng</a></li>
+          <li><a href="">Quản lý dịch vụ</a></li>
+          <li><a href="{{ route('admin.payments.index') }}">Quản lý thanh toán</a></li>
+          <li><a href="#">Báo cáo thống kê</a></li>
+        @elseif(auth()->user()->role == 'staff')
+          <li><a href="{{ route('staff.contracts.index') }}">Quản lý hợp đồng</a></li>
+          <li><a href="">Quản lý dịch vụ</a></li>
+          <li><a href="#">Quản lý thông tin cá nhân</a></li>
+          <li><a href="#">Báo cáo thống kê</a></li>
+        @elseif(auth()->user()->role == 'customer')
+          <li><a href="{{ route('services.index') }}">Xem & lựa chọn dịch vụ</a></li>
+          <li><a href="{{ route('my.contracts') }}">Quản lý hợp đồng</a></li>
+          <li><a href="#">Quản lý thông tin cá nhân</a></li>
+          <li><a href="#">Thay đổi mật khẩu</a></li>
+        @else
+          <li><a href="">Xem dịch vụ</a></li>
+          <li><a href="{{ route('register') }}">Đăng ký tài khoản</a></li>
+        @endif
+        <li>
+          <form action="{{ route('logout') }}" method="POST">
+            @csrf
+            <button type="submit" class="logout-button">Đăng xuất</button>
+          </form>
+        </li>
+      </ul>
+    </div>
+    <div class="content">
+      <div class="card">
+        <h2>Thông tin chung</h2>
+        <p>Đây là dashboard tổng quan của hệ thống quản lý hợp đồng cung cấp dịch vụ CNTT điện tử.</p>
+      </div>
+      <div class="card">
+        <h2>Hướng dẫn sử dụng</h2>
+        <p>Chọn mục trong menu bên trái để quản lý các chức năng hệ thống.</p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+    
