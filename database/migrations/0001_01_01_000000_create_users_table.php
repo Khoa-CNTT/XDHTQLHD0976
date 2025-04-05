@@ -103,6 +103,12 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::dropIfExists('signatures');
+        Schema::dropIfExists('payments');
+        Schema::dropIfExists('contracts');
+        Schema::dropIfExists('services');
+        Schema::dropIfExists('customers');
+        Schema::dropIfExists('employees');
         Schema::dropIfExists('sessions');
         Schema::dropIfExists('password_reset_tokens');
         Schema::dropIfExists('users');

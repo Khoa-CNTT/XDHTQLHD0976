@@ -7,7 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-
+use App\Models\Customer;
 class RegisterController extends Controller
 {
     /*
@@ -28,7 +28,8 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/customer/dashboard';
+
 
     /**
      * Create a new controller instance.
@@ -47,14 +48,17 @@ class RegisterController extends Controller
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
-    {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
-    }
-
+{
+    return Validator::make($data, [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+        'phone' => ['required', 'string', 'max:15'],
+        'address' => ['required', 'string', 'max:255'],
+        'company_name' => ['required', 'string', 'max:255'], // Thêm validation cho company_name
+        'tax_code' => ['required', 'string', 'max:50'], // Thêm validation cho tax_code
+    ]);
+}
     /**
      * Create a new user instance after a valid registration.
      *
@@ -63,10 +67,23 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
+        // Tạo người dùng trong bảng users
+        $user = User::create([
             'name' => $data['name'],
             'email' => $data['email'],
             'password' => Hash::make($data['password']),
+            'role' => 'customer', // Mặc định vai trò là customer
+            'phone' => $data['phone'],
+            'address' => $data['address'],
         ]);
+    
+        // Tạo khách hàng trong bảng customers
+        Customer::create([
+            'user_id' => $user->id,
+            'company_name' => $data['company_name'],
+            'tax_code' => $data['tax_code'],
+        ]);
+    
+        return $user;
     }
 }

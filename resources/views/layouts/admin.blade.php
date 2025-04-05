@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>@yield('title', 'Dashboard Admin')</title>
+  <title>@yield('title', ' Admin')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   @stack('styles')
@@ -20,7 +20,7 @@
 </head>
 <body>
   <header>
-    <div class="logo"><a href="{{ route('dashboard') }}"><img src="{{ asset('images/logo.png') }}" alt="Logo"></a></div>
+    <div class="logo"><a href="{{ route('admin.dashboard') }}"><img src="{{ asset('images/logo.png') }}" alt="Logo"></a></div>
     <div class="user-actions">
       <span class="welcome-text">Chào, {{ auth()->user()->name }}!</span>
       <form action="{{ route('logout') }}" method="POST">@csrf<button type="submit" class="btn btn-danger">Đăng xuất</button></form>
@@ -31,15 +31,18 @@
     <div class="sidebar">
       <h2>Menu</h2>
       <ul>
-        <li><a href="#">Quản lý khách hàng &amp; nhân viên</a></li>
-        <li><a href="{{ route('contracts.index') }}">Quản lý hợp đồng</a></li>
-        <li><a href="{{ route('services.index') }}">Quản lý dịch vụ</a></li>
-        @if(auth()->user()->role === 'admin')
-          <li><a href="#">Quản lý thanh toán</a></li>
-          <li><a href="#">Báo cáo thống kê</a></li>
+        @if(auth()->user()->role == 'admin')
+            <li><a href="">Quản lý khách hàng &amp; nhân viên</a></li>
+            <li><a href="{{ route('admin.contracts.create') }}">Quản lý hợp đồng</a></li>
+            <li><a href="{{ route('admin.services.index') }}">Quản lý dịch vụ</a></li>
+            <li><a href="">Quản lý thanh toán</a></li>
+            <li><a href="">Báo cáo thống kê</a></li>
+        @elseif(auth()->user()->role == 'employee')
+            <li><a href="{{ route('admin.contracts.index') }}">Quản lý hợp đồng</a></li>
+            <li><a href="{{ route('admin.services.index') }}">Quản lý dịch vụ</a></li>
+            <li><a href="">Quản lý thông tin cá nhân</a></li>
         @endif
-        <li><a href="#">Cài đặt tài khoản</a></li>
-      </ul>
+    </ul>
     </div>
     <div class="content">
       @yield('content')

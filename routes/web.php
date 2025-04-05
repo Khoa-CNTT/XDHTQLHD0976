@@ -1,32 +1,27 @@
 <?php
-
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
-use App\Http\Controllers\Staff\DashboardController as StaffDashboardController;
-use App\Http\Controllers\ContractController;
-use App\Http\Controllers\ServiceController;
-use App\Http\Controllers\PaymentController;
-use App\Http\Controllers\SettingController;
-use App\Http\Controllers\CustomerController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Admin\ContractController as AdminContractController;
+use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Customer\ContractController as CustomerContractController;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\CustomerProfileController;
-
-
-Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
-Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
-Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
-
-
-
-
-
-
-// Route mặc định: nếu đã đăng nhập chuyển đến dashboard, nếu chưa chuyển đến login
+use App\Http\Middleware\AdminOrEmployeeMiddleware;
+use App\Http\Middleware\CustomerMiddleware;
+// Route mặc định: Chuyển hướng dựa trên vai trò của người dùng
 Route::get('/', function () {
-    return Auth::check() ? redirect()->route('dashboard') : redirect()->route('login');
+    if (Auth::check()) {
+        // Kiểm tra vai trò của người dùng
+        if (Auth::user()->role === 'admin') {
+            return redirect('/admin/dashboard'); // Chuyển hướng đến trang admin
+        } elseif (Auth::user()->role === 'customer') {
+            return redirect('/customer/dashboard'); // Chuyển hướng đến trang khách hàng
+        }
+    }
+
+    // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
+    return redirect('/login');
 });
 
 // Routes cho khách chưa đăng nhập
@@ -35,49 +30,32 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
+    Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
 });
 
 // Route đăng xuất
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 
-Route::middleware('auth')->group(function () {
-    Route::get('/dashboard', function () {
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard');
-        } elseif (Auth::user()->role === 'employee') {
-            return redirect()->route('employee.dashboard');
-        } else {
-            return redirect()->route('customer.dashboard');
-        }
-    })->name('dashboard');
-});
+// Admin và Employee routes
+Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\AdminOrEmployeeMiddleware::class])
+    ->prefix('admin')
+     ->as('admin.')
+    ->group(function () {
+        Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+        Route::resource('contracts', AdminContractController::class);
+        Route::resource('services', AdminServiceController::class);
+    });
+// Customer routes
+Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
+    ->prefix('customer')
+    ->group(function () {
+        Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+        Route::get('contracts', [CustomerContractController::class, 'index'])->name('customer.contracts.index');
+        Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('customer.contracts.show');
+        Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('customer.contracts.sign');
+        Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
+    });
 
-// Routes chỉ dành cho Admin
-Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/admin/dashboard', function () {
-        return "Trang quản trị Admin";
-    })->name('admin.dashboard');
-});
-
-// Routes chỉ dành cho Employee
-Route::middleware(['auth', 'role:employee'])->group(function () {
-    Route::get('/employee/dashboard', function () {
-        return "Trang nhân viên";
-    })->name('employee.dashboard');
-});
-
-// Routes chỉ dành cho Customer
-Route::middleware(['auth', 'role:customer'])->group(function () {
-    Route::get('/customer/dashboard', function () {
-        return "Trang khách hàng";
-    })->name('customer.dashboard');
-});
-
-Route::middleware(['auth', 'role:admin,employee'])->group(function () {
-    Route::resource('contracts', ContractController::class);
-    Route::resource('services', ServiceController::class);
-    Route::resource('payments', PaymentController::class);
-});
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

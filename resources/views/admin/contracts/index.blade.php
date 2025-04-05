@@ -1,4 +1,4 @@
-@extends('layouts.dashboard')
+@extends('layouts.admin')
 
 @section('content')
 <style>
@@ -63,17 +63,17 @@
 
     <!-- Nút Thêm Hợp Đồng -->
     @can('create', App\Models\Contract::class)
-    <a href="{{ route('contracts.create') }}" class="btn-add-contract">➕ Thêm Hợp đồng</a>
+    <a href="{{ route('admin.contracts.create') }}" class="btn-add-contract">➕ Thêm Hợp đồng</a>
     @endcan
     <!-- Bảng Hợp Đồng -->
     <table class="contract-table">
         <thead>
             <tr>
-                <th>Số Hợp đồng</th>
-                <th>Tiêu đề</th>
-                <th>Ngày bắt đầu</th>
-                <th>Số tiền</th>
+                <th>Mã hợp đồng</th>
                 <th>Khách hàng</th>
+                <th>Dịch vụ</th>
+                <th>Trạng thái</th>
+                <th>Ngày bắt đầu</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -81,17 +81,16 @@
             @foreach($contracts as $contract)
             <tr>
                 <td>{{ $contract->contract_number }}</td>
-                <td>{{ $contract->title }}</td>
+                <td>{{ $contract->customer->company_name }}</td>
+                <td>{{ $contract->service->service_name }}</td>
+                <td>{{ $contract->status }}</td>
                 <td>{{ $contract->start_date }}</td>
-                <td>{{ number_format($contract->amount) }} VNĐ</td>
-                <td>{{ $contract->customer->name }}</td>
                 <td>
-                    <a href="{{ route('contracts.show', $contract) }}" class="text-blue-500 hover:underline">Xem</a> |
-                    <a href="{{ route('contracts.edit', $contract) }}" class="text-yellow-500 hover:underline">Sửa</a> |
-                    <form action="{{ route('contracts.destroy', $contract) }}" method="POST" style="display:inline;">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="text-red-500 hover:underline" onclick="return confirm('Xác nhận xóa?')">Xóa</button>
+                    <a href="{{ route('admin.contracts.show', $contract->id) }}" class="btn btn-sm btn-info">Xem</a>
+                    <a href="{{ route('admin.contracts.edit', $contract->id) }}" class="btn btn-sm btn-warning">Sửa</a>
+                    <form action="{{ route('admin.contracts.destroy', $contract->id) }}" method="POST" style="display:inline;">
+                        @csrf @method('DELETE')
+                        <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa hợp đồng này?')">Xóa</button>
                     </form>
                 </td>
             </tr>
@@ -99,7 +98,6 @@
         </tbody>
     </table>
 
-    <!-- Phân trang -->
     <div class="mt-4">
         {{ $contracts->links() }}
     </div>

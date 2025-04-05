@@ -43,9 +43,19 @@ class User extends Authenticatable
     /**
      * Lấy tên role (dành cho middleware)
      */
-    public function roleName()
+    // Kiểm tra nếu user là customer
+    public function isCustomer()
     {
-        return $this->role; // Trả về 'admin', 'user', ...
+        return $this->role === 'customer';
+    }
+   // Kiểm tra nếu user là admin
+   public function isAdmin()
+   {
+       return $this->role === 'admin';
+   }
+   public function isEmployee()
+    {
+        return $this->role === 'employee';
     }
     public function employee()
     {

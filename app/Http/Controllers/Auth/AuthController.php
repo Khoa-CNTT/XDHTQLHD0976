@@ -43,9 +43,16 @@ class AuthController extends Controller
             'email'    => 'required|email',
             'password' => 'required',
         ]);
-        if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-            return redirect()->route('dashboard');
+    
+        if (Auth::attempt($credentials)) {
+            // Kiểm tra vai trò của người dùng và chuyển hướng phù hợp
+            if (Auth::user()->role === 'admin') {
+                return redirect()->route('admin.dashboard');
+            } elseif (Auth::user()->role === 'customer') {
+                return redirect()->route('customer.dashboard');
+            }
         }
+    
         return back()->withErrors(['email' => 'Email hoặc mật khẩu không chính xác']);
     }
 
@@ -89,7 +96,7 @@ class AuthController extends Controller
         // Đăng nhập sau khi đăng ký
         Auth::login($user);
 
-        return redirect()->route('dashboard');
+        return redirect()->route('customer.dashboard');
     }
 
     // Đăng xuất

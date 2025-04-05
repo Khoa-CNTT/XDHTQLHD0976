@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
@@ -25,7 +27,18 @@ class LoginController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected function redirectTo()
+    {
+        // Kiểm tra vai trò của người dùng và chuyển hướng phù hợp
+        if (Auth::user()->role === 'admin') {
+            return '/admin/dashboard';
+        } elseif (Auth::user()->role === 'customer') {
+            return '/customer/dashboard';
+        }
+
+        // Mặc định chuyển hướng đến trang đăng nhập nếu không xác định được vai trò
+        return '/login';
+    }
 
     /**
      * Create a new controller instance.

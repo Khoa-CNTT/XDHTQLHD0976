@@ -13,15 +13,13 @@ class Contract extends Model
     
 
     // Quan hệ với user (khách hàng)
-    public function customer()
-    {
+    public function customer() {
         return $this->belongsTo(Customer::class);
     }
-
-    public function service()
-    {
+    public function service() {
         return $this->belongsTo(Service::class);
     }
+    
 
     public function payments()
     {

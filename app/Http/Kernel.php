@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http;
-use App\Models\Role;
+
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
@@ -14,11 +14,7 @@ class Kernel extends HttpKernel
      *
      * @var array<int, class-string|string>
      */
-    protected $routeMiddleware = [
-        // …
-        'auth' => \Illuminate\Auth\Middleware\Authenticate::class,
-        'role' => \App\Http\Middleware\CheckRole::class,
-    ];
+  
     
 
     /**
@@ -60,6 +56,9 @@ class Kernel extends HttpKernel
         'signed' => \App\Http\Middleware\ValidateSignature::class,
         'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
         'verified' => \Illuminate\Auth\Middleware\EnsureEmailIsVerified::class,
-        'role' => \App\Http\Middleware\CheckRole::class,
+    
+        
+        'customer' => \App\Http\Middleware\CustomerMiddleware::class,
+        'admin_or_employee' => \App\Http\Middleware\AdminOrEmployeeMiddleware::class,
     ];
 } 

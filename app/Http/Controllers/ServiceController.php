@@ -25,6 +25,7 @@ class ServiceController extends Controller
             'description' => 'nullable|string',
             'service_type' => 'required|string',
             'price' => 'required|numeric|min:0',
+            'created_by',
         ]);
 
         Service::create($request->all());
