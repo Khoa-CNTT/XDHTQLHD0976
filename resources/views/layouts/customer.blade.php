@@ -39,29 +39,28 @@
                     <!-- Dropdown Menu -->
                     <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
                         @if(auth()->check())
-    <div class="px-4 py-3 border-b">
-        <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
-        <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
-    </div>
-@else
-    <div class="px-4 py-3 border-b">
-        <span class="block text-sm text-gray-900">Khách</span>
-        <span class="block text-sm text-gray-500 truncate">Vui lòng đăng nhập</span>
-    </div>
-@endif
-                        <ul class="py-1">
-                            <li>
-                                <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Trang Cá Nhân
-                                </a>
-                            </li>
-                            <li>
-                                <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    @csrf
-                                    <button type="submit" class="w-full text-left">Đăng Xuất</button>
-                                </form>
-                            </li>
-                        </ul>
+                            <div class="px-4 py-3 border-b">
+                                <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
+                                <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
+                            </div>
+                            <ul class="py-1">
+                                <li>
+                                    <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Trang Cá Nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left">Đăng Xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
+                        @else
+                            <div class="px-4 py-3 border-b">
+                                <span class="block text-sm text-gray-500 truncate">Vui lòng đăng nhập</span>
+                            </div>
+                        @endif
                     </div>
                 </div>
             </nav>
