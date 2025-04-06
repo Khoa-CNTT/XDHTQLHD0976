@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\ASUS_TUF\Documents\QuanLyHopDong\ConT_management\resources\views\layouts\customer.blade.php -->
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -27,7 +26,11 @@
                 <div class="relative">
                     <button id="user-menu-button" class="flex items-center focus:outline-none">
                         <img src="/api/placeholder/40/40" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
-                        <span class="hidden md:inline">{{ auth()->user()->name }}</span>
+                        @if(auth()->check())
+    <span class="hidden md:inline">{{ auth()->user()->name }}</span>
+@else
+    <span class="hidden md:inline">Chưa Đăng Nhập</span>
+@endif
                         <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                         </svg>
@@ -35,10 +38,17 @@
 
                     <!-- Dropdown Menu -->
                     <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
-                        <div class="px-4 py-3 border-b">
-                            <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
-                            <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
-                        </div>
+                        @if(auth()->check())
+    <div class="px-4 py-3 border-b">
+        <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
+        <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
+    </div>
+@else
+    <div class="px-4 py-3 border-b">
+        <span class="block text-sm text-gray-900">Khách</span>
+        <span class="block text-sm text-gray-500 truncate">Vui lòng đăng nhập</span>
+    </div>
+@endif
                         <ul class="py-1">
                             <li>
                                 <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -102,11 +112,19 @@
     <script>
         // Xử lý dropdown menu trang cá nhân
         const userMenuButton = document.getElementById('user-menu-button');
-        const userDropdown = document.getElementById('user-dropdown');
+const userDropdown = document.getElementById('user-dropdown');
 
-        userMenuButton.addEventListener('click', () => {
-            userDropdown.classList.toggle('hidden');
-        });
+if (userMenuButton && userDropdown) {
+    userMenuButton.addEventListener('click', () => {
+        userDropdown.classList.toggle('hidden');
+    });
+
+    document.addEventListener('click', (event) => {
+        if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+            userDropdown.classList.add('hidden');
+        }
+    });
+}
 
         // Đóng dropdown khi click ngoài
         document.addEventListener('click', (event) => {

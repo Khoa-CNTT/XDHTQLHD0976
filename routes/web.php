@@ -10,21 +10,23 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\AdminOrEmployeeMiddleware;
 use App\Http\Middleware\CustomerMiddleware;
 use App\Http\Controllers\Customer\CustomerProfileController;
-// Route mặc định: Chuyển hướng dựa trên vai trò của người dùng
+
+
+Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+
 Route::get('/', function () {
     if (Auth::check()) {
         // Kiểm tra vai trò của người dùng
         if (Auth::user()->role === 'admin') {
-            return redirect('/admin/dashboard'); // Chuyển hướng đến trang admin
+            return redirect()->route('admin.dashboard'); // Chuyển hướng đến dashboard admin
         } elseif (Auth::user()->role === 'customer') {
-            return redirect('/customer/dashboard'); // Chuyển hướng đến trang khách hàng
+            return redirect()->route('customer.dashboard'); // Chuyển hướng đến dashboard khách hàng
         }
     }
 
-    // Nếu chưa đăng nhập, chuyển hướng đến trang đăng nhập
-    return redirect('/login');
+    // Nếu chưa đăng nhập, chuyển hướng đến trang khách hàng
+    return redirect()->route('customer.dashboard');
 });
-
 // Routes cho khách chưa đăng nhập
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
@@ -52,17 +54,17 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
     ->prefix('customer')
+    ->name('customer.')
     ->group(function () {
-        Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-        Route::get('contracts', [CustomerContractController::class, 'index'])->name('customer.contracts.index');
+        Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
+        Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('customer.contracts.show');
         Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('customer.contracts.sign');
         Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
+
+            Route::get('/profile', [App\Http\Controllers\CustomerProfileController::class, 'profile'])->name('profile');
+            Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
+            Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
+        
     });
 
-// Router trang ca nhan
-Route::middleware(['auth'])->prefix('customer')->name('customer.')->group(function () {
-    Route::get('/profile', [App\Http\Controllers\CustomerProfileController::class, 'profile'])->name('profile');
-    Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
-    Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
-});
