@@ -18,9 +18,10 @@ class CustomerProfileController extends Controller
         $user = auth()->user();
 
         $validator = Validator::make($request->all(), [
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:50',
             'email' => 'required|string|email|max:255|unique:users,email,' . $user->id,
             'phone' => 'required|string|max:20',
+            'address' => 'required|string|max:255',
         ]);
 
         if ($validator->fails()) {
@@ -33,6 +34,7 @@ class CustomerProfileController extends Controller
         $user->name = $request->name;
         $user->email = $request->email;
         $user->phone = $request->phone;
+        $user->address = $request->address;
         $user->save();
 
         return redirect()->back()->with('success', 'Profile information has been updated.')->with('tab', 'info');

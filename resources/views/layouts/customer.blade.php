@@ -9,10 +9,12 @@
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
-    <header class="bg-blue-600 text-white py-6 shadow-md">
+    <header class="bg-blue-600 text-white py-0 shadow-md">
         <div class="container mx-auto px-4 flex justify-between items-center">
             <div class="flex items-center">
-                <img src="/api/placeholder/50/50" alt="Logo" class="h-12 w-12 mr-4">
+                <div class="logo">
+                    <a href="{{ route('customer.dashboard') }}"><img src="{{ asset('images/logo1.png') }}" alt="Logo" style="height: 85px;"></a>
+                </div>
                 <h1 class="text-2xl font-bold">Dịch Vụ Công Nghệ Thông Tin</h1>
             </div>
             <nav class="flex items-center space-x-6">
@@ -25,15 +27,16 @@
                 <!-- Dropdown Trang Cá Nhân -->
                 <div class="relative">
                     <button id="user-menu-button" class="flex items-center focus:outline-none">
-                        <img src="/api/placeholder/40/40" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
                         @if(auth()->check())
-    <span class="hidden md:inline">{{ auth()->user()->name }}</span>
-@else
-    <span class="hidden md:inline">Chưa Đăng Nhập</span>
-@endif
-                        <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-                        </svg>
+                            <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        @else
+                            <a href="{{ route('login') }}" class="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition">
+                                Đăng nhập
+                            </a>  
+                        @endif
                     </button>
 
                     <!-- Dropdown Menu -->
@@ -52,7 +55,7 @@
                                 <li>
                                     <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         @csrf
-                                        <button type="submit" class="w-full text-left">Đăng Xuất</button>
+                                        <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>
                                     </form>
                                 </li>
                             </ul>
@@ -111,19 +114,19 @@
     <script>
         // Xử lý dropdown menu trang cá nhân
         const userMenuButton = document.getElementById('user-menu-button');
-const userDropdown = document.getElementById('user-dropdown');
+        const userDropdown = document.getElementById('user-dropdown');
 
-if (userMenuButton && userDropdown) {
-    userMenuButton.addEventListener('click', () => {
-        userDropdown.classList.toggle('hidden');
-    });
+        if (userMenuButton && userDropdown) {
+            userMenuButton.addEventListener('click', () => {
+                userDropdown.classList.toggle('hidden');
+            });
 
-    document.addEventListener('click', (event) => {
-        if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
-            userDropdown.classList.add('hidden');
+        document.addEventListener('click', (event) => {
+            if (!userMenuButton.contains(event.target) && !userDropdown.contains(event.target)) {
+                userDropdown.classList.add('hidden');
+            }
+        });
         }
-    });
-}
 
         // Đóng dropdown khi click ngoài
         document.addEventListener('click', (event) => {

@@ -67,6 +67,13 @@
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
+                    <div class="mb-4">
+                        <label for="address" class="block text-gray-700">Địa chỉ:</label>
+                        <input type="text" id="address" name="address" class="w-full p-2 border rounded" value="{{ auth()->user()->address }}" required>
+                        @error('address')
+                            <div class="text-red-600">{{ $message }}</div>
+                        @enderror
+                    </div>
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Cập Nhật Thông Tin</button>
                 </form>
             </div>
