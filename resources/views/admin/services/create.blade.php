@@ -31,7 +31,7 @@
             <select name="service_type" class="form-control">
                 <option value="Phần mềm">Phần mềm</option>
                 <option value="Phần cứng">Phần cứng</option>
-                <option value="Nhà mạng">Nhà mạng</option>
+                <option value="Nhà mạng">An Ninh mạng</option>
             </select>
         </div>
         <div class="mb-3">

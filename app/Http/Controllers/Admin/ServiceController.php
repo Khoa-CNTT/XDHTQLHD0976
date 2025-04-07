@@ -81,4 +81,14 @@ class ServiceController extends Controller
         Service::destroy($id); // Xoá dịch vụ
         return redirect()->back()->with('success', 'Xoá dịch vụ thành công!');
     }
+
+// Tìm kiếm dịch vụ
+
+    public function search(Request $request)
+{
+    $query = $request->input('query');
+    $services = Service::where('service_name', 'LIKE', "%{$query}%")->get();
+    return view('admin.services.index', compact('services'));
+}
+
 }

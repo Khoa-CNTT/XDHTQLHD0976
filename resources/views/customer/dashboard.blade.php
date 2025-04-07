@@ -11,11 +11,12 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <nav>
                 <ul class="flex space-x-6">
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600">Phát Triển Phần Mềm</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600">Quản Trị Hệ Thống</a></li>
-                    <li><a href="#" class="text-gray-700 hover:text-blue-600">An Ninh Mạng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'An Ninh mạng') }}" class="text-gray-700 hover:text-blue-600">An Ninh Mạng</a></li>
                 </ul>
+            </nav>>
             </nav>
             <div class="relative w-1/3">
                 <input type="text" placeholder="Tìm kiếm dịch vụ..." class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
