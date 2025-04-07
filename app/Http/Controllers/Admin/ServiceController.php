@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Service;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Auth;
 class ServiceController extends Controller
 {
     // Hiển thị danh sách các dịch vụ
@@ -29,11 +29,11 @@ class ServiceController extends Controller
             'service_name' => 'required|string|max:255|unique:services',
             'description' => 'nullable|string',
             'service_type' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            'price' => 'numeric|max:99999999.99',
         ]);
     
         // Gán ID của người tạo (nếu cần)
-        $data['created_by'] = auth()->id();
+        $data['created_by'] = Auth::id();
     
         // Lưu dữ liệu vào cơ sở dữ liệu
         Service::create($data);

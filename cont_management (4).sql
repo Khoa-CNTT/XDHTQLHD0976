@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 03, 2025 lúc 09:22 AM
+-- Thời gian đã tạo: Th4 07, 2025 lúc 07:37 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -53,17 +53,23 @@ CREATE TABLE `cache_locks` (
 
 CREATE TABLE `contracts` (
   `id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) UNSIGNED NOT NULL,
   `service_id` bigint(20) UNSIGNED NOT NULL,
   `contract_number` varchar(255) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `status` enum('pending','active','completed','cancelled') NOT NULL,
+  `status` enum('chờ xử lý','đang hoạt động','hoàn thành','đã hủy') NOT NULL,
   `total_price` decimal(10,2) NOT NULL,
   `signed_document` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `contracts`
+--
+
+INSERT INTO `contracts` (`id`, `service_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
+(1, 3, '001', '2025-04-08', '2025-04-18', '', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-06 10:45:20');
 
 -- --------------------------------------------------------
 
@@ -79,6 +85,13 @@ CREATE TABLE `customers` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `customers`
+--
+
+INSERT INTO `customers` (`id`, `user_id`, `company_name`, `tax_code`, `created_at`, `updated_at`) VALUES
+(2, 9, 'ngaphammm', 'TAX002', '2025-04-04 23:55:07', '2025-04-04 23:55:07');
 
 -- --------------------------------------------------------
 
@@ -96,6 +109,14 @@ CREATE TABLE `employees` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `employees`
+--
+
+INSERT INTO `employees` (`id`, `user_id`, `position`, `department`, `salary`, `hired_date`, `created_at`, `updated_at`) VALUES
+(1, 10, 'Nhân viên IT', 'Công nghệ thông tin', 10000000.00, '2025-04-01', '2025-04-05 08:00:35', '2025-04-05 08:00:35'),
+(2, 11, 'Nhân viên Kế toán', 'Kế toán', 8000000.00, '2025-03-15', '2025-04-05 08:00:35', '2025-04-05 08:00:35');
 
 -- --------------------------------------------------------
 
@@ -167,7 +188,11 @@ CREATE TABLE `migrations` (
 INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (1, '0001_01_01_000000_create_users_table', 1),
 (2, '0001_01_01_000001_create_cache_table', 1),
-(3, '0001_01_01_000002_create_jobs_table', 1);
+(3, '0001_01_01_000002_create_jobs_table', 1),
+(4, '2025_04_06_030242_add_remember_token_to_users_table', 2),
+(5, '2025_04_06_030449_create_permissions_table', 2),
+(6, '2025_04_06_174343_remove_customer_id_from_contracts_table', 2),
+(7, '2025_04_06_175502_update_contracts_table', 3);
 
 -- --------------------------------------------------------
 
@@ -208,6 +233,20 @@ CREATE TABLE `payments` (
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `permissions`
+--
+
+CREATE TABLE `permissions` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `services`
 --
 
@@ -216,11 +255,19 @@ CREATE TABLE `services` (
   `service_name` varchar(255) NOT NULL,
   `description` text NOT NULL,
   `service_type` varchar(255) NOT NULL,
-  `price` decimal(10,2) NOT NULL,
-  `created_by` bigint(20) UNSIGNED NOT NULL,
+  `price` decimal(15,2) NOT NULL,
+  `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `services`
+--
+
+INSERT INTO `services` (`id`, `service_name`, `description`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
+(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'Phần mềm', 10000000.00, 2, '2025-04-05 08:04:29', '2025-04-05 08:04:29'),
+(4, 'cccc', 'ccc', 'Phần cứng', 100000.00, 2, '2025-04-06 22:37:13', '2025-04-06 22:37:13');
 
 -- --------------------------------------------------------
 
@@ -242,7 +289,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('CbOtIC0cIDJVZTkAIdU4CwXYW2oaqTy51wUexBj4', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/134.0.0.0 Safari/537.36 Edg/134.0.0.0', 'ZXlKcGRpSTZJaTl6Y1hZeVJXVjFOblo1Um5kcVZWSjBabU5tVjNjOVBTSXNJblpoYkhWbElqb2lkVGM0Y1ZSeGMwc3lZV2xZVTFWdWEySjZLMkZWZFhkUk9XeFRiMU5JUkM4elMwVnlhbGRxY1djNFduVkJjVkE1Y1dWQlYwWldSbUZOYkdocWEyZExjRXBsVjJocFpVTmtVMGhZVDJsMlNGWXdkQzlXWVhGaFkxVklSbXR2YkRaMU4zZ3ZSV1JRYlVoblNWZHRSVzlOWWxkRFJsTlZieXRzUmpCNlQxSkNTamQwWjNZM2FYaFJOMUJxVGpsaU0yNW5jUzlrWlRWWGJrRndNbmxsVWxkaE1rMXNkblpOZEVKaE1HYzVXVEp1UjBOTVFubElObll4U0dSSVNHaDFWSFZ2U2xweVFrTnNSRmgyU1hOalYwdFlSRVJVVDNseU9FdEJhazFwYVU0NGVrNDJaeXMxT0RReEszZFJjbEIzUlUxUGEwRm5VRlZzYVUxWVFtSTFXakJoU1VzemVUVnFVakZSUkZadFpHUnVOMmxaZVdRNFJEUkhUUzl3WjNwa1pEUXZNR0k0Wm1Sb00zY3JNVkI1YUhsVlJXRlFkMVJ1UTNwNE5XczJUV05EWVVaRWJqZHNRWG94U3pCMmNtdE9lRGg2ZDJnMGMzWlhUVzk0ZVcxRlpDOVJTMUpMY1RVcmQycFlWbE5yVkZaaFUyc3pWbE52V0dneWJIaEZjRFZEV2l0RUlpd2liV0ZqSWpvaU9EZGtZVGhtT1dFM09EaGpabVUwTXpObFpqWTFPV0ZtWVRrd09XRXhaR0ZrTVRZMk1UazJZMkl6Tm1VMU1UWXhObU16TVRKa01XWTFPRFV6T1dReVlpSXNJblJoWnlJNklpSjk=', 1743583027);
+('aWyUsQ0gqeACq9Sbfw8rIqzZumZkjjdPJyb7wSr8', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbTF2SzNocGNqRmhTMUZzVldacGFIcFNPR28yUVZFOVBTSXNJblpoYkhWbElqb2lUV1JwVXpaeVJXcGlXalJTZUVsbk5FMTNUM1Z4Wlc1M1dHTmtWakUyTUdkTWNsUlZSRTkyYmpWTldsWXdlbVo2ZFROWGJGSm9UVVpuTlc1UlVtMHhRbEIwYnpWME5GVlpTblY2ZDBWTmNHNDJVWGRLY204elZEUnlVMmxzVlhoU1ZFWnpWaTltZG5VeWRqUXdaM2QyTTNOemRIcDVia0ZLU1d4alRuaHpLMFZNTjJnM1IwOHhWV0p0TWxwM2EwSmpaR0p2TVhOb1VHRklTVEJNU0dac09GaHNia3RPYjNKbVIzRkZPSFJ5TldWc1EzbFRVMGRUTW1OUU4wd3hlVVptZURGUGFUaHVlREZUV2tFNVdHMUtUVkIyUVRKU1pHa3hMMmxKZW5kYWQwZFhjWFp0T0doWmQwUkZPR0pGWmxwU2RXUlFiV1JSSzNNMlEydGxNVGhyYkhSSVUwNDVSa3RQUlRGNmRIazJlWEJDU2k5bmNuWkJhVnB2U2toV2JFRm1RV1Y1Tm5VM1UxaDBRMUpTY0RsMWVqQk9ZMDFZS3padUszRndRVEp3UWsxNU1uaG9RVkEwVmsxeloyNXljMVZNYkhkWmFWazNZbkZyVm1GeldubEtSRXRYVlRoMVEzRlpZakUwUFNJc0ltMWhZeUk2SWpRd01tWmxOVGd6TmpWaE56a3hObUpqTURkbVlUZGhZMlZoWWpnMVl6VXpZalF3TVdaaU5ETmlaR0prWlRWbE5UTmhOak00TTJGbU9HWXdNVFpqTm1RaUxDSjBZV2NpT2lJaWZRPT0=', 1744004234);
 
 -- --------------------------------------------------------
 
@@ -274,17 +321,20 @@ CREATE TABLE `users` (
   `phone` varchar(255) DEFAULT NULL,
   `address` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `users`
 --
 
-INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `address`, `created_at`, `updated_at`) VALUES
-(1, 'User', 'user', '$2y$12$RMop/HL4MYed8hA1U4yC/OsPad1S.7f1JRtrk/wsONxoJfWxUQByi', 'admin', '0123456789', 'Đà Nẵng', '2025-04-02 00:23:52', '2025-04-02 00:23:52'),
-(2, 'Admin', 'admin', '$2y$12$87zbSUJenTUoyqsdLU029uj5pV1YlSEtMFKv.0bGFAWphKaXpLEfi', 'admin', '0123456789', 'Hà Nội', '2025-04-02 00:22:39', '2025-04-02 00:22:39'),
-(6, 'ngapham', 'okamibada@gmail.com', '$2y$12$qvzO4sYWY78wQRBEu628AuejTG.XAms5V2GgQWpi/vV6sXIoEb8YO', 'admin', NULL, NULL, '2025-04-02 01:34:58', '2025-04-02 01:34:58');
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `address`, `created_at`, `updated_at`, `remember_token`) VALUES
+(1, 'User', 'user@gmail.com', '$2y$12$RMop/HL4MYed8hA1U4yC/OsPad1S.7f1JRtrk/wsONxoJfWxUQByi', 'employee', '0123456789', 'Đà Nẵng', '2025-04-02 00:23:52', '2025-04-02 00:23:52', NULL),
+(2, 'Admin', 'admin@gmail.com', '$2y$12$87zbSUJenTUoyqsdLU029uj5pV1YlSEtMFKv.0bGFAWphKaXpLEfi', 'admin', '0123456789', 'Hà Nội', '2025-04-02 00:22:39', '2025-04-02 00:22:39', NULL),
+(9, 'ngapham', 'okamibada@gmail.com', '$2y$12$33n3YkWig1mmCvaWj4/wQekpPq7ulLPw5dd.Gw2p9j1c8jkumDaoy', 'customer', '0987653214', '12312313123', '2025-04-04 23:55:07', '2025-04-04 23:55:07', NULL),
+(10, 'Nguyễn Văn A', 'nguyenvana@example.com', '$2y$12$omKYbFq8TuGPG5D/mi/9pO9nrSptwCS9nQWv9V45Di88ZdWq1amSy', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL),
+(11, 'Trần Thị B', 'tranthib@example.com', '$2y$12$WbfoT3J2SZMWA6KFbg5VWu/nW3r0u.yG5iGphUA41XzBQS/JhzeAG', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -308,7 +358,6 @@ ALTER TABLE `cache_locks`
 ALTER TABLE `contracts`
   ADD PRIMARY KEY (`id`),
   ADD UNIQUE KEY `contracts_contract_number_unique` (`contract_number`),
-  ADD KEY `contracts_customer_id_foreign` (`customer_id`),
   ADD KEY `contracts_service_id_foreign` (`service_id`);
 
 --
@@ -365,6 +414,13 @@ ALTER TABLE `payments`
   ADD KEY `payments_contract_id_foreign` (`contract_id`);
 
 --
+-- Chỉ mục cho bảng `permissions`
+--
+ALTER TABLE `permissions`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `permissions_name_unique` (`name`);
+
+--
 -- Chỉ mục cho bảng `services`
 --
 ALTER TABLE `services`
@@ -401,19 +457,19 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `failed_jobs`
@@ -431,7 +487,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -440,10 +496,16 @@ ALTER TABLE `payments`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
 
 --
+-- AUTO_INCREMENT cho bảng `permissions`
+--
+ALTER TABLE `permissions`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+
+--
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `signatures`
@@ -455,7 +517,7 @@ ALTER TABLE `signatures`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -465,7 +527,6 @@ ALTER TABLE `users`
 -- Các ràng buộc cho bảng `contracts`
 --
 ALTER TABLE `contracts`
-  ADD CONSTRAINT `contracts_customer_id_foreign` FOREIGN KEY (`customer_id`) REFERENCES `customers` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `contracts_service_id_foreign` FOREIGN KEY (`service_id`) REFERENCES `services` (`id`) ON DELETE CASCADE;
 
 --

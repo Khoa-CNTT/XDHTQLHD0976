@@ -46,14 +46,13 @@ return new class extends Migration
             $table->string('service_name');
             $table->text('description');
             $table->string('service_type');
-            $table->decimal('price', 10, 2);
+            $table->decimal('price', 15, 2);
             $table->foreignId('created_by')->constrained('employees')->onDelete('cascade');
             $table->timestamps();
         });
 
         Schema::create('contracts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('customer_id')->constrained('customers')->onDelete('cascade');
             $table->foreignId('service_id')->constrained('services')->onDelete('cascade');
             $table->string('contract_number')->unique();
             $table->date('start_date');

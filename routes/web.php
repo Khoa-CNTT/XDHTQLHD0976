@@ -40,7 +40,10 @@ Route::middleware('guest')->group(function () {
 });
 
 // Route đăng xuất
-Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+Route::post('/logout', function () {
+    Auth::logout(); // Đăng xuất người dùng
+    return redirect()->route('customer.dashboard'); // Chuyển hướng về trang customer/dashboard
+})->name('logout');
 
 // Admin và Employee routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\AdminOrEmployeeMiddleware::class])
@@ -61,6 +64,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
         Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('customer.contracts.sign');
         Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
+
+        Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
 
         Route::get('/profile', [App\Http\Controllers\CustomerProfileController::class, 'profile'])->name('profile');
         Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
