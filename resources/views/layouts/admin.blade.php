@@ -33,7 +33,7 @@
       <ul>
         @if(auth()->user()->role == 'admin')
             <li><a href="">Quản lý khách hàng &amp; nhân viên</a></li>
-            <li><a href="{{ route('admin.contracts.create') }}">Quản lý hợp đồng</a></li>
+            <li><a href="{{ route('admin.contracts.index') }}">Quản lý hợp đồng</a></li>
             <li><a href="{{ route('admin.services.index') }}">Quản lý dịch vụ</a></li>
             <li><a href="">Quản lý thanh toán</a></li>
             <li><a href="">Báo cáo thống kê</a></li>

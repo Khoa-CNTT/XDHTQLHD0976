@@ -70,10 +70,8 @@
         <thead>
             <tr>
                 <th>Mã hợp đồng</th>
-                <th>Khách hàng</th>
                 <th>Dịch vụ</th>
                 <th>Trạng thái</th>
-                <th>Ngày bắt đầu</th>
                 <th>Hành động</th>
             </tr>
         </thead>
@@ -81,10 +79,8 @@
             @foreach($contracts as $contract)
             <tr>
                 <td>{{ $contract->contract_number }}</td>
-                <td>{{ $contract->customer->company_name }}</td>
                 <td>{{ $contract->service->service_name }}</td>
                 <td>{{ $contract->status }}</td>
-                <td>{{ $contract->start_date }}</td>
                 <td>
                     <a href="{{ route('admin.contracts.show', $contract->id) }}" class="btn btn-sm btn-info">Xem</a>
                     <a href="{{ route('admin.contracts.edit', $contract->id) }}" class="btn btn-sm btn-warning">Sửa</a>

@@ -58,7 +58,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
     ->group(function () {
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
-        Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('customer.contracts.show');
+        Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
         Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('customer.contracts.sign');
         Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
 

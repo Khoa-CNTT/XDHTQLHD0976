@@ -9,17 +9,15 @@ use Illuminate\Support\Facades\Auth;
 
 class ContractController extends Controller
 {
-    public function index() {
-        $contracts = Contract::with('customer', 'service')
-            ->paginate(10)
-            ->where('customer_id', Auth::user()->customer->id)
-            ->orderByDesc('start_date')
-            ->get();
+    public function index()
+    {
+        $contracts = Contract::with('service')->get();
         return view('customer.contracts.index', compact('contracts'));
     }
 
-    public function show($id) {
-        $contract = Contract::with('service')->where('customer_id', Auth::user()->customer->id)->findOrFail($id);
+    public function show($id)
+    {
+        $contract = Contract::with('service')->findOrFail($id);
         return view('customer.contracts.show', compact('contract'));
     }
 }

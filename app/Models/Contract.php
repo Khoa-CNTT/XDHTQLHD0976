@@ -9,7 +9,7 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['customer_id', 'service_id', 'contract_number', 'start_date', 'end_date', 'status', 'total_price', 'signed_document'];
+    protected $fillable = [ 'service_id', 'contract_number', 'start_date', 'end_date', 'status', 'total_price', 'signed_document'];
     
 
     // Quan hệ với user (khách hàng)

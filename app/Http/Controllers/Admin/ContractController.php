@@ -25,18 +25,22 @@ class ContractController extends Controller
 
     public function store(Request $request)
     {
-        $data = $request->validate([
-            'customer_id' => 'required|exists:customers,id',
+        $validatedData = $request->validate([
             'service_id' => 'required|exists:services,id',
-            'contract_number' => 'required|unique:contracts',
+            'contract_number' => 'required|unique:contracts,contract_number',
             'start_date' => 'required|date',
             'end_date' => 'required|date|after:start_date',
-            'status' => 'required|in:pending,active,completed,cancelled',
-            'total_price' => 'required|numeric'
+            'total_price' => 'required|numeric|min:0',
         ]);
-        Contract::create($data);
-        return redirect()->route('admin.contracts.index')->with('success', 'Tạo hợp đồng thành công!');
+
+        // Lưu hợp đồng
+        Contract::create(array_merge($validatedData, [
+            'signed_document' => null, // Để trống, khách hàng sẽ ký sau
+        ]));
+
+        return redirect()->route('admin.contracts.index')->with('success', 'Hợp đồng đã được tạo thành công.');
     }
+
 
     public function show($id)
     {

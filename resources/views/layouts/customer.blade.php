@@ -6,6 +6,7 @@
     <title>@yield('title', 'Dịch Vụ Công Nghệ Thông Tin')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    
 </head>
 <body class="bg-gray-50">
     <!-- Header -->
@@ -27,6 +28,13 @@
                 <!-- Dropdown Trang Cá Nhân -->
                 <div class="relative">
                     <button id="user-menu-button" class="flex items-center focus:outline-none">
+                        @if(auth()->check())
+    <img src="/api/placeholder/40/40" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
+@else
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 text-white mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5.121 17.804A10.97 10.97 0 0112 15c2.21 0 4.21.635 5.879 1.804M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+    </svg>
+@endif
                         @if(auth()->check())
                             <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
                             <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
@@ -63,6 +71,18 @@
                             <div class="px-4 py-3 border-b">
                                 <span class="block text-sm text-gray-500 truncate">Vui lòng đăng nhập</span>
                             </div>
+                            <ul class="py-1">
+                                <li>
+                                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Đăng Nhập
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Đăng Ký
+                                    </a>
+                                </li>
+                            </ul>
                         @endif
                     </div>
                 </div>

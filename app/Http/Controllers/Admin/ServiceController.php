@@ -11,7 +11,7 @@ class ServiceController extends Controller
     // Hiển thị danh sách các dịch vụ
     public function index()
     {
-        $services = Service::all(); // Lấy tất cả dịch vụ
+        $services = Service::with('employee')->get(); // Lấy tất cả dịch vụ và thông tin người tạo
         return view('admin.services.index', compact('services'));
     }
 

@@ -25,6 +25,7 @@
             <input type="number" name="price" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-success">Lưu</button>
+        <a href="{{route ('admin.services.index')}}">Trở Lại</a>
     </form>
 </div>
 @endsection
