@@ -1,5 +1,7 @@
 @extends('layouts.admin')
+@section('title', 'Tạo hợp đồng mới')
 @section('content')
+
 <div class="container mt-4">
     <h2>Tạo hợp đồng mới</h2>
     <form action="{{ route('admin.contracts.store') }}" method="POST">
@@ -29,6 +31,8 @@
             <input type="number" name="total_price" class="form-control" required>
         </div>
         <button type="submit" class="btn btn-success">Lưu</button>
+        
     </form>
 </div>
 @endsection
+

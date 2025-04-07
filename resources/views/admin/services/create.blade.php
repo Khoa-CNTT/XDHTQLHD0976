@@ -1,4 +1,18 @@
 @extends('layouts.admin')
+@section('title', 'Thêm dịch vụ ')
+@if(session('success'))
+    @push('scripts')
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    @endpush
+@endif
 @section('content')
 <div class="container mt-4">
     <h2>Thêm dịch vụ mới</h2>

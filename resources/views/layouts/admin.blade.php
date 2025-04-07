@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   @stack('styles')
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  @stack('styles')
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body, html { font-family: 'Roboto', sans-serif; background: #f4f7f9; color: #333; }
@@ -49,7 +50,8 @@
     </div>
   </div>
   
-  @stack('scripts')
+
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  @stack('scripts')
 </body>
 </html>

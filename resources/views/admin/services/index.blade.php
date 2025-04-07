@@ -1,4 +1,18 @@
 @extends('layouts.admin')
+@section('title', 'Danh sách dịch vụ')
+@if(session()->has('success'))
+    @push('scripts')
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    @endpush
+@endif
 <style>
     .table td.text-truncate {
     white-space: nowrap; /* Không xuống dòng */
@@ -62,10 +76,30 @@
                         @csrf @method('DELETE')
                         <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa dịch vụ này?')">Xóa</button>
                     </form>
+                    <script>
+                        function confirmDelete(event) {
+                            event.preventDefault(); // Ngăn form submit ngay lập tức
+                            Swal.fire({
+                                title: 'Bạn có chắc chắn?',
+                                text: "Hành động này không thể hoàn tác!",
+                                icon: 'warning',
+                                showCancelButton: true,
+                                confirmButtonColor: '#3085d6',
+                                cancelButtonColor: '#d33',
+                                confirmButtonText: 'Xóa',
+                                cancelButtonText: 'Hủy'
+                            }).then((result) => {
+                                if (result.isConfirmed) {
+                                    event.target.submit(); // Submit form nếu người dùng xác nhận
+                                }
+                            });
+                        }
+                    </script>
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 </div>
+
 @endsection

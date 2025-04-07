@@ -55,21 +55,23 @@ class ContractController extends Controller
         $services = \App\Models\Service::all();
         return view('admin.contracts.edit', compact('contract', 'customers', 'services'));
     }
-
     public function update(Request $request, $id)
     {
         $contract = Contract::findOrFail($id);
+    
         $data = $request->validate([
-            'customer_id' => 'required',
             'service_id' => 'required',
             'contract_number' => 'required',
-            'start_date' => 'required',
-            'end_date' => 'required',
-            'status' => 'required',
-            'total_price' => 'required'
+            'start_date' => 'required|date',
+            'end_date' => 'required|date|after_or_equal:start_date',
+            'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
+            'total_price' => 'required|numeric|min:0',
         ]);
+    
         $contract->update($data);
+    
         return redirect()->route('admin.contracts.index')->with('success', 'Cập nhật hợp đồng thành công!');
+        
     }
 
     public function destroy($id)

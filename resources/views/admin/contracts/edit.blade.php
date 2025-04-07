@@ -1,4 +1,6 @@
 @extends('layouts.admin')
+@section('title', 'Chỉnh sửa hợp đồng')
+
 @section('content')
 <style>
     body {
@@ -55,34 +57,46 @@
     }
 </style>
 <div class="container mt-4">
-    <h2>Tạo hợp đồng mới</h2>
-    <form action="{{ route('admin.contracts.update') }}" method="POST">
+    <h2>Chỉnh sửa hợp đồng</h2>
+    <form action="{{ route('admin.contracts.update', $contract->id) }}" method="POST">
         @csrf
+        @method('PUT')
         <div class="mb-3">
             <label>Dịch vụ</label>
             <select name="service_id" class="form-control">
                 @foreach($services as $service)
-                <option value="{{ $service->id }}">{{ $service->service_name }}</option>
+                <option value="{{ $service->id }}" {{ $contract->service_id == $service->id ? 'selected' : '' }}>
+                    {{ $service->service_name }}
+                </option>
                 @endforeach
             </select>
         </div>
         <div class="mb-3">
             <label>Số hợp đồng</label>
-            <input type="text" name="contract_number" class="form-control" required>
+            <input type="text" name="contract_number" class="form-control" value="{{ old('contract_number', $contract->contract_number) }}" required>
         </div>
         <div class="mb-3">
             <label>Ngày bắt đầu</label>
-            <input type="date" name="start_date" class="form-control" required>
+            <input type="date" name="start_date" class="form-control" value="{{ old('start_date', $contract->start_date) }}" required>
         </div>
         <div class="mb-3">
             <label>Ngày kết thúc</label>
-            <input type="date" name="end_date" class="form-control" required>
+            <input type="date" name="end_date" class="form-control" value="{{ old('end_date', $contract->end_date) }}" required>
         </div>
         <div class="mb-3">
             <label>Tổng tiền</label>
-            <input type="number" name="total_price" class="form-control" required>
+            <input type="number" name="total_price" class="form-control" value="{{ old('total_price', $contract->total_price) }}" required>
         </div>
-        <button type="submit" class="btn btn-success">Lưu</button>
+        <div class="mb-3">
+            <label>Trạng thái</label>
+            <select name="status" class="form-control">
+                <option value="Chờ xử lý" {{ $contract->status == 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
+                <option value="Hoạt động" {{ $contract->status == 'Hoạt động' ? 'selected' : '' }}>Hoạt động</option>
+                <option value="Hoàn thành" {{ $contract->status == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
+                <option value="Đã huỷ" {{ $contract->status == 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-success">Cập nhật</button>
     </form>
 </div>
 @endsection

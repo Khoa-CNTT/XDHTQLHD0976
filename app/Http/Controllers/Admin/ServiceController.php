@@ -37,8 +37,8 @@ class ServiceController extends Controller
     
         // Lưu dữ liệu vào cơ sở dữ liệu
         Service::create($data);
-    
-        return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công.');
+        session()->flash('success', 'Dịch vụ đã được thêm thành công.');
+        return redirect()->route('admin.services.index');
     }
 
     // Hiển thị chi tiết một dịch vụ
