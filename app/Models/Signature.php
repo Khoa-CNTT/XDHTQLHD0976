@@ -9,7 +9,13 @@ class Signature extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['contract_id', 'signature_data', 'signed_at'];
+    protected $fillable = [ 
+    'contract_id',
+    'customer_name',
+    'customer_email',
+    'signature_data',
+    'signed_at',
+];
 
     public function contract()
     {

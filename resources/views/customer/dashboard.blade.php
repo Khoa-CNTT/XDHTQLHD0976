@@ -28,54 +28,19 @@
 
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Phát Triển Web</h3>
-            <p class="text-gray-600 mb-4">Thiết kế website chuyên nghiệp, responsive và hiệu quả cho mọi doanh nghiệp.</p>
-            <a href="{{ route('customer.contracts.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Hợp đồng Cung Cấp Dịch Vụ Xử Lý Dữ Liệu và Bảo Mật</h3>
-            <p class="text-gray-600 mb-4">Khám phá các dịch vụ mà chúng tôi cung cấp.</p>
-            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Hợp đồng Cung Cấp Phần Mềm và Giải Pháp Công Nghệ</h3>
-            <p class="text-gray-600 mb-4">Cập nhật thông tin cá nhân của bạn.</p>
-            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Hợp đồng Cung Cấp Phần Mềm và Giải Pháp Công Nghệ</h3>
-            <p class="text-gray-600 mb-4">Cập nhật thông tin cá nhân của bạn.</p>
-            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Hợp đồng Cung Cấp Phần Mềm và Giải Pháp Công Nghệ</h3>
-            <p class="text-gray-600 mb-4">Cập nhật thông tin cá nhân của bạn.</p>
-            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
-
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-            <h3 class="text-xl font-semibold text-gray-800 mb-4">Hợp đồng Cung Cấp Phần Mềm và Giải Pháp Công Nghệ</h3>
-            <p class="text-gray-600 mb-4">Cập nhật thông tin cá nhân của bạn.</p>
-            <a href="#" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                Xem Hợp Đồng
-            </a>
-        </div>
+        @forelse($contracts as $contract)
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $contract->service->service_name }}</h3>
+                <p class="text-gray-600 mb-4">{{ $contract->service->description }}</p>
+                <a href="{{ route('customer.contracts.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    Xem Hợp Đồng
+                </a>
+            </div>
+        @empty
+            <p class="text-gray-600">Không có hợp đồng nào.</p>
+        @endforelse
     </div>
+
 
     {{-- Giới thiệu về web --}}
     <div class="mt-16 bg-gray-100 py-12">

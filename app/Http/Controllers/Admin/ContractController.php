@@ -7,13 +7,16 @@ use App\Models\Contract;
 use App\Models\Customer;
 use App\Models\Service;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ContractController extends Controller
 {
     public function index()
     {
-        $contracts = Contract::with('customer', 'service')->paginate(10);
-        return view('admin.contracts.index', compact('contracts'));
+     
+        $contracts = Contract::where('customer_id', Auth::id())->with('service')->get();
+
+        return view('customer.dashboard', compact('contracts'));
     }
 
     public function create()
@@ -79,4 +82,25 @@ class ContractController extends Controller
         Contract::destroy($id);
         return redirect()->back()->with('success', 'Xoá hợp đồng thành công!');
     }
+
+
+
+    public function sign(Request $request, $id)
+{
+    $validated = $request->validate([
+        'customer_name' => 'required|string|max:255',
+        'customer_email' => 'required|email|max:255',
+        'signature_data' => 'required', // Dữ liệu chữ ký
+    ]);
+
+    // Lưu chữ ký
+    \App\Models\Signature::create([
+        'contract_id' => $id,
+        'customer_name' => $validated['customer_name'],
+        'customer_email' => $validated['customer_email'],
+        'signature_data' => $validated['signature_data'],
+    ]);
+
+    return redirect()->route('customer.dashboard')->with('success', 'Hợp đồng đã được ký thành công!');
+}
 }
