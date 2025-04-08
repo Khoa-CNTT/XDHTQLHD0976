@@ -1,8 +1,10 @@
 @extends('layouts.admin')
+@section('title', 'Chi tiết dịch vụ')
+
 @section('content')
-<div class="container mt-4">
-    <h2>Chi tiết dịch vụ</h2>
-    <ul class="list-group">
+<div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded shadow">
+    <h2 class="text-2xl font-semibold mb-6">Chi tiết dịch vụ</h2>
+    <ul class="space-y-3 text-sm">
         <li class="list-group-item"><strong>Tên dịch vụ:</strong> {{ $service->service_name }}</li>
         <li class="list-group-item"><strong>Mô tả:</strong> {{ $service->description }}</li>
         <li class="list-group-item"><strong>Nội dung chi tiết:</strong> {{ $service->content }}</li>
@@ -12,8 +14,9 @@
         
         <li class="list-group-item"><strong>Ngày tạo:</strong> {{ $service->created_at->format('d/m/Y H:i') }}</li>
         <li class="list-group-item"><strong>Ngày cập nhật:</strong> {{ $service->updated_at->format('d/m/Y H:i') }}</li>
-        <a href="{{ route('admin.services.index', $service->id) }}">Trở Lại</a>
-        
     </ul>
+    <div class="mt-6 text-right">
+        <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
+    </div>
 </div>
 @endsection

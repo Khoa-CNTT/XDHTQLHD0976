@@ -1,5 +1,6 @@
 @extends('layouts.admin')
 @section('title', 'Danh sách dịch vụ')
+
 @if(session()->has('success'))
     @push('scripts')
     <script>
@@ -13,93 +14,92 @@
     </script>
     @endpush
 @endif
-<style>
-    .table td.text-truncate {
-    white-space: nowrap; /* Không xuống dòng */
-    overflow: hidden; /* Ẩn nội dung tràn */
-    text-overflow: ellipsis; /* Thêm dấu "..." nếu nội dung quá dài */
-    max-width: 300px; /* Đặt chiều rộng tối đa */
-}   
-    
-        .table th, .table td {
-            text-align: center
-;
-        }
-        .table th {
-            background-color: #f8f9fa;
-            font-weight: bold;
-        }
-        .table td {
-            vertical-align: middle;
-        }
-        .btn-info, .btn-warning, .btn-danger {
-            margin: 0 2px;
-        }
-        .btn-info {
-            background-color: #17a2b8;
-            border-color: #17a2b8;
-        }
-        .btn-warning {
-            background-color: #ffc107;
-            border-color: #ffc107;
-        }
-        
-</style>
+
 @section('content')
+<div class="container mx-auto mt-8">
+    <h2 class="text-2xl font-semibold mb-6">Danh sách dịch vụ</h2>
 
-<div class="container mt-4">
-    <h2>Danh sách dịch vụ</h2>
-    <a href="{{ route('admin.services.create') }}" class="btn btn-primary mb-3">Thêm dịch vụ mới</a>
-    <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th style="width: 20%;">Tên dịch vụ</th>
-                <th style="width: 35%;">Mô tả</th>
-                <th style="width: 10%;">Giá</th>
-                <th style="width: 15%;">Loại dịch vụ</th>
-                <th style="width: 10%;">Người tạo</th>
-                <th style="width: 10%;">Hành động</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($services as $service)
-            <tr>
-                <td>{{ $service->service_name }}</td>
-                <td class="text-truncate" style="max-width: 300px;">{{ $service->description }}</td>
-                <td>{{ number_format($service->price, 0, ',', '.') }} VND</td>
-                <td>{{ $service->service_type }}</td>
-                <td>{{ $service->employee->name ?? 'Admin' }}</td>
-                <td class="text-center">
-                    <a href="{{ route('admin.services.show', $service->id) }}" class="btn btn-sm btn-info mb-1">Xem</a>
-                    <a href="{{ route('admin.services.edit', $service->id) }}" class="btn btn-sm btn-warning mb-1">Sửa</a>
-                    <form action="{{ route('admin.services.destroy', $service->id) }}" method="POST" style="display:inline;">
-                        @csrf @method('DELETE')
-                        <button class="btn btn-sm btn-danger" onclick="return confirm('Xóa dịch vụ này?')">Xóa</button>
-                    </form>
-                    <script>
-                        function confirmDelete(event) {
-                            event.preventDefault(); // Ngăn form submit ngay lập tức
-                            Swal.fire({
-                                title: 'Bạn có chắc chắn?',
-                                text: "Hành động này không thể hoàn tác!",
-                                icon: 'warning',
-                                showCancelButton: true,
-                                confirmButtonColor: '#3085d6',
-                                cancelButtonColor: '#d33',
-                                confirmButtonText: 'Xóa',
-                                cancelButtonText: 'Hủy'
-                            }).then((result) => {
-                                if (result.isConfirmed) {
-                                    event.target.submit(); // Submit form nếu người dùng xác nhận
-                                }
-                            });
-                        }
-                    </script>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <a href="{{ route('admin.services.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
+        Thêm dịch vụ mới
+    </a>
+
+    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+        <table class="min-w-full leading-normal">
+            <thead>
+                <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
+                    <th class="py-3 px-6 text-left">Tên dịch vụ</th>
+                    <th class="py-3 px-6 text-left">Mô tả</th>
+                    <th class="py-3 px-6 text-center">Giá</th>
+                    <th class="py-3 px-6 text-center">Loại dịch vụ</th>
+                    <th class="py-3 px-6 text-center">Người tạo</th>
+                    <th class="py-3 px-6 text-center">Hành động</th>
+                </tr>
+            </thead>
+            <tbody class="text-gray-600 text-sm font-light">
+                @foreach($services as $service)
+                <tr class="border-b border-gray-200 hover:bg-gray-100">
+                    <td class="py-3 px-6 text-left whitespace-nowrap">
+                        {{ $service->service_name }}
+                    </td>
+                    <td class="py-3 px-6 text-left max-w-xs truncate" title="{{ $service->description }}">
+                        {{ $service->description }}
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        {{ $service->price ? number_format($service->price, 0, ',', '.') . ' VND' : 'N/A' }}
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        {{ $service->service_type ?? 'Không xác định' }}
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        {{ $service->employee->name ?? 'Admin' }}
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        <div class="flex items-center justify-center space-x-2">
+                            <a href="{{ route('admin.services.show', $service->id) }}"
+                               class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
+                                Xem
+                            </a>
+                            <a href="{{ route('admin.services.edit', $service->id) }}"
+                               class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
+                                Sửa
+                            </a>
+                            <form action="{{ route('admin.services.destroy', $service->id) }}"
+                                  method="POST" onsubmit="confirmDelete(event)">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit"
+                                        class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
+                                    Xóa
+                                </button>
+                            </form>
+                        </div>
+                    </td>                    
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
 </div>
-
 @endsection
+
+@push('scripts')
+<script>
+    function confirmDelete(event) {
+        event.preventDefault(); // Ngăn form submit
+        Swal.fire({
+            title: 'Bạn có chắc chắn?',
+            text: "Hành động này không thể hoàn tác!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Xóa',
+            cancelButtonText: 'Hủy'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                event.target.submit();
+            }
+        });
+    }
+</script>
+@endpush
