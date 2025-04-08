@@ -25,7 +25,8 @@
     </a>
     @endcan
 
-    <div class="overflow-x-auto bg-white shadow-md rounded-lg">
+    <div class="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-300">
+
         <table class="min-w-full leading-normal">
             <thead>
                 <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">

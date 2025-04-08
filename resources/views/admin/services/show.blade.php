@@ -2,7 +2,8 @@
 @section('title', 'Chi tiết dịch vụ')
 
 @section('content')
-<div class="max-w-3xl mx-auto mt-10 bg-white p-6 rounded shadow">
+<div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-xl border border-gray-300">
+
     <h2 class="text-2xl font-semibold mb-6">Chi tiết dịch vụ</h2>
     <ul class="space-y-3 text-sm">
         <li class="list-group-item"><strong>Tên dịch vụ:</strong> {{ $service->service_name }}</li>

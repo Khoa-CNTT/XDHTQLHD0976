@@ -25,7 +25,7 @@
   <header>
     <div class="logo">
       <a href="{{ route('admin.dashboard') }}">
-        <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-8" style="height: 85px;">
+        <img src="{{ asset('images/logo1.png') }}" alt="Logo"  class="h-8" style="height: 85px;">
       </a>
     </div>
     <div class="user-actions flex items-center space-x-4">
