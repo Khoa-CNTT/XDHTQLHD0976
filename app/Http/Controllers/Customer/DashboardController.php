@@ -29,33 +29,4 @@ class DashboardController extends Controller
         $contract = Contract::with('service')->findOrFail($id);
         return view('customer.contracts.show', compact('contract'));
     }
-    public function filter($type)
-    {
-        // Nếu chọn "Tất Cả", lấy tất cả hợp đồng
-        if ($type === 'Tất Cả') {
-            $contracts = Contract::with('service')->get();
-        } else {
-            // Lấy danh sách hợp đồng theo loại dịch vụ
-            $contracts = Contract::with('service')->whereHas('service', function ($query) use ($type) {
-                $query->where('service_type', $type);
-            })->get();
-        }
-
-        // Trả về view với danh sách hợp đồng
-        return view('customer.contracts.index', compact('contracts', 'type'));
-    }
-    public function search(Request $request)
-    {
-        $query = $request->input('query');
-
-        // Tìm kiếm hợp đồng theo số hợp đồng hoặc tên dịch vụ
-        $contracts = Contract::with('service')
-            ->where('contract_number', 'LIKE', "%{$query}%")
-            ->orWhereHas('service', function ($q) use ($query) {
-                $q->where('service_name', 'LIKE', "%{$query}%");
-            })
-            ->get();
-
-        return view('customer.contracts.index', compact('contracts'));
-    }
 }

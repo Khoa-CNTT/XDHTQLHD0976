@@ -29,4 +29,19 @@ class ServiceController extends Controller
     $service = Service::findOrFail($id); // Lấy dịch vụ theo ID
     return view('customer.services.show', compact('service'));
 }
+
+
+public function search(Request $request)
+{
+    $query = $request->input('query'); // Lấy từ khóa tìm kiếm từ request
+
+    // Tìm kiếm dịch vụ theo tên hoặc mô tả
+    $services = Service::where('service_name', 'LIKE', "%{$query}%")
+        ->orWhere('description', 'LIKE', "%{$query}%")
+        ->paginate(10); // Phân trang kết quả
+
+    $type = 'Tất Cả'; // Giá trị mặc định cho loại dịch vụ
+
+    return view('customer.services.index', compact('services', 'query', 'type'));
+}
 }

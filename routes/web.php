@@ -67,6 +67,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
         Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
         Route::get('/services/{id}', [\App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
+        
+        Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('services.search');
         Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('services.filter');
 
 
