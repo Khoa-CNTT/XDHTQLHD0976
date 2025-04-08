@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 07, 2025 lúc 07:37 AM
+-- Thời gian đã tạo: Th4 08, 2025 lúc 07:52 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -57,7 +57,7 @@ CREATE TABLE `contracts` (
   `contract_number` varchar(255) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `status` enum('chờ xử lý','đang hoạt động','hoàn thành','đã hủy') NOT NULL,
+  `status` enum('Chờ xử lý','Hoạt động','Hoàn thành','Đã huỷ') NOT NULL,
   `total_price` decimal(10,2) NOT NULL,
   `signed_document` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -69,7 +69,8 @@ CREATE TABLE `contracts` (
 --
 
 INSERT INTO `contracts` (`id`, `service_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
-(1, 3, '001', '2025-04-08', '2025-04-18', '', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-06 10:45:20');
+(1, 3, '001', '2025-04-08', '2025-04-19', 'Hoạt động', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-07 08:46:29'),
+(2, 3, '002', '2025-04-11', '2025-04-12', 'Chờ xử lý', 34243.00, NULL, '2025-04-07 08:22:31', '2025-04-07 08:38:39');
 
 -- --------------------------------------------------------
 
@@ -192,7 +193,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (4, '2025_04_06_030242_add_remember_token_to_users_table', 2),
 (5, '2025_04_06_030449_create_permissions_table', 2),
 (6, '2025_04_06_174343_remove_customer_id_from_contracts_table', 2),
-(7, '2025_04_06_175502_update_contracts_table', 3);
+(7, '2025_04_06_175502_update_contracts_table', 3),
+(8, '2025_04_07_161710_add_customer_name_and_email_to_signatures_table', 4);
 
 -- --------------------------------------------------------
 
@@ -266,8 +268,11 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `service_name`, `description`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
-(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'Phần mềm', 10000000.00, 2, '2025-04-05 08:04:29', '2025-04-05 08:04:29'),
-(4, 'cccc', 'ccc', 'Phần cứng', 100000.00, 2, '2025-04-06 22:37:13', '2025-04-06 22:37:13');
+(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-07 07:18:01'),
+(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29'),
+(9, 'ccc', 'cc', 'Phần mềm', 4.00, 2, '2025-04-07 07:53:32', '2025-04-07 07:53:32'),
+(10, 'cccc', 'cc3', 'Phần mềm', 34.00, 2, '2025-04-07 08:12:57', '2025-04-07 08:12:57'),
+(11, 'vv', 'vv', 'Phần mềm', 42.00, 2, '2025-04-07 08:13:39', '2025-04-07 08:13:39');
 
 -- --------------------------------------------------------
 
@@ -289,7 +294,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('aWyUsQ0gqeACq9Sbfw8rIqzZumZkjjdPJyb7wSr8', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbTF2SzNocGNqRmhTMUZzVldacGFIcFNPR28yUVZFOVBTSXNJblpoYkhWbElqb2lUV1JwVXpaeVJXcGlXalJTZUVsbk5FMTNUM1Z4Wlc1M1dHTmtWakUyTUdkTWNsUlZSRTkyYmpWTldsWXdlbVo2ZFROWGJGSm9UVVpuTlc1UlVtMHhRbEIwYnpWME5GVlpTblY2ZDBWTmNHNDJVWGRLY204elZEUnlVMmxzVlhoU1ZFWnpWaTltZG5VeWRqUXdaM2QyTTNOemRIcDVia0ZLU1d4alRuaHpLMFZNTjJnM1IwOHhWV0p0TWxwM2EwSmpaR0p2TVhOb1VHRklTVEJNU0dac09GaHNia3RPYjNKbVIzRkZPSFJ5TldWc1EzbFRVMGRUTW1OUU4wd3hlVVptZURGUGFUaHVlREZUV2tFNVdHMUtUVkIyUVRKU1pHa3hMMmxKZW5kYWQwZFhjWFp0T0doWmQwUkZPR0pGWmxwU2RXUlFiV1JSSzNNMlEydGxNVGhyYkhSSVUwNDVSa3RQUlRGNmRIazJlWEJDU2k5bmNuWkJhVnB2U2toV2JFRm1RV1Y1Tm5VM1UxaDBRMUpTY0RsMWVqQk9ZMDFZS3padUszRndRVEp3UWsxNU1uaG9RVkEwVmsxeloyNXljMVZNYkhkWmFWazNZbkZyVm1GeldubEtSRXRYVlRoMVEzRlpZakUwUFNJc0ltMWhZeUk2SWpRd01tWmxOVGd6TmpWaE56a3hObUpqTURkbVlUZGhZMlZoWWpnMVl6VXpZalF3TVdaaU5ETmlaR0prWlRWbE5UTmhOak00TTJGbU9HWXdNVFpqTm1RaUxDSjBZV2NpT2lJaWZRPT0=', 1744004234);
+('DT4mDd7zSmcyD1kOm1xCEbWbzfSnpKl1ZWEV2yNu', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbk5PUkdaSEwza3dUbHBVVkhWcmVYZG1OR0V2TlhjOVBTSXNJblpoYkhWbElqb2lVMVphU0c0MFprVXdiMWxsWmpOUVQyWmlTR2RUWlVGMVdsbFFVSEJ1ZUVJeFkxaFZNalIwTkcxQmFuSlFUR28wT0ZaUWRqVjVORFE1UmxCMmREbHFla3BhYVRKWWEzbGhSbkJ6WkZCdE9HUjFMMnh3ZUVGcVNVRlJSMGx4YjBaSVRtczJNR1J3S3pKaFdFNVhkSHBqZEhCV1pXcFpTbFpLZDA1dVExUktSbEJsUzB0dFJXbHlRMnd5Vm5keFoySnNkRXBFTUVwS05VdzBXVE5rYTBOMlFWSmhhV2Q2U3k5SU0waEJPV1ZRTVRsT2FVbG1hVEJsV1dOMU5HWnZWMXBFZEV3MGRYSTFRV0pDTHpGM09DdGpPWEZNUjIxV2VqTm5LeTh4Y0dOalMxVnBRWE5UTVVkc01rRmhiSGhrUjBSMGNtNUtObWxpYVhGUFlYbHFTR2RHWmtZemREQkZlREJMUzIxeVNFRk9kbnB4YUVKamVHYzlQU0lzSW0xaFl5STZJbVk1WkRGbFpqRTFZVFU0WTJKaVlUaG1NamhoTjJZNU1qazRZMkU0T1RRNU0yWTBNVFU1TURZMk1qTXpOelV6WXpSbVlXWTFabUppTldGak0yUmxaVGdpTENKMFlXY2lPaUlpZlE9PQ==', 1744038904),
+('h43VyXLTV6i16pheaAoFNFHtrQ477dknP7r7ecW1', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbHA0YVhWbFFuVlFTM1pSZGtsd0wyWlJPRXBPWjJjOVBTSXNJblpoYkhWbElqb2liVWxrYlRoTVpIWmxOVTFYV2xKYWRXNURiVmxYU2tsb1NFeHVkV0ZqUlRoYVNsZDFTUzlGVms1elEwbFNiekJ3VEdodFZISlhNbEExV1V0c2NXWm5kR2s1ZVRnclJIUlpTVVIxZUdkT1NGTk1VemRzYjJ4UE1ucFRNRkkyZG1kVFVtMHdibGxxWVhSSFMzYzRkWGMyVGpGNFJVY3pOMm94Ym5jNVkybHhaU3RZVkc0d1IxWmpWMWx5Y0dzeU9IQllURFIzT1VOVmNVeHpUalpuTlROQk5TOXhRWFZYUXpKb1drc3JRVGN3YWpsbk1qZGhORnBHVTJkcFdXMUZTVWcyVURZMVdEZHJiUzlVVVhKS1RVMTRielp1UW5kd1psaEdjV2x4VEVwVGJsbEROSGdyVlV4Tk9ERXdhR0ZzU1ZSeWNFOHpXSGRzYmtndmRtTlNXRzFRVkcxVlRUZHBRVTlwVWs5SFR6VTVUa2hUTjJkNlRVRTlQU0lzSW0xaFl5STZJbUk1Tm1ObE16UmpORFprTVRobVpqTXdabVF3WVdGbE56VmpNamxqTVRkbE5UWm1NbVF3WW1ReE4yWmtNbUl3TXpCbFlXTTBORFZrWVRCbE5ESXdPV01pTENKMFlXY2lPaUlpZlE9PQ==', 1744091504),
+('ThjVcl8V0m00duPCK6SZnpSsNl1icio61yAHB2VY', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJa1JWVkcxRGFURklUSG8yY2tSbFVFVXhWek5tVUZFOVBTSXNJblpoYkhWbElqb2lTbVo2TVd4R1RtSTNLekl4Um5oSVVWVkVLMWQ2UkVSRlFuZGtRMjFFV2sxME5YbzNTbEpyVVVOV0szaFBVMHByT0VkcGNtaHhaMUI0VWpaa2NqaFpZbUUzZW14dlZDdDZha1ZoTUdKUWJGUldabEpsV2tsbVVGZHJUalpEVTB4Vk5uSnRiR1Z1Wm1zelVuTndaRlIwVUhNNVJUUjNUQ3M1Vm5acmJub3dSaXRYWWtGSk9VaFBZbFp3WWxKRVVtaEhTRzVxTnpWUk0xQktLMWh6UkRFNWVtNUJiblFyZVVSSVpqRlBaWFZGZFdWMlFsSm1UVkppTUM5clpuWlpUMjB5WjBkNVJHcHplWGhTZEU5blZHdExWa05HTDBSSVpGcEZja3RVZUN0c2RVaElWVzlUZUdONGNFRjFkakE0ZFVSdlowOWpUM2RvUjFsbUsybDJkRFJOU1hOclJubzFjWFpFU21KRFVtVlliMWxJWkZSNVYxZzNiRnBvVEhvclpFZ3djSFIyZGpSR1dFRnRLMUpJYkV0YWVWZzFhM053V1ZkUWRXbGtkSE5uZDNaQ1kyMTJPV2xQVUhONWIyVkZibkF4ZFVKTGRpOTBVamhyTVVRd1RqTkhVRmRxTm1GM1QyaEtORlFyTVVaMlVpdGFNM1lyTjBFd2QxbFJhMWhFZWt0MlptMVVWRFJrV1hRMmNtVjVkMWN2VVM5TlVHdFJkejA5SWl3aWJXRmpJam9pWVRJeE1HWmpaV0UxWkRrek1HUXhObVExT1RObU5qVTJOamd3WkRRMlkyUmpZemd4WlRWbU5qTm1OV1V5WTJFNFkyTTJORFEyTURCaU5UQXdNRGcwTXlJc0luUmhaeUk2SWlKOQ==', 1744044817);
 
 -- --------------------------------------------------------
 
@@ -300,6 +307,8 @@ INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, 
 CREATE TABLE `signatures` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `contract_id` bigint(20) UNSIGNED NOT NULL,
+  `customer_name` varchar(255) NOT NULL,
+  `customer_email` varchar(255) NOT NULL,
   `signature_data` text NOT NULL,
   `signed_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `created_at` timestamp NULL DEFAULT NULL,
@@ -457,7 +466,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `customers`
@@ -487,7 +496,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -505,7 +514,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `signatures`
