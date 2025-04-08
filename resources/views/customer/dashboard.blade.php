@@ -32,9 +32,13 @@
         @forelse($contracts as $contract)
             <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
                 <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $contract->service->service_name }}</h3>
-                <p class="text-gray-600 mb-4">{{ $contract->service->description }}</p>
-                <a href="{{ route('customer.contracts.index') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                    Xem Hợp Đồng
+                <p class="text-gray-600 mb-2"><strong>Số hợp đồng:</strong> {{ $contract->contract_number }}</p>
+                <p class="text-gray-600 mb-2"><strong>Ngày bắt đầu:</strong> {{ $contract->start_date }}</p>
+                <p class="text-gray-600 mb-2"><strong>Ngày kết thúc:</strong> {{ $contract->end_date }}</p>
+                <p class="text-gray-600 mb-2"><strong>Trạng thái:</strong> {{ $contract->status }}</p>
+                <p class="text-gray-600 mb-4"><strong>Tổng tiền:</strong> {{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
+                <a href="{{ route('customer.contracts.show', $contract->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    Xem Chi Tiết
                 </a>
             </div>
         @empty
@@ -42,7 +46,10 @@
         @endforelse
     </div>
 
-
+<!-- Hiển thị phân trang -->
+<div class="mt-6">
+    {{ $contracts->links() }}
+</div>
     {{-- Giới thiệu về web --}}
     <div class="mt-16 bg-gray-100 py-12">
         <div class="container mx-auto text-center">
@@ -89,6 +96,7 @@
         </div>
     </div>
 </div>
+
 
 
 @endsection

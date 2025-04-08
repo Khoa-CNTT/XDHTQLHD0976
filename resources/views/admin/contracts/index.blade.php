@@ -92,7 +92,7 @@
             @foreach($contracts as $contract)
             <tr>
                 <td>{{ $contract->contract_number }}</td>
-                <td>{{ $contract->service->service_name }}</td>
+                <td>{{ optional($contract->service)->service_name }}</td> <!-- Sử dụng optional để tránh lỗi -->
                 <td>{{ $contract->status }}</td>
                 <td>
                     <a href="{{ route('admin.contracts.show', $contract->id) }}" class="btn btn-sm btn-info">Xem</a>
@@ -129,5 +129,8 @@
     <div class="mt-4">
         {{ $contracts->links() }}
     </div>
+</div>
+<div class="mt-4">
+    {{ $contracts->links() }}
 </div>
 @endsection

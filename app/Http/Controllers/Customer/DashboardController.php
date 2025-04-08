@@ -14,11 +14,47 @@ class DashboardController extends Controller
     // }
 
     public function index()
+{
+    $isLoggedIn = Auth::check();
+    $user = $isLoggedIn ? Auth::user() : null;
+
+    // Sử dụng phân trang
+    $contracts = Contract::with('service')->paginate(10); // Hiển thị 10 hợp đồng mỗi trang
+
+    return view('customer.dashboard', compact('isLoggedIn', 'user', 'contracts'));
+}
+    public function show($id)
     {
-        $isLoggedIn = Auth::check();
-        $user = $isLoggedIn ? Auth::user() : null;
-        $contracts = Contract::with('service')->get(); // Lấy tất cả hợp đồng
-        // $contracts = Contract::where('service_id', 1)->with('service')->get(); // Lọc theo service_id
-        return view('customer.dashboard', compact('isLoggedIn', 'user','contracts'));
+        $contract = Contract::with('service')->findOrFail($id);
+        return view('customer.contracts.show', compact('contract'));
+    }
+    public function filter($type)
+    {
+        // Nếu chọn "Tất Cả", lấy tất cả hợp đồng
+        if ($type === 'Tất Cả') {
+            $contracts = Contract::with('service')->get();
+        } else {
+            // Lấy danh sách hợp đồng theo loại dịch vụ
+            $contracts = Contract::with('service')->whereHas('service', function ($query) use ($type) {
+                $query->where('service_type', $type);
+            })->get();
+        }
+
+        // Trả về view với danh sách hợp đồng
+        return view('customer.contracts.index', compact('contracts', 'type'));
+    }
+    public function search(Request $request)
+    {
+        $query = $request->input('query');
+
+        // Tìm kiếm hợp đồng theo số hợp đồng hoặc tên dịch vụ
+        $contracts = Contract::with('service')
+            ->where('contract_number', 'LIKE', "%{$query}%")
+            ->orWhereHas('service', function ($q) use ($query) {
+                $q->where('service_name', 'LIKE', "%{$query}%");
+            })
+            ->get();
+
+        return view('customer.contracts.index', compact('contracts'));
     }
 }

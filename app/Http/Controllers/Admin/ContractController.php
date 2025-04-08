@@ -12,12 +12,12 @@ use Illuminate\Support\Facades\Auth;
 class ContractController extends Controller
 {
     public function index()
-    {
-     
-        $contracts = Contract::where('customer_id', Auth::id())->with('service')->get();
+{
+    // Lấy tất cả hợp đồng cùng với thông tin dịch vụ
+    $contracts = Contract::with('service')->paginate(10); // Phân trang 10 hợp đồng mỗi trang
 
-        return view('customer.dashboard', compact('contracts'));
-    }
+    return view('admin.contracts.index', compact('contracts'));
+}
 
     public function create()
     {
