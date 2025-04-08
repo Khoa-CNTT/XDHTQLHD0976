@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 08, 2025 lúc 07:52 AM
+-- Thời gian đã tạo: Th4 08, 2025 lúc 10:31 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -194,7 +194,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2025_04_06_030449_create_permissions_table', 2),
 (6, '2025_04_06_174343_remove_customer_id_from_contracts_table', 2),
 (7, '2025_04_06_175502_update_contracts_table', 3),
-(8, '2025_04_07_161710_add_customer_name_and_email_to_signatures_table', 4);
+(8, '2025_04_07_161710_add_customer_name_and_email_to_signatures_table', 4),
+(9, '2025_04_08_080841_add_content_to_services_table', 5);
 
 -- --------------------------------------------------------
 
@@ -256,6 +257,7 @@ CREATE TABLE `services` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `description` text NOT NULL,
+  `content` text DEFAULT NULL,
   `service_type` varchar(255) NOT NULL,
   `price` decimal(15,2) NOT NULL,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
@@ -267,12 +269,14 @@ CREATE TABLE `services` (
 -- Đang đổ dữ liệu cho bảng `services`
 --
 
-INSERT INTO `services` (`id`, `service_name`, `description`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
-(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-07 07:18:01'),
-(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29'),
-(9, 'ccc', 'cc', 'Phần mềm', 4.00, 2, '2025-04-07 07:53:32', '2025-04-07 07:53:32'),
-(10, 'cccc', 'cc3', 'Phần mềm', 34.00, 2, '2025-04-07 08:12:57', '2025-04-07 08:12:57'),
-(11, 'vv', 'vv', 'Phần mềm', 42.00, 2, '2025-04-07 08:13:39', '2025-04-07 08:13:39');
+INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
+(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'ccc', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-07 07:18:01'),
+(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', NULL, 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29'),
+(9, 'ccc', 'cc', NULL, 'Phần mềm', 4.00, 2, '2025-04-07 07:53:32', '2025-04-07 07:53:32'),
+(10, 'cccc', 'cc3', NULL, 'Phần mềm', 34.00, 2, '2025-04-07 08:12:57', '2025-04-07 08:12:57'),
+(11, 'vv', 'vv', NULL, 'Phần cứng', 42.00, 2, '2025-04-07 08:13:39', '2025-04-08 00:49:37'),
+(17, 'câcc', 'ccacs', NULL, 'Nhà mạng', 34324.00, 2, '2025-04-08 01:14:40', '2025-04-08 01:14:40'),
+(18, 'nga', 'dep trai', NULL, 'Nhà mạng', 34.00, 2, '2025-04-08 01:25:43', '2025-04-08 01:25:43');
 
 -- --------------------------------------------------------
 
@@ -294,9 +298,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('DT4mDd7zSmcyD1kOm1xCEbWbzfSnpKl1ZWEV2yNu', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbk5PUkdaSEwza3dUbHBVVkhWcmVYZG1OR0V2TlhjOVBTSXNJblpoYkhWbElqb2lVMVphU0c0MFprVXdiMWxsWmpOUVQyWmlTR2RUWlVGMVdsbFFVSEJ1ZUVJeFkxaFZNalIwTkcxQmFuSlFUR28wT0ZaUWRqVjVORFE1UmxCMmREbHFla3BhYVRKWWEzbGhSbkJ6WkZCdE9HUjFMMnh3ZUVGcVNVRlJSMGx4YjBaSVRtczJNR1J3S3pKaFdFNVhkSHBqZEhCV1pXcFpTbFpLZDA1dVExUktSbEJsUzB0dFJXbHlRMnd5Vm5keFoySnNkRXBFTUVwS05VdzBXVE5rYTBOMlFWSmhhV2Q2U3k5SU0waEJPV1ZRTVRsT2FVbG1hVEJsV1dOMU5HWnZWMXBFZEV3MGRYSTFRV0pDTHpGM09DdGpPWEZNUjIxV2VqTm5LeTh4Y0dOalMxVnBRWE5UTVVkc01rRmhiSGhrUjBSMGNtNUtObWxpYVhGUFlYbHFTR2RHWmtZemREQkZlREJMUzIxeVNFRk9kbnB4YUVKamVHYzlQU0lzSW0xaFl5STZJbVk1WkRGbFpqRTFZVFU0WTJKaVlUaG1NamhoTjJZNU1qazRZMkU0T1RRNU0yWTBNVFU1TURZMk1qTXpOelV6WXpSbVlXWTFabUppTldGak0yUmxaVGdpTENKMFlXY2lPaUlpZlE9PQ==', 1744038904),
-('h43VyXLTV6i16pheaAoFNFHtrQ477dknP7r7ecW1', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbHA0YVhWbFFuVlFTM1pSZGtsd0wyWlJPRXBPWjJjOVBTSXNJblpoYkhWbElqb2liVWxrYlRoTVpIWmxOVTFYV2xKYWRXNURiVmxYU2tsb1NFeHVkV0ZqUlRoYVNsZDFTUzlGVms1elEwbFNiekJ3VEdodFZISlhNbEExV1V0c2NXWm5kR2s1ZVRnclJIUlpTVVIxZUdkT1NGTk1VemRzYjJ4UE1ucFRNRkkyZG1kVFVtMHdibGxxWVhSSFMzYzRkWGMyVGpGNFJVY3pOMm94Ym5jNVkybHhaU3RZVkc0d1IxWmpWMWx5Y0dzeU9IQllURFIzT1VOVmNVeHpUalpuTlROQk5TOXhRWFZYUXpKb1drc3JRVGN3YWpsbk1qZGhORnBHVTJkcFdXMUZTVWcyVURZMVdEZHJiUzlVVVhKS1RVMTRielp1UW5kd1psaEdjV2x4VEVwVGJsbEROSGdyVlV4Tk9ERXdhR0ZzU1ZSeWNFOHpXSGRzYmtndmRtTlNXRzFRVkcxVlRUZHBRVTlwVWs5SFR6VTVUa2hUTjJkNlRVRTlQU0lzSW0xaFl5STZJbUk1Tm1ObE16UmpORFprTVRobVpqTXdabVF3WVdGbE56VmpNamxqTVRkbE5UWm1NbVF3WW1ReE4yWmtNbUl3TXpCbFlXTTBORFZrWVRCbE5ESXdPV01pTENKMFlXY2lPaUlpZlE9PQ==', 1744091504),
-('ThjVcl8V0m00duPCK6SZnpSsNl1icio61yAHB2VY', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJa1JWVkcxRGFURklUSG8yY2tSbFVFVXhWek5tVUZFOVBTSXNJblpoYkhWbElqb2lTbVo2TVd4R1RtSTNLekl4Um5oSVVWVkVLMWQ2UkVSRlFuZGtRMjFFV2sxME5YbzNTbEpyVVVOV0szaFBVMHByT0VkcGNtaHhaMUI0VWpaa2NqaFpZbUUzZW14dlZDdDZha1ZoTUdKUWJGUldabEpsV2tsbVVGZHJUalpEVTB4Vk5uSnRiR1Z1Wm1zelVuTndaRlIwVUhNNVJUUjNUQ3M1Vm5acmJub3dSaXRYWWtGSk9VaFBZbFp3WWxKRVVtaEhTRzVxTnpWUk0xQktLMWh6UkRFNWVtNUJiblFyZVVSSVpqRlBaWFZGZFdWMlFsSm1UVkppTUM5clpuWlpUMjB5WjBkNVJHcHplWGhTZEU5blZHdExWa05HTDBSSVpGcEZja3RVZUN0c2RVaElWVzlUZUdONGNFRjFkakE0ZFVSdlowOWpUM2RvUjFsbUsybDJkRFJOU1hOclJubzFjWFpFU21KRFVtVlliMWxJWkZSNVYxZzNiRnBvVEhvclpFZ3djSFIyZGpSR1dFRnRLMUpJYkV0YWVWZzFhM053V1ZkUWRXbGtkSE5uZDNaQ1kyMTJPV2xQVUhONWIyVkZibkF4ZFVKTGRpOTBVamhyTVVRd1RqTkhVRmRxTm1GM1QyaEtORlFyTVVaMlVpdGFNM1lyTjBFd2QxbFJhMWhFZWt0MlptMVVWRFJrV1hRMmNtVjVkMWN2VVM5TlVHdFJkejA5SWl3aWJXRmpJam9pWVRJeE1HWmpaV0UxWkRrek1HUXhObVExT1RObU5qVTJOamd3WkRRMlkyUmpZemd4WlRWbU5qTm1OV1V5WTJFNFkyTTJORFEyTURCaU5UQXdNRGcwTXlJc0luUmhaeUk2SWlKOQ==', 1744044817);
+('NCs1ONQTBdma82PXuPCKcslojljqWHNMpfFDLs5Z', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBYYUN0dmJUaEhPVXBpU0RCSVpuUmphSGw1Vm1jOVBTSXNJblpoYkhWbElqb2lXa3A2Ym04NWIyUnhkWG8yY2sxMlFqaDJWMjF5YUdsdFdXRXpWVkJhYmtaUlduRk5XazAwVmtabU9YTm1NV3hwVWxKSVRFaDNPVTl1U1ZNdlFWUllabmhJU1dGVlZGbEhlQ3RCTHpjM1VucHBTelZCYURFMGNXTlRhbVJWWVZKS1ZWUkZkVGhYY1RORFEyVklOekZuUmtOMlUwbFBOV3ByZGpCaFZrSnlka00wUlZwcFRHbHZNR2hJVTIwd1lTOXlaVWhIT0ZWbVJEWkVXalpGTm1SR01rMHlhMjVIZFVobGJXNTJPVmwzUjFObFUwWmtkVXMzTlhvMGNHRnhhbVZWUzJobVVWb3lSMUZQY21adGJFdFFUM2t5Vkc0MVVWSjVPRmhoUkZWWFpHdHdSMVoxT1c1VVlXSk5VVGsyV1cxck1tbFNhVTA1TTJORmJtczRaM1p1Vm14WmNrbzBWa0paYUZscGNHcHlkWFZrTHpkRk9FVjJSRFJEVkZSUVkyRnhNbmN4VFhSTU5WcHNiR0ZIVkdkTU5VSm1hMkZ5VEd0Mk0yRXpOVXgxVlVOR2NYZzVVbFpuVG14bEwyaDVPR00xUkZaaVRucGFVelEwUWxkbVJtNWhha2R6TTJSUFdFUk5MMXBOUFNJc0ltMWhZeUk2SWpNNVpqWTNNak0xWWpnME56VTVZelV4WXpoa1lUaG1NVEk0Tm1ObFlqQmxZbVUwWkRJME5EVTVNakJtT1RGbVpUVXlNbUptTldVNFltRTNPRFprTVRNaUxDSjBZV2NpT2lJaWZRPT0=', 1744101051),
+('txXStjTYea0ADQ9JyyKYVoGq88KDZl3GNZwbUqWk', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBSVW5GT01IRjFTakUzYVZKV01UbE5hVGRTUlZFOVBTSXNJblpoYkhWbElqb2lSM2RxVldSSEsyZExSRkJqVDFKYWJXY3JWVVZ0TUhBNE5VVmhSSFl4VGxCMU9VOVpNVUpzVjJSTGRHYzBWekpZU2xOTFpWUlhiek5hYUhaNWQwYzRWMjFDY1dVemNHNDFUVWxtYVZsWk1VMW9hRXd5T0dSb1ptTkhjSEYwV1cxSkswUjFSVlp5Vm10TGNqSnBSMFZ6Yldjck5WRkhXa05sZEVWR05DOVBVbVoyVEVwV1JtcFpXRFp5VGxvelYyVjRUVFZ5TkRsRFYyWkNXV3BUUlRjd2NFeEVaM1pTVWtVck0wRnhOM1J6Y0ZoTWExWkdWbTE1TWpoNWRUZHlXREZMWkZsSFZWVnRhRll2WjBjNU9GWXhPVnA1T1cxSU5rZE9jbWhrV0U1cmExVlJaM281ZUUwelUzSnhiM3A1TlZCRk5qQndMMDkxVmpFMk1tbDFaVGxRU1ZaMmQzWktTbGgyVFV4RlRUSkxLelJNWjJOR2FGUTVjV2RyUm1WTlMwRkJkSGR2UkRGRWEwNXVWakZtUnl0UFdVUmtkSEo2VkV0cWQxQkRMMmR1YXpkMWFIRnVhVkJ4UW5KMU0yaFZOa3RsZDNaeFZsUlVhQ3ROY1RoSVZGUkJkWGhMUVhJMGVsZGxlalZOUFNJc0ltMWhZeUk2SWpVeFl6RmlaamMzTkdNNE9URXlZbVl6TVdJeFpERmhNR0ZrWVRCaFkyTmlaRGRoTjJKak5URmxZak0yT1dNNE1XTmpabVk0TnpKbU5HTmpNR0UyTXpNaUxDSjBZV2NpT2lJaWZRPT0=', 1744100351);
 
 -- --------------------------------------------------------
 
@@ -496,7 +499,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -514,7 +517,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
 
 --
 -- AUTO_INCREMENT cho bảng `signatures`

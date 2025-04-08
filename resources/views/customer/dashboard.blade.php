@@ -29,26 +29,27 @@
 
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
-        @forelse($contracts as $contract)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $contract->service->service_name }}</h3>
-                <p class="text-gray-600 mb-2"><strong>Số hợp đồng:</strong> {{ $contract->contract_number }}</p>
-                <p class="text-gray-600 mb-2"><strong>Ngày bắt đầu:</strong> {{ $contract->start_date }}</p>
-                <p class="text-gray-600 mb-2"><strong>Ngày kết thúc:</strong> {{ $contract->end_date }}</p>
-                <p class="text-gray-600 mb-2"><strong>Trạng thái:</strong> {{ $contract->status }}</p>
-                <p class="text-gray-600 mb-4"><strong>Tổng tiền:</strong> {{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
-                <a href="{{ route('customer.contracts.show', $contract->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                    Xem Chi Tiết
+        @forelse($services as $service)
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200">
+                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $service->service_name }}</h3>
+                <p class="text-gray-600 mb-4">{{ $service->description }}</p>
+                <p class="text-gray-600 mb-2"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
+                <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
+                    <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
+                </p>
+                <a href="{{ route('customer.services.show', $service->id) }}" 
+                   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
+                    Xem Hợp Đồng
                 </a>
             </div>
         @empty
-            <p class="text-gray-600">Không có hợp đồng nào.</p>
+            <p class="text-gray-600">Không có dịch vụ nào.</p>
         @endforelse
     </div>
 
 <!-- Hiển thị phân trang -->
 <div class="mt-6">
-    {{ $contracts->links() }}
+    {{ $services->links() }}
 </div>
     {{-- Giới thiệu về web --}}
     <div class="mt-16 bg-gray-100 py-12">

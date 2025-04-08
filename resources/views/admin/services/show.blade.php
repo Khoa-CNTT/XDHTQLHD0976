@@ -5,6 +5,7 @@
     <ul class="list-group">
         <li class="list-group-item"><strong>Tên dịch vụ:</strong> {{ $service->service_name }}</li>
         <li class="list-group-item"><strong>Mô tả:</strong> {{ $service->description }}</li>
+        <li class="list-group-item"><strong>Nội dung chi tiết:</strong> {{ $service->content }}</li>
         <li class="list-group-item"><strong>Giá:</strong> {{ number_format($service->price, 0, ',', '.') }} VND</li>
         <li class="list-group-item"><strong>Loại:</strong> {{ $service->service_type }}</li>
         <li class="list-group-item"><strong>Người tạo:</strong> {{ $service->employee->name ?? 'Admin' }}</li>

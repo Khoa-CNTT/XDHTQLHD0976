@@ -25,6 +25,10 @@
             <textarea name="description" class="form-control" rows="3">{{ old('description', $service->description) }}</textarea>
         </div>
         <div class="mb-3">
+            <label>Nội dung chi tiết</label>
+            <textarea name="content" class="form-control" rows="5">{{ old('content', $service->content) }}</textarea>
+        </div>
+        <div class="mb-3">
             <label>Loại dịch vụ</label>
             <select name="service_type" class="form-control">
                 <option value="Phần mềm" {{ $service->service_type == 'Phần mềm' ? 'selected' : '' }}>Phần mềm</option>

@@ -22,21 +22,20 @@ class ServiceController extends Controller
     }
 
     // Lưu dịch vụ mới vào cơ sở dữ liệu
+    
     public function store(Request $request)
     {
-        // Validate dữ liệu
         $data = $request->validate([
             'service_name' => 'required|string|max:255|unique:services',
             'description' => 'nullable|string',
+            'content' => 'nullable|string', 
             'service_type' => 'required|string',
             'price' => 'numeric|max:99999999.99',
         ]);
     
-        // Gán ID của người tạo (nếu cần)
         $data['created_by'] = Auth::id();
-    
-        // Lưu dữ liệu vào cơ sở dữ liệu
         Service::create($data);
+    
         session()->flash('success', 'Dịch vụ đã được thêm thành công.');
         return redirect()->route('admin.services.index');
     }
@@ -59,22 +58,19 @@ class ServiceController extends Controller
     public function update(Request $request, $id)
     {
         $service = Service::findOrFail($id);
-
-        // Validate dữ liệu
+    
         $data = $request->validate([
             'service_name' => 'required|string|max:255',
             'description' => 'required|string',
+            'content' => 'nullable|string',
             'service_type' => 'required|string',
             'price' => 'required|numeric|min:0',
         ]);
-
-        // Cập nhật dịch vụ
+    
         $service->update($data);
-
-        // Chuyển hướng với thông báo thành công
+    
         return redirect()->route('admin.services.index')->with('success', 'Cập nhật dịch vụ thành công!');
     }
-
     // Xoá một dịch vụ
     public function destroy($id)
     {

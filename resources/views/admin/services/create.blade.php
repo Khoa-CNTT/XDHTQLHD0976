@@ -27,11 +27,15 @@
             <textarea name="description" class="form-control" rows="3"></textarea>
         </div>
         <div class="mb-3">
+            <label>Nội dung chi tiết</label>
+            <textarea name="content" class="form-control" rows="5">{{ old('content') }}</textarea>
+        </div>
+        <div class="mb-3">
             <label>Loại dịch vụ</label>
             <select name="service_type" class="form-control">
                 <option value="Phần mềm">Phần mềm</option>
                 <option value="Phần cứng">Phần cứng</option>
-                <option value="Nhà mạng">An Ninh mạng</option>
+                <option value="Nhà mạng">Nhà mạng</option>
             </select>
         </div>
         <div class="mb-3">

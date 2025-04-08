@@ -23,4 +23,5 @@ class ContractController extends Controller
         $contract = Contract::with('service')->findOrFail($id);
         return view('customer.contracts.show', compact('contract'));
     }
+    
 }

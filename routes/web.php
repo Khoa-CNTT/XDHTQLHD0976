@@ -66,6 +66,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
 
         Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
+        Route::get('/services/{id}', [\App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
         Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('services.filter');
 
 

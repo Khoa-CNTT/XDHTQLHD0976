@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Contract;
+use App\Models\Service;
 class DashboardController extends Controller
 {
     // public function index()
@@ -14,15 +15,15 @@ class DashboardController extends Controller
     // }
 
     public function index()
-{
-    $isLoggedIn = Auth::check();
-    $user = $isLoggedIn ? Auth::user() : null;
-
-    // Sử dụng phân trang
-    $contracts = Contract::with('service')->paginate(10); // Hiển thị 10 hợp đồng mỗi trang
-
-    return view('customer.dashboard', compact('isLoggedIn', 'user', 'contracts'));
-}
+    {
+        $isLoggedIn = Auth::check();
+        $user = $isLoggedIn ? Auth::user() : null;
+    
+        // Lấy danh sách dịch vụ
+        $services = Service::select('id', 'service_name', 'description', 'service_type', 'price')->paginate(10); // Phân trang
+    
+        return view('customer.dashboard', compact('isLoggedIn', 'user', 'services'));
+    }
     public function show($id)
     {
         $contract = Contract::with('service')->findOrFail($id);
