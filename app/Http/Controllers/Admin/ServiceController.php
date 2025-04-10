@@ -26,10 +26,12 @@ class ServiceController extends Controller
     {
         $data = $request->validate([
             'service_name' => 'required|string|max:255|unique:services',
-            'description' => 'nullable|string',
-            'content' => 'nullable|string', 
+            'description' => 'required|string',
+            'content' => 'required|string', 
             'service_type' => 'required|string',
             'price' => 'numeric|max:99999999.99',
+        ], [
+            'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
         ]);
     
         $data['created_by'] = Auth::id();
@@ -59,11 +61,13 @@ class ServiceController extends Controller
         $service = Service::findOrFail($id);
     
         $data = $request->validate([
-            'service_name' => 'required|string|max:255',
+            'service_name' => 'required|string|max:255|unique:services,service_name,' . $id,
             'description' => 'required|string',
-            'content' => 'nullable|string',
+            'content' => 'required|string',
             'service_type' => 'required|string',
             'price' => 'required|numeric|min:0',
+        ],[
+            'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
         ]);
     
         $service->update($data);

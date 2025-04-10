@@ -23,15 +23,19 @@
         @csrf
         <div class="mb-4">
             <label class="block mb-1 font-medium">Tên dịch vụ</label>
-            <input type="text" name="service_name" class="w-full border border-gray-300 rounded px-4 py-2" required>
+            <input type="text" name="service_name" class="w-full border border-gray-300 rounded px-4 py-2" value="{{ old('service_name') }}" required>
+            
+            @error('service_name')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
         <div class="mb-4">
             <label class="block mb-1 font-medium">Mô tả</label>
-            <textarea name="description" rows="3" class="w-full border border-gray-300 rounded px-4 py-2"></textarea>
+            <textarea name="description" rows="3" class="w-full border border-gray-300 rounded px-4 py-2" required>{{ old('description') }}</textarea>
         </div>
         <div class="mb-4">
             <label class="block mb-1 font-medium">Nội dung chi tiết</label>
-            <textarea name="content" class="w-full border border-gray-300 rounded px-4 py-2" rows="5">{{ old('content') }}</textarea>
+            <textarea name="content" class="w-full border border-gray-300 rounded px-4 py-2" rows="5" required>{{ old('content') }}</textarea>
         </div>
         <div class="mb-4">
             <label class="block mb-1 font-medium">Loại dịch vụ</label>
@@ -51,4 +55,16 @@
         </div>
     </form>
 </div>
+@if ($errors->any())
+    @push('scripts')
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Lỗi!',
+            text: '{{ $errors->first() }}',
+            confirmButtonColor: '#3085d6',
+        });
+    </script>
+    @endpush
+@endif
 @endsection
