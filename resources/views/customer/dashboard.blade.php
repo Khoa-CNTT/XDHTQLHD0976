@@ -35,7 +35,23 @@
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
         @forelse($services as $service)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px]">
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px] relative">
+    
+                <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
+                @if($service->created_at && $service->created_at->gt(now()->subDays(7)))
+                    <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
+                        Mới
+                    </span>
+                @endif
+    
+                <!-- Nhãn "Hot" (Bao phủ góc trên phải) -->
+                @if($service->is_hot)
+                    <span class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-bl-full">
+                        Hot
+                    </span>
+                @endif
+    
+                <!-- Nội dung dịch vụ -->
                 <div>
                     <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
                     <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
@@ -56,10 +72,26 @@
         @endforelse
     </div>
     
+    
 <!-- Hiển thị phân trang -->
 <div class="mt-6">
-    {{ $services->links() }}
+    <div class="flex justify-center space-x-4">
+        @if ($services->onFirstPage())
+            <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-l-lg">Trang đầu</span>
+        @else
+            <a href="{{ $services->previousPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700">Trang đầu</a>
+        @endif
+
+        <span class="px-4 py-2 text-gray-500">Trang {{ $services->currentPage() }} / {{ $services->lastPage() }}</span>
+
+        @if ($services->hasMorePages())
+            <a href="{{ $services->nextPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Trang sau</a>
+        @else
+            <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-r-lg">Trang sau</span>
+        @endif
+    </div>
 </div>
+
     {{-- Giới thiệu về web --}}
     <div class="mt-16 bg-gray-100 py-12">
         <div class="container mx-auto text-center">

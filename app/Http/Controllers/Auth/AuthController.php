@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
-
+use Illuminate\Support\Facades\Cookie;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -28,7 +28,16 @@ class AuthController extends Controller
         ]);
     
         if (Auth::attempt($credentials)) {
-            // Kiểm tra vai trò của người dùng và chuyển hướng phù hợp
+            // Nếu người dùng tích "ghi nhớ đăng nhập"
+            if ($request->has('remember_credentials')) {
+                Cookie::queue('remember_email', $request->email, 60 * 24 * 7);     // 7 ngày
+                Cookie::queue('remember_password', $request->password, 60 * 24 * 7);
+            } else {
+                Cookie::queue(Cookie::forget('remember_email'));
+                Cookie::queue(Cookie::forget('remember_password'));
+            }
+        
+            // Điều hướng theo role
             if (Auth::user()->role === 'admin') {
                 return redirect()->route('admin.dashboard');
             } elseif (Auth::user()->role === 'customer') {
