@@ -11,7 +11,7 @@
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <nav>
                 <ul class="flex space-x-6">
-                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Tất Cả Dịch Vụ') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="text-gray-700 hover:text-blue-600">Nhà Mạng</a></li>
@@ -68,7 +68,7 @@
                 </div>
             </div>
         @empty
-            <p class="text-gray-600">Không có dịch vụ nào.</p>
+        <p class="text-gray-600">Chúng tôi rất tiếc ,không có dịch vụ nào bạn đang tìm kiếm cả!!!</p>
         @endforelse
     </div>
     
