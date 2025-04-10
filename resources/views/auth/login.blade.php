@@ -119,19 +119,35 @@
         @endforeach
       </div>
     @endif
-    <form action="{{ route('login') }}" method="POST">
-      @csrf
-      <div>
-        <label>Email</label>
-        <input type="email" name="email" value="{{ old('email') }}" required>
+      <form action="{{ route('login') }}" method="POST">
+        @csrf
+        <div>
+          <label for="email">Email</label>
+          <input 
+              type="email" 
+              name="email" 
+              id="email" 
+              value="{{ old('email') ?? request()->cookie('remember_email') }}" 
+              required>
       </div>
+      
       <div>
-        <label>Mật khẩu</label>
-        <input type="password" name="password" required>
+          <label for="password">Mật khẩu</label>
+          <input 
+              type="password" 
+              name="password" 
+              id="password" 
+              value="{{ request()->cookie('remember_password') }}" 
+              required>
       </div>
+      
       <div class="checkbox-group">
-        <input type="checkbox" name="remember">
-        <label>Ghi nhớ đăng nhập</label>
+          <input 
+              type="checkbox" 
+              name="remember_credentials" 
+              id="remember_credentials"
+              {{ request()->cookie('remember_email') ? 'checked' : '' }}>
+          <label for="remember_credentials">Ghi nhớ đăng nhập</label>
       </div>
       <button type="submit">Đăng nhập</button>
     </form>
