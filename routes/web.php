@@ -10,7 +10,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\AdminOrEmployeeMiddleware;
 use App\Http\Middleware\CustomerMiddleware;
 use App\Http\Controllers\Customer\CustomerProfileController;
-
+use App\Http\Controllers\Auth\ResetPasswordController;
+use App\Http\Controllers\Auth\ForgotPasswordController;
+use App\Http\Controllers\Auth\VerificationController;
+use App\Http\Controllers\Auth\ConfirmPasswordController;
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
@@ -33,10 +36,22 @@ Route::middleware('guest')->group(function () {
     Route::post('/login', [AuthController::class, 'login']);
     Route::get('/register', [AuthController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [AuthController::class, 'register']);
-    Route::get('password/reset', [AuthController::class, 'showLinkRequestForm'])->name('password.request');
-    Route::post('password/email', [AuthController::class, 'sendResetLinkEmail'])->name('password.email');
-    Route::get('password/reset/{token}', [AuthController::class, 'showResetForm'])->name('password.reset');
-    Route::post('password/reset', [AuthController::class, 'reset'])->name('password.update');
+
+
+       // Routes cho quên mật khẩu
+    Route::get('password/reset', [ForgotPasswordController::class, 'showLinkRequestForm'])->name('password.request');
+    Route::post('password/email', [ForgotPasswordController::class, 'sendResetLinkEmail'])->name('password.email');
+    Route::get('password/reset/{token}', [ResetPasswordController::class, 'showResetForm'])->name('password.reset');
+    Route::post('password/reset', [ResetPasswordController::class, 'reset'])->name('password.update');
+
+    // Xác thực email
+    Route::get('email/verify', [VerificationController::class, 'show'])->name('verification.notice');
+    Route::get('email/verify/{id}/{hash}', [VerificationController::class, 'verify'])->name('verification.verify');
+    Route::post('email/resend', [VerificationController::class, 'resend'])->name('verification.resend');
+
+    // Xác nhận mật khẩu
+    Route::get('password/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
+    Route::post('password/confirm', [ConfirmPasswordController::class, 'confirm']);
 });
 
 // Route đăng xuất
@@ -78,4 +93,3 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
         
     });
-

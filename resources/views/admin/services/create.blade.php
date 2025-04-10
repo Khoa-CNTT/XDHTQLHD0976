@@ -47,7 +47,7 @@
         </div>
         <div class="mb-6">
             <label class="block mb-1 font-medium">Giá</label>
-            <input type="number" name="price" class="w-full border border-gray-300 rounded px-4 py-2" required>
+            <input type="text" id="price" name="price" class="w-full border border-gray-300 rounded px-4 py-2" required oninput="formatPrice(this)">
         </div>
         <div class="flex justify-end space-x-3">
             <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
@@ -67,4 +67,36 @@
     </script>
     @endpush
 @endif
+{{-- <script>
+    function formatPrice(input) {
+        let value = input.value.replace(/\D/g, '');
+        if (value) {
+            input.value = new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value);
+        } else {
+            input.value = '';
+        }
+    }
+</script> --}}
+<script>
+    // Format giá trị giá với dấu phẩy khi người dùng nhập
+    function formatPrice(input) {
+        // Lấy giá trị hiện tại và loại bỏ tất cả ký tự không phải số
+        let value = input.value.replace(/\D/g, ''); // loại bỏ tất cả ký tự không phải số
+
+        // Định dạng lại giá trị thành dạng có dấu phẩy
+        if (value) {
+            input.value = new Intl.NumberFormat('vi-VN').format(value);
+        } else {
+            input.value = '';
+        }
+    }
+
+    // Trước khi gửi form, loại bỏ dấu phẩy trong giá trị để gửi một chuỗi số thuần túy
+    document.querySelector('form').addEventListener('submit', function (event) {
+    const priceInput = document.getElementById('price');
+    priceInput.value = priceInput.value.replace(/[.,]/g, ''); // Loại bỏ dấu phẩy và chấm
+});
+
+</script>
+
 @endsection

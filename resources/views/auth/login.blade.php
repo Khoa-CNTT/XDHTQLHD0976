@@ -138,5 +138,6 @@
     <p>Chưa có tài khoản? <a href="{{ route('register') }}">Đăng ký ngay</a></p>
     <p> <a href="{{ route('password.request') }}">Quên mật khẩu?</a></p>
   </div>
+  
 </body>
 </html>

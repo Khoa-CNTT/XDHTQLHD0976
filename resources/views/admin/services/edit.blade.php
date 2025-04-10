@@ -33,8 +33,9 @@
         </div>
         <div class="mb-6">
             <label class="block mb-1 font-medium">Giá</label>
-            <input type="number" name="price" value="{{ old('price', $service->price) }}"
-                   class="w-full border border-gray-300 rounded px-4 py-2" required>
+            <input type="text" id="price" name="price"
+            value="{{ number_format(old('price', $service->price), 0, ',', '.') }}"
+                   class="w-full border border-gray-300 rounded px-4 py-2" required oninput="formatPrice(this)">
         </div>
         <div class="flex justify-end space-x-3">
             <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
@@ -54,4 +55,25 @@
     </script>
     @endpush
 @endif
+
 @endsection
+
+@push('scripts')
+<script>
+    // Format lại giá có dấu chấm ngăn cách hàng nghìn
+    function formatPrice(input) {
+        let value = input.value.replace(/\D/g, ''); // bỏ hết ký tự không phải số
+        if (value) {
+            input.value = new Intl.NumberFormat('vi-VN').format(value);
+        } else {
+            input.value = '';
+        }
+    }
+
+    // Trước khi gửi, loại bỏ dấu chấm để giá là số thuần
+    document.getElementById('editServiceForm').addEventListener('submit', function () {
+        const priceInput = document.getElementById('price');
+        priceInput.value = priceInput.value.replace(/\./g, ''); // xóa dấu chấm
+    });
+</script>
+@endpush

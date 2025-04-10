@@ -12,24 +12,7 @@ use App\Models\Customer;
 use Illuminate\Support\Facades\Password;
 class AuthController extends Controller
 {
-    public function showLinkRequestForm()
-{
-    return view('auth.passwords.email');
-}
-    //quenmk
-    public function sendResetLinkEmail(Request $request)
-{
-    $request->validate(['email' => 'required|email']);
-
-    // Gửi email reset mật khẩu
-    $response = Password::sendResetLink($request->only('email'));
-
-    if ($response == Password::RESET_LINK_SENT) {
-        return back()->with('status', 'Đã gửi liên kết reset mật khẩu vào email của bạn!');
-    }
-
-    return back()->withErrors(['email' => 'Không thể tìm thấy email này trong hệ thống.']);
-}
+    
     // Hiển thị form đăng nhập
     public function showLoginForm()
     {

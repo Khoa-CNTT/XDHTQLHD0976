@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 08, 2025 lúc 10:31 AM
+-- Thời gian đã tạo: Th4 10, 2025 lúc 06:47 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -64,14 +64,6 @@ CREATE TABLE `contracts` (
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Đang đổ dữ liệu cho bảng `contracts`
---
-
-INSERT INTO `contracts` (`id`, `service_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
-(1, 3, '001', '2025-04-08', '2025-04-19', 'Hoạt động', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-07 08:46:29'),
-(2, 3, '002', '2025-04-11', '2025-04-12', 'Chờ xử lý', 34243.00, NULL, '2025-04-07 08:22:31', '2025-04-07 08:38:39');
-
 -- --------------------------------------------------------
 
 --
@@ -116,8 +108,8 @@ CREATE TABLE `employees` (
 --
 
 INSERT INTO `employees` (`id`, `user_id`, `position`, `department`, `salary`, `hired_date`, `created_at`, `updated_at`) VALUES
-(1, 10, 'Nhân viên IT', 'Công nghệ thông tin', 10000000.00, '2025-04-01', '2025-04-05 08:00:35', '2025-04-05 08:00:35'),
-(2, 11, 'Nhân viên Kế toán', 'Kế toán', 8000000.00, '2025-03-15', '2025-04-05 08:00:35', '2025-04-05 08:00:35');
+(1, 1, 'Nhân Viên', 'Kinh Doanh', 200000.00, '2025-04-16', '2025-04-24 16:23:43', '2025-04-25 16:23:43'),
+(3, 2, 'cc', 'cc', 100000.00, '2025-04-11', '2025-04-18 16:35:26', '2025-04-19 16:35:26');
 
 -- --------------------------------------------------------
 
@@ -200,21 +192,14 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 -- --------------------------------------------------------
 
 --
--- Cấu trúc bảng cho bảng `password_reset_tokens`
+-- Cấu trúc bảng cho bảng `password_resets`
 --
 
-CREATE TABLE `password_reset_tokens` (
+CREATE TABLE `password_resets` (
   `email` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `password_reset_tokens`
---
-
-INSERT INTO `password_reset_tokens` (`email`, `token`, `created_at`) VALUES
-('okamibada@gmail.com', '$2y$12$XTVZKwcngDaHn/bZ/m/45O.9jglR4Q1jPBE6uHmn0MZ8rwA2Sqxei', '2025-04-02 01:37:06');
 
 -- --------------------------------------------------------
 
@@ -270,13 +255,11 @@ CREATE TABLE `services` (
 --
 
 INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
-(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'ccc', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-07 07:18:01'),
-(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', NULL, 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29'),
-(9, 'ccc', 'cc', NULL, 'Phần mềm', 4.00, 2, '2025-04-07 07:53:32', '2025-04-07 07:53:32'),
-(10, 'cccc', 'cc3', NULL, 'Phần mềm', 34.00, 2, '2025-04-07 08:12:57', '2025-04-07 08:12:57'),
-(11, 'vv', 'vv', NULL, 'Phần cứng', 42.00, 2, '2025-04-07 08:13:39', '2025-04-08 00:49:37'),
-(17, 'câcc', 'ccacs', NULL, 'Nhà mạng', 34324.00, 2, '2025-04-08 01:14:40', '2025-04-08 01:14:40'),
-(18, 'nga', 'dep trai', NULL, 'Nhà mạng', 34.00, 2, '2025-04-08 01:25:43', '2025-04-08 01:25:43');
+(19, 'HOME 3_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'Nhà mạng', 310000.00, NULL, '2025-04-10 06:14:48', '2025-04-10 06:14:48'),
+(20, 'Home 2', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'Nhà mạng', 240000.00, NULL, '2025-04-10 08:30:46', '2025-04-10 08:32:08'),
+(21, 'HOME 4_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', '1. Ưu đãi gói cước\r\n- Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\n- Trang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\n+  Wifi Mesh 5: \r\n     * Wifi Mesh 5 iGate EW12ST là sự kết hợp giữa chuẩn Wifi 5 và công nghệ Mesh Wifi, phù hợp với hộ gia đình với mọi cấu trúc nhà ở. \r\n     * Tốc độ lên đến 1200Mbps trên cả 2 băng tần 2,4-5GHz\r\n     * Kết nối liền mạch, chỉ tạo tên 1 Wifi duy nhất\r\n     * Hỗ trợ đồng thời 40 thiết bị\r\n     * Cài đặt dễ dàng, triển khai linh hoạt.\r\n+ Wifi Mesh 6:\r\n     *Wifi Mesh 6 iGate EW30SX là sự kết hợp giữa chuẩn Wifi 6 và công nghệ Mesh, phù hợp với các doanh nghiệp, tổ chức vừa và nhỏ, các gia đình có nhu cầu sử dụng internet cao. \r\n     * Tốc độ lên đến 3Gbps, trên cả hai băng tần 2,4 – 5GHz\r\n     * Kết nối liền mạch, phù hợp mọi ngóc ngách\r\n     * Hỗ trợ đồng thời 100 thiết bị\r\n     * Độ trễ giảm 50%. \r\n- Lắp đặt nhanh chóng, chăm sóc và hỗ trợ khách hàng 24/7\r\n\r\n2. Cước đấu nối hòa mạng\r\n - Cước đấu nối hòa mạng áp dụng cho thuê bao đăng ký mới dịch vụ cho Khách hàng cá nhân, Hộ gia đình: 300.000 VNĐ/thuê bao (đã bao gồm VAT)\r\n\r\n3. Khu vực áp dụng\r\n - Áp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố\r\n\r\n4. Tổng đài hỗ trợ \r\n - Để được hỗ trợ về dịch vụ internet và truyền hình, Quý khách vui lòng liên hệ 1800 1166 (miễn phí)', 'Phần mềm', 1000000.00, NULL, '2025-04-10 08:34:14', '2025-04-10 09:46:50'),
+(26, 'câcc', 'câc', 'âcc', 'Phần mềm', 500000.00, NULL, '2025-04-10 09:14:56', '2025-04-10 09:14:56'),
+(29, 'ngapham', '230130', '0230130', 'Phần mềm', 1000000.00, 3, '2025-04-10 09:36:14', '2025-04-10 09:36:14');
 
 -- --------------------------------------------------------
 
@@ -298,8 +281,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('NCs1ONQTBdma82PXuPCKcslojljqWHNMpfFDLs5Z', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBYYUN0dmJUaEhPVXBpU0RCSVpuUmphSGw1Vm1jOVBTSXNJblpoYkhWbElqb2lXa3A2Ym04NWIyUnhkWG8yY2sxMlFqaDJWMjF5YUdsdFdXRXpWVkJhYmtaUlduRk5XazAwVmtabU9YTm1NV3hwVWxKSVRFaDNPVTl1U1ZNdlFWUllabmhJU1dGVlZGbEhlQ3RCTHpjM1VucHBTelZCYURFMGNXTlRhbVJWWVZKS1ZWUkZkVGhYY1RORFEyVklOekZuUmtOMlUwbFBOV3ByZGpCaFZrSnlka00wUlZwcFRHbHZNR2hJVTIwd1lTOXlaVWhIT0ZWbVJEWkVXalpGTm1SR01rMHlhMjVIZFVobGJXNTJPVmwzUjFObFUwWmtkVXMzTlhvMGNHRnhhbVZWUzJobVVWb3lSMUZQY21adGJFdFFUM2t5Vkc0MVVWSjVPRmhoUkZWWFpHdHdSMVoxT1c1VVlXSk5VVGsyV1cxck1tbFNhVTA1TTJORmJtczRaM1p1Vm14WmNrbzBWa0paYUZscGNHcHlkWFZrTHpkRk9FVjJSRFJEVkZSUVkyRnhNbmN4VFhSTU5WcHNiR0ZIVkdkTU5VSm1hMkZ5VEd0Mk0yRXpOVXgxVlVOR2NYZzVVbFpuVG14bEwyaDVPR00xUkZaaVRucGFVelEwUWxkbVJtNWhha2R6TTJSUFdFUk5MMXBOUFNJc0ltMWhZeUk2SWpNNVpqWTNNak0xWWpnME56VTVZelV4WXpoa1lUaG1NVEk0Tm1ObFlqQmxZbVUwWkRJME5EVTVNakJtT1RGbVpUVXlNbUptTldVNFltRTNPRFprTVRNaUxDSjBZV2NpT2lJaWZRPT0=', 1744101051),
-('txXStjTYea0ADQ9JyyKYVoGq88KDZl3GNZwbUqWk', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBSVW5GT01IRjFTakUzYVZKV01UbE5hVGRTUlZFOVBTSXNJblpoYkhWbElqb2lSM2RxVldSSEsyZExSRkJqVDFKYWJXY3JWVVZ0TUhBNE5VVmhSSFl4VGxCMU9VOVpNVUpzVjJSTGRHYzBWekpZU2xOTFpWUlhiek5hYUhaNWQwYzRWMjFDY1dVemNHNDFUVWxtYVZsWk1VMW9hRXd5T0dSb1ptTkhjSEYwV1cxSkswUjFSVlp5Vm10TGNqSnBSMFZ6Yldjck5WRkhXa05sZEVWR05DOVBVbVoyVEVwV1JtcFpXRFp5VGxvelYyVjRUVFZ5TkRsRFYyWkNXV3BUUlRjd2NFeEVaM1pTVWtVck0wRnhOM1J6Y0ZoTWExWkdWbTE1TWpoNWRUZHlXREZMWkZsSFZWVnRhRll2WjBjNU9GWXhPVnA1T1cxSU5rZE9jbWhrV0U1cmExVlJaM281ZUUwelUzSnhiM3A1TlZCRk5qQndMMDkxVmpFMk1tbDFaVGxRU1ZaMmQzWktTbGgyVFV4RlRUSkxLelJNWjJOR2FGUTVjV2RyUm1WTlMwRkJkSGR2UkRGRWEwNXVWakZtUnl0UFdVUmtkSEo2VkV0cWQxQkRMMmR1YXpkMWFIRnVhVkJ4UW5KMU0yaFZOa3RsZDNaeFZsUlVhQ3ROY1RoSVZGUkJkWGhMUVhJMGVsZGxlalZOUFNJc0ltMWhZeUk2SWpVeFl6RmlaamMzTkdNNE9URXlZbVl6TVdJeFpERmhNR0ZrWVRCaFkyTmlaRGRoTjJKak5URmxZak0yT1dNNE1XTmpabVk0TnpKbU5HTmpNR0UyTXpNaUxDSjBZV2NpT2lJaWZRPT0=', 1744100351);
+('d8GgW0jywCrsGYDQoQWLyrigHPXCBHvAEpDTLuCc', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbXR6WkNzMlV6azBTbVl2YkdKU1YzUk1SamNyV0ZFOVBTSXNJblpoYkhWbElqb2ljU3N6YTJOb2VFOXRjV0pVWjJSWU9TdHhRekJHVGxsUmFXcFBibU5LUlRCcE16Tm1VRVZ5WjFZeVJtRlNabG8wUjJacldTdElkbXRFY0c0MVVGYzNUbTVETW1WNU5WQmhkbkpVVjBKWFUydGlWblV6T1dsNVZuZHBUVXhDZFdFM1pUSkZOMlF4VjBSRGNtdENSRmxGT0N0SU5WVnlhakpaVmpCMlRGTklkRVpDVm0xRFNIQk1aMWR1VEZKSWNrMHJUakJ4Y2xKRGFUVkNlSFJTY0hRdmJ6RTNaelpNWWk4M056Tk9ibk13TURkVFNERjBUSE0wU2paNFUyVm5kV2hET1RCdmNHaHdPVWxTY1haSGRIVkhhMjFNWnk5dFZDdFdWVFE0U1dGNlZWSjFaekJEYUcxVGNFTTFXVGxuUjB4V2J6TTNXRU42TUM5YWIwTXJSR0V2WkhSUGFFdzRaWFZ6V1RCVEwzUkdNSE5GZFZJNGNrRTlQU0lzSW0xaFl5STZJakF5T1RFMFpqZzVNekl4TVdFMFpUZGxOemxsWW1WbVpUTXlZVE5qWlRGaVpqTmpZVGhrWW1FNE5qQm1NMkkyWm1Nek5qRTJNRFF3TkRBeU9HRmlZamtpTENKMFlXY2lPaUlpZlE9PQ==', 1744303616),
+('rbiLNbDEkOdPtgT72lFDQzTTdi35IV4aKTbSOJ7W', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbWMzTUdSWWVHTTBZVTUzWjJOd1FXWnBTVlJwUkVFOVBTSXNJblpoYkhWbElqb2liMkp4Y1ZodmRXUjRlVXhEVEdoSlFsazRhRmhIWlRscGQzZGxNalpYVHpodE9VbFRXbmhrYjJ0UlMyOUJjU3RpWjFBM2RERmFkMlJZU0hoNmN6WmpkalEzTmxoTFZDOUNablI1TkdSTFdYb3hVRVUzTWxJNU1HODNSSFJzVkVGTVVuZE9OM2R1Y0RaTk0zUXdlbFpYVldkVlNFNUtXUzl2TDBOTmJ6UklaRWRFVm1Wak1tOVFXRWx0Y0ROcVV6QmpUVXBZYm5ZM1MyOTZjM1UwTVV0T09GVXpaVmw2WTNGTE5FeFJPV3BFVGxWSGMyZFpSa2R4VFdsNlVsQk9lR3hXZWxSbU9EZFlVbW8wYW5kSmVqWkVVa1pxVDNaSmMyOVFZWFZsZWxwMFdHZGxZVXd5V0V0bWFVRTRkbHByTVZSdVNHUjJWR3MzTlhjMFREWXJSa1JvVVZVeGJUUkhUR1ExUlVkWFRGUjVXRXROWTJ0SFRsRTlQU0lzSW0xaFl5STZJak5pTldZd05UQXhaR1poTXpGa01UYzNZakV5T1RCalltTTVPVFZpTW1NNE1ESTNaV1EyTldRek5HRm1OV1UwTm1FMVpqaGpPV0kzWldFNU1HTmtaREFpTENKMFlXY2lPaUlpZlE9PQ==', 1744300387);
 
 -- --------------------------------------------------------
 
@@ -344,9 +327,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `address`, `created_at`, `updated_at`, `remember_token`) VALUES
 (1, 'User', 'user@gmail.com', '$2y$12$RMop/HL4MYed8hA1U4yC/OsPad1S.7f1JRtrk/wsONxoJfWxUQByi', 'employee', '0123456789', 'Đà Nẵng', '2025-04-02 00:23:52', '2025-04-02 00:23:52', NULL),
 (2, 'Admin', 'admin@gmail.com', '$2y$12$87zbSUJenTUoyqsdLU029uj5pV1YlSEtMFKv.0bGFAWphKaXpLEfi', 'admin', '0123456789', 'Hà Nội', '2025-04-02 00:22:39', '2025-04-02 00:22:39', NULL),
-(9, 'ngapham', 'okamibada@gmail.com', '$2y$12$33n3YkWig1mmCvaWj4/wQekpPq7ulLPw5dd.Gw2p9j1c8jkumDaoy', 'customer', '0987653214', '12312313123', '2025-04-04 23:55:07', '2025-04-04 23:55:07', NULL),
-(10, 'Nguyễn Văn A', 'nguyenvana@example.com', '$2y$12$omKYbFq8TuGPG5D/mi/9pO9nrSptwCS9nQWv9V45Di88ZdWq1amSy', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL),
-(11, 'Trần Thị B', 'tranthib@example.com', '$2y$12$WbfoT3J2SZMWA6KFbg5VWu/nW3r0u.yG5iGphUA41XzBQS/JhzeAG', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL);
+(9, 'ngapham', 'okamibada@gmail.com', '$2y$12$ERICZ.v4gMUIv.aTW0EqsOmen.4dnD0YUnChdDpGgtw3Q/IefSOw6', 'customer', '0987653214', '12312313123', '2025-04-04 23:55:07', '2025-04-10 08:53:07', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -413,9 +394,9 @@ ALTER TABLE `migrations`
   ADD PRIMARY KEY (`id`);
 
 --
--- Chỉ mục cho bảng `password_reset_tokens`
+-- Chỉ mục cho bảng `password_resets`
 --
-ALTER TABLE `password_reset_tokens`
+ALTER TABLE `password_resets`
   ADD PRIMARY KEY (`email`);
 
 --
@@ -475,13 +456,13 @@ ALTER TABLE `contracts`
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `failed_jobs`
@@ -517,7 +498,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=30;
 
 --
 -- AUTO_INCREMENT cho bảng `signatures`
@@ -529,7 +510,7 @@ ALTER TABLE `signatures`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
