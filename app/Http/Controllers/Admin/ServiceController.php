@@ -23,23 +23,28 @@ class ServiceController extends Controller
 
     // Lưu dịch vụ mới vào cơ sở dữ liệu
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'service_name' => 'required|string|max:255|unique:services',
-            'description' => 'required|string',
-            'content' => 'required|string', 
-            'service_type' => 'required|string',
-            'price' => 'numeric|max:99999999.99',
-        ], [
-            'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
-        ]);
-    
-        $data['created_by'] = Auth::id();
-        Service::create($data);
-    
-        session()->flash('success', 'Dịch vụ đã được thêm thành công.');
-        return redirect()->route('admin.services.index');
-    }
+{
+    // Validate dữ liệu
+    $request->validate([
+        'service_name' => 'required|string|max:255',
+        'description' => 'required|string',
+        'content' => 'required|string',
+        'service_type' => 'required|string',
+        'price' => 'required|numeric|min:0',
+    ]);
+
+    // Lưu dữ liệu vào database
+    Service::create([
+        'service_name' => $request->input('service_name'),
+        'description' => $request->input('description'),
+        'content' => $request->input('content'),
+        'service_type' => $request->input('service_type'),
+        'price' => $request->input('price'),
+    ]);
+
+    // Chuyển hướng với thông báo thành công
+    return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công!');
+}
 
     // Hiển thị chi tiết một dịch vụ
     public function show($id)

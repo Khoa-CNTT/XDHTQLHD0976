@@ -1,3 +1,4 @@
+@extends('layouts.customer')
 <form action="{{ route('password.update') }}" method="POST">
     @csrf
     <input type="hidden" name="token" value="{{ $token }}">
