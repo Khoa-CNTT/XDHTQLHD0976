@@ -14,12 +14,12 @@ class ServiceController extends Controller
     {
         if ($type === 'Tất Cả') {
             // Lấy tất cả dịch vụ
-            $services = Service::select('id', 'service_name', 'description', 'service_type', 'price')->paginate(10); // Phân trang
+            $services = Service::select('id', 'service_name', 'description', 'service_type', 'price', 'created_by', 'created_at', 'is_hot')->paginate(9); // Phân trang
         } else {
             // Lấy dịch vụ theo loại
-            $services = Service::select('id', 'service_name', 'description', 'service_type', 'price')
+            $services = Service::select('id', 'service_name', 'description', 'service_type', 'price', 'created_by', 'created_at', 'is_hot')
                 ->where('service_type', $type)
-                ->paginate(10); // Phân trang
+                ->paginate(9); // Phân trang
         }
     
         return view('customer.services.index', compact('services', 'type'));
@@ -35,10 +35,14 @@ public function search(Request $request)
 {
     $query = $request->input('query'); // Lấy từ khóa tìm kiếm từ request
 
-    // Tìm kiếm dịch vụ theo tên hoặc mô tả
-    $services = Service::where('service_name', 'LIKE', "%{$query}%")
-        ->orWhere('description', 'LIKE', "%{$query}%")
-        ->paginate(10); // Phân trang kết quả
+    $services = Service::query()
+        ->when($query, function ($q) use ($query) {
+            $q->where('service_name', 'LIKE', "% {$query}%")
+              ->orWhere('description', 'LIKE', "% {$query}%")
+              ->orWhere('service_type', 'LIKE', "% {$query}%")
+              ->orWhere('price', '=', $query); // Tìm kiếm chính xác trong cột 'price'
+        })
+        ->paginate(9); // Phân trang kết quả
 
     $type = 'Tất Cả'; // Giá trị mặc định cho loại dịch vụ
 

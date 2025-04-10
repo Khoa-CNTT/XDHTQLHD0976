@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 08, 2025 lúc 10:31 AM
+-- Máy chủ: 127.0.0.1:3306
+-- Thời gian đã tạo: Th4 10, 2025 lúc 03:22 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -69,7 +69,7 @@ CREATE TABLE `contracts` (
 --
 
 INSERT INTO `contracts` (`id`, `service_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
-(1, 3, '001', '2025-04-08', '2025-04-19', 'Hoạt động', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-07 08:46:29'),
+(1, 3, '001', '2025-04-08', '2025-04-19', 'Hoạt động', 100000.00, NULL, '2025-04-06 10:45:20', '2025-04-08 01:19:08'),
 (2, 3, '002', '2025-04-11', '2025-04-12', 'Chờ xử lý', 34243.00, NULL, '2025-04-07 08:22:31', '2025-04-07 08:38:39');
 
 -- --------------------------------------------------------
@@ -92,7 +92,8 @@ CREATE TABLE `customers` (
 --
 
 INSERT INTO `customers` (`id`, `user_id`, `company_name`, `tax_code`, `created_at`, `updated_at`) VALUES
-(2, 9, 'ngaphammm', 'TAX002', '2025-04-04 23:55:07', '2025-04-04 23:55:07');
+(2, 9, 'ngaphammm', 'TAX002', '2025-04-04 23:55:07', '2025-04-04 23:55:07'),
+(3, 12, 'congty aa', '0509', '2025-04-08 00:05:53', '2025-04-08 00:05:53');
 
 -- --------------------------------------------------------
 
@@ -194,8 +195,7 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (5, '2025_04_06_030449_create_permissions_table', 2),
 (6, '2025_04_06_174343_remove_customer_id_from_contracts_table', 2),
 (7, '2025_04_06_175502_update_contracts_table', 3),
-(8, '2025_04_07_161710_add_customer_name_and_email_to_signatures_table', 4),
-(9, '2025_04_08_080841_add_content_to_services_table', 5);
+(8, '2025_04_07_161710_add_customer_name_and_email_to_signatures_table', 4);
 
 -- --------------------------------------------------------
 
@@ -257,26 +257,40 @@ CREATE TABLE `services` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `service_name` varchar(255) NOT NULL,
   `description` text NOT NULL,
-  `content` text DEFAULT NULL,
+  `content` text NOT NULL,
   `service_type` varchar(255) NOT NULL,
   `price` decimal(15,2) NOT NULL,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
-  `updated_at` timestamp NULL DEFAULT NULL
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `is_hot` tinyint(1) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Đang đổ dữ liệu cho bảng `services`
 --
 
-INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`) VALUES
-(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ, bao gồm việc quản lý, duy trì, bảo trì, và hỗ trợ các hệ thống CNTT của khách hàng nhằm đảm bảo hoạt động ổn định và hiệu quả.', 'ccc', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-07 07:18:01'),
-(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', NULL, 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29'),
-(9, 'ccc', 'cc', NULL, 'Phần mềm', 4.00, 2, '2025-04-07 07:53:32', '2025-04-07 07:53:32'),
-(10, 'cccc', 'cc3', NULL, 'Phần mềm', 34.00, 2, '2025-04-07 08:12:57', '2025-04-07 08:12:57'),
-(11, 'vv', 'vv', NULL, 'Phần cứng', 42.00, 2, '2025-04-07 08:13:39', '2025-04-08 00:49:37'),
-(17, 'câcc', 'ccacs', NULL, 'Nhà mạng', 34324.00, 2, '2025-04-08 01:14:40', '2025-04-08 01:14:40'),
-(18, 'nga', 'dep trai', NULL, 'Nhà mạng', 34.00, 2, '2025-04-08 01:25:43', '2025-04-08 01:25:43');
+INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`, `is_hot`) VALUES
+(3, 'Hợp đồng Cung Cấp Dịch Vụ Quản Trị Mạng và Hệ Thống Máy Chủ', 'Hợp đồng này quy định các dịch vụ quản trị mạng và hệ thống máy chủ.', '', 'Phần mềm', 5000000.00, 2, '2025-04-05 08:04:29', '2025-04-08 05:01:28', 0),
+(5, 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', 'Hợp đồng cung cấp dịch vụ công nghệ thông tin và giải pháp điện tử', '', 'Phần mềm', 500000.00, 2, '2025-04-07 07:28:29', '2025-04-07 07:28:29', 0),
+(17, 'Dịch vụ bảo mật dữ liệu', '...', '123', 'Nhà mạng', 1000000.00, 2, '2025-04-08 05:02:13', '2025-04-09 20:39:47', 0),
+(19, 'Dịch vụ 1', 'đây la dịch vụ 1', 'đây là dịch vụ 1 nha nha', 'Nhà mạng', 1111111.00, 2, '2025-04-09 20:40:35', '2025-04-09 20:53:07', 1),
+(20, 'Dịch vụ 2', '123', '123', 'Phần mềm', 123.00, 2, '2025-04-09 21:47:39', '2025-04-09 22:03:05', 1),
+(21, 'Dịch vụ Phát triển Website', 'Phát triển website theo yêu cầu của khách hàng', 'Thiết kế giao diện, xây dựng hệ thống backend', 'Phần mềm', 2000000.00, 2, '2025-04-10 05:00:00', '2025-04-10 05:00:00', 1),
+(22, 'Dịch vụ Bảo mật Ứng dụng', 'Tư vấn và triển khai các giải pháp bảo mật ứng dụng', '...', 'Phần mềm', 2500000.00, 2, '2025-04-10 05:10:00', '2025-04-10 05:10:00', 0),
+(23, 'Dịch vụ Phát triển Mobile App', 'Phát triển ứng dụng trên iOS và Android', '...', 'Phần mềm', 3000000.00, 2, '2025-04-10 05:20:00', '2025-04-10 05:20:00', 1),
+(24, 'Dịch vụ Quản lý Dữ liệu', 'Quản lý và tối ưu hóa cơ sở dữ liệu', '...', 'Phần mềm', 1500000.00, 2, '2025-04-10 05:30:00', '2025-04-10 05:30:00', 0),
+(25, 'Dịch vụ Tư vấn CNTT', 'Tư vấn giải pháp công nghệ thông tin cho doanh nghiệp', '...', 'Phần mềm', 3500000.00, 2, '2025-04-10 05:40:00', '2025-04-10 05:40:00', 1),
+(26, 'Dịch vụ Sửa chữa Laptop', 'Sửa chữa các lỗi phần cứng và phần mềm laptop', 'Kiểm tra và sửa chữa linh kiện', 'Phần cứng', 500000.00, 2, '2025-04-10 05:00:00', '2025-04-10 05:00:00', 1),
+(27, 'Dịch vụ Bảo trì Máy chủ', 'Bảo trì và nâng cấp hệ thống máy chủ', '...', 'Phần cứng', 2000000.00, 2, '2025-04-10 05:10:00', '2025-04-10 05:10:00', 0),
+(28, 'Dịch vụ Lắp đặt Thiết bị Mạng', 'Lắp đặt router, switch và thiết bị mạng', '...', 'Phần cứng', 1500000.00, 2, '2025-04-10 05:20:00', '2025-04-10 05:20:00', 1),
+(29, 'Dịch vụ Lắp ráp Máy tính', 'Lắp ráp máy tính theo yêu cầu của khách hàng', '...', 'Phần cứng', 1000000.00, 2, '2025-04-10 05:30:00', '2025-04-10 05:30:00', 0),
+(30, 'Dịch vụ Sửa chữa Thiết bị Ngoại vi', 'Sửa chữa các thiết bị như máy in, máy scan', '...', 'Phần cứng', 700000.00, 2, '2025-04-10 05:40:00', '2025-04-10 05:40:00', 0),
+(31, 'Dịch vụ Cài đặt Mạng Doanh nghiệp', 'Thiết lập và triển khai hệ thống mạng cho doanh nghiệp', '...', 'Nhà mạng', 5000000.00, 2, '2025-04-10 05:00:00', '2025-04-10 05:00:00', 1),
+(32, 'Dịch vụ Bảo trì Mạng', 'Bảo trì định kỳ hệ thống mạng', '...', 'Nhà mạng', 3000000.00, 2, '2025-04-10 05:10:00', '2025-04-10 05:10:00', 0),
+(33, 'Dịch vụ Tối ưu Hóa Băng thông', 'Tối ưu hóa băng thông mạng để tăng hiệu suất', '...', 'Nhà mạng', 2000000.00, 2, '2025-04-10 05:20:00', '2025-04-10 05:20:00', 1),
+(34, 'Dịch vụ Triển khai VPN', 'Thiết lập mạng riêng ảo (VPN) cho doanh nghiệp', '...', 'Nhà mạng', 4000000.00, 2, '2025-04-10 05:30:00', '2025-04-10 05:30:00', 1),
+(35, 'Dịch vụ Tư vấn An ninh Mạng', 'Tư vấn giải pháp an ninh mạng toàn diện', '...', 'Nhà mạng', 3500000.00, 2, '2025-04-10 05:40:00', '2025-04-10 05:40:00', 0);
 
 -- --------------------------------------------------------
 
@@ -298,8 +312,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('NCs1ONQTBdma82PXuPCKcslojljqWHNMpfFDLs5Z', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBYYUN0dmJUaEhPVXBpU0RCSVpuUmphSGw1Vm1jOVBTSXNJblpoYkhWbElqb2lXa3A2Ym04NWIyUnhkWG8yY2sxMlFqaDJWMjF5YUdsdFdXRXpWVkJhYmtaUlduRk5XazAwVmtabU9YTm1NV3hwVWxKSVRFaDNPVTl1U1ZNdlFWUllabmhJU1dGVlZGbEhlQ3RCTHpjM1VucHBTelZCYURFMGNXTlRhbVJWWVZKS1ZWUkZkVGhYY1RORFEyVklOekZuUmtOMlUwbFBOV3ByZGpCaFZrSnlka00wUlZwcFRHbHZNR2hJVTIwd1lTOXlaVWhIT0ZWbVJEWkVXalpGTm1SR01rMHlhMjVIZFVobGJXNTJPVmwzUjFObFUwWmtkVXMzTlhvMGNHRnhhbVZWUzJobVVWb3lSMUZQY21adGJFdFFUM2t5Vkc0MVVWSjVPRmhoUkZWWFpHdHdSMVoxT1c1VVlXSk5VVGsyV1cxck1tbFNhVTA1TTJORmJtczRaM1p1Vm14WmNrbzBWa0paYUZscGNHcHlkWFZrTHpkRk9FVjJSRFJEVkZSUVkyRnhNbmN4VFhSTU5WcHNiR0ZIVkdkTU5VSm1hMkZ5VEd0Mk0yRXpOVXgxVlVOR2NYZzVVbFpuVG14bEwyaDVPR00xUkZaaVRucGFVelEwUWxkbVJtNWhha2R6TTJSUFdFUk5MMXBOUFNJc0ltMWhZeUk2SWpNNVpqWTNNak0xWWpnME56VTVZelV4WXpoa1lUaG1NVEk0Tm1ObFlqQmxZbVUwWkRJME5EVTVNakJtT1RGbVpUVXlNbUptTldVNFltRTNPRFprTVRNaUxDSjBZV2NpT2lJaWZRPT0=', 1744101051),
-('txXStjTYea0ADQ9JyyKYVoGq88KDZl3GNZwbUqWk', 9, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbnBSVW5GT01IRjFTakUzYVZKV01UbE5hVGRTUlZFOVBTSXNJblpoYkhWbElqb2lSM2RxVldSSEsyZExSRkJqVDFKYWJXY3JWVVZ0TUhBNE5VVmhSSFl4VGxCMU9VOVpNVUpzVjJSTGRHYzBWekpZU2xOTFpWUlhiek5hYUhaNWQwYzRWMjFDY1dVemNHNDFUVWxtYVZsWk1VMW9hRXd5T0dSb1ptTkhjSEYwV1cxSkswUjFSVlp5Vm10TGNqSnBSMFZ6Yldjck5WRkhXa05sZEVWR05DOVBVbVoyVEVwV1JtcFpXRFp5VGxvelYyVjRUVFZ5TkRsRFYyWkNXV3BUUlRjd2NFeEVaM1pTVWtVck0wRnhOM1J6Y0ZoTWExWkdWbTE1TWpoNWRUZHlXREZMWkZsSFZWVnRhRll2WjBjNU9GWXhPVnA1T1cxSU5rZE9jbWhrV0U1cmExVlJaM281ZUUwelUzSnhiM3A1TlZCRk5qQndMMDkxVmpFMk1tbDFaVGxRU1ZaMmQzWktTbGgyVFV4RlRUSkxLelJNWjJOR2FGUTVjV2RyUm1WTlMwRkJkSGR2UkRGRWEwNXVWakZtUnl0UFdVUmtkSEo2VkV0cWQxQkRMMmR1YXpkMWFIRnVhVkJ4UW5KMU0yaFZOa3RsZDNaeFZsUlVhQ3ROY1RoSVZGUkJkWGhMUVhJMGVsZGxlalZOUFNJc0ltMWhZeUk2SWpVeFl6RmlaamMzTkdNNE9URXlZbVl6TVdJeFpERmhNR0ZrWVRCaFkyTmlaRGRoTjJKak5URmxZak0yT1dNNE1XTmpabVk0TnpKbU5HTmpNR0UyTXpNaUxDSjBZV2NpT2lJaWZRPT0=', 1744100351);
+('eUyrHI9vEvlOZLYEgEgslLUEFHDRVhb5R8coaE2d', 12, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoieXA1M2I1SElEVlpSYkdyUHhLeW5kcDM0SVQ1SGl2T3g1WTVTRjZQciI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NzE6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jdXN0b21lci9zZXJ2aWNlcy9maWx0ZXIvVCVFMSVCQSVBNXQlMjBDJUUxJUJBJUEzIjt9czo2OiJfZmxhc2giO2E6Mjp7czozOiJvbGQiO2E6MDp7fXM6MzoibmV3IjthOjA6e319czo1MDoibG9naW5fd2ViXzU5YmEzNmFkZGMyYjJmOTQwMTU4MGYwMTRjN2Y1OGVhNGUzMDk4OWQiO2k6MTI7fQ==', 1744291337);
 
 -- --------------------------------------------------------
 
@@ -346,7 +359,8 @@ INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `phone`, `addres
 (2, 'Admin', 'admin@gmail.com', '$2y$12$87zbSUJenTUoyqsdLU029uj5pV1YlSEtMFKv.0bGFAWphKaXpLEfi', 'admin', '0123456789', 'Hà Nội', '2025-04-02 00:22:39', '2025-04-02 00:22:39', NULL),
 (9, 'ngapham', 'okamibada@gmail.com', '$2y$12$33n3YkWig1mmCvaWj4/wQekpPq7ulLPw5dd.Gw2p9j1c8jkumDaoy', 'customer', '0987653214', '12312313123', '2025-04-04 23:55:07', '2025-04-04 23:55:07', NULL),
 (10, 'Nguyễn Văn A', 'nguyenvana@example.com', '$2y$12$omKYbFq8TuGPG5D/mi/9pO9nrSptwCS9nQWv9V45Di88ZdWq1amSy', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL),
-(11, 'Trần Thị B', 'tranthib@example.com', '$2y$12$WbfoT3J2SZMWA6KFbg5VWu/nW3r0u.yG5iGphUA41XzBQS/JhzeAG', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL);
+(11, 'Trần Thị B', 'tranthib@example.com', '$2y$12$WbfoT3J2SZMWA6KFbg5VWu/nW3r0u.yG5iGphUA41XzBQS/JhzeAG', 'employee', NULL, NULL, '2025-04-05 08:00:35', '2025-04-05 08:00:35', NULL),
+(12, 'NGUYEN HUU TRUONG', 'nguyenhuutruong05092003@gmail.com', '$2y$12$r3tyJYAuP5jZTUpgwOUdE.mKV5vRucsAvGZ6XczLuFr4z2wivhiqK', 'customer', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', '2025-04-08 00:05:53', '2025-04-08 00:05:53', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -475,7 +489,7 @@ ALTER TABLE `contracts`
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `employees`
@@ -499,7 +513,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -517,7 +531,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT cho bảng `services`
 --
 ALTER TABLE `services`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
 -- AUTO_INCREMENT cho bảng `signatures`
@@ -529,7 +543,7 @@ ALTER TABLE `signatures`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
