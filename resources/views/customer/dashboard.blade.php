@@ -35,23 +35,27 @@
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
         @forelse($services as $service)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $service->service_name }}</h3>
-                <p class="text-gray-600 mb-4">{{ $service->description }}</p>
-                <p class="text-gray-600 mb-2"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
-                <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
-                    <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
-                </p>
-                <a href="{{ route('customer.services.show', $service->id) }}" 
-                   class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                    Xem Hợp Đồng
-                </a>
+            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px]">
+                <div>
+                    <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
+                    <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
+                    <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
+                    <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
+                        <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
+                    </p>
+                </div>
+                <div>
+                    <a href="{{ route('customer.services.show', $service->id) }}" 
+                       class="text-sm px-4 py-2 rounded bg-blue-600 text-white hover:bg-blue-700 transition inline-block">
+                        Xem Hợp Đồng
+                    </a>
+                </div>
             </div>
         @empty
             <p class="text-gray-600">Không có dịch vụ nào.</p>
         @endforelse
     </div>
-
+    
 <!-- Hiển thị phân trang -->
 <div class="mt-6">
     {{ $services->links() }}

@@ -26,56 +26,55 @@
                 
                 <!-- Dropdown Trang Cá Nhân -->
                 @if(auth()->check())
-    <div class="relative">
-        <button id="user-menu-button" class="flex items-center focus:outline-none">
-            <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
-            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
-                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
-            </svg>
-        </button>
-        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
-            <div class="px-4 py-3 border-b">
-                <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
-                <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
-            </div>
-            <ul class="py-1">
-                <li>
-                    <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        Trang Cá Nhân
-                    </a>
-                </li>
-                <li>
-                    <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                        @csrf
-                        <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>
-                    </form>
-                </li>
-            </ul>
-        </div>
-    </div>
-@else
-                       
-                        <div class="relative">
-                            <button id="guest-menu-button" class="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition">
-                                Đăng nhập
-                            </button>
-                            <div id="guest-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
-                                <ul class="py-1">
-                                    <li>
-                                        <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Đăng Nhập
-                                        </a>
-                                    </li>
-                                    <li>
-                                        <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                            Đăng Ký
-                                        </a>
-                                    </li>
-                                </ul>
+                    <div class="relative">
+                        <button id="user-menu-button" class="flex items-center focus:outline-none">
+                            <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
+                            <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
+                            </svg>
+                        </button>
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
+                            <div class="px-4 py-3 border-b">
+                                <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
+                                <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
                             </div>
+                            <ul class="py-1">
+                                <li>
+                                    <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Trang Cá Nhân
+                                    </a>
+                                </li>
+                                <li>
+                                    <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        @csrf
+                                        <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>
+                                    </form>
+                                </li>
+                            </ul>
                         </div>
-                    @endif
                     </div>
+                @else   
+                    <div class="relative">
+                        <button id="guest-menu-button" class="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition">
+                            Đăng nhập
+                        </button>
+                        <div id="guest-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
+                            <ul class="py-1">
+                                <li>
+                                    <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Đăng Nhập
+                                    </a>
+                                </li>
+                                <li>
+                                    <a href="{{ route('register') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Đăng Ký
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                @endif
+                </div>
                 </div>
             </nav>
         </div>

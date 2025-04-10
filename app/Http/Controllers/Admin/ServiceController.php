@@ -22,7 +22,6 @@ class ServiceController extends Controller
     }
 
     // Lưu dịch vụ mới vào cơ sở dữ liệu
-    
     public function store(Request $request)
     {
         $data = $request->validate([
