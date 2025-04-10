@@ -14,9 +14,9 @@
                     <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'An Ninh mạng') }}" class="text-gray-700 hover:text-blue-600">An Ninh Mạng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="text-gray-700 hover:text-blue-600">Nhà Mạng</a></li>
                 </ul>
-            </nav>>
+            </nav>
             </nav>
             <form action="{{ route('customer.services.search') }}" method="GET" class="relative w-1/3 mb-4">
                 <input 
