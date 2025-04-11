@@ -8,72 +8,63 @@
     {{-- Thanh hình ảnh chạy - sử dụng Alpine.js --}}
     <section 
         x-data="{
-            images: [
-            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/ai-la-nguoi-dam-me-nhung-bau-troi-dem-day-sao-dep-den-nao-long-nao.jpg',
-            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/danh-cho-nhung-ban-nao-yeu-thich-su-huyen-bi-cua-mau-den.jpg',
-            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-40-1.jpg'
-            ],
-            currentIndex: 0,
-            next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },
-            prev() { this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length },
-            startSlider() { setInterval(() => this.next(), 5000); }
-        }"
-         x-init="startSlider"
+                images: [
+                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/ai-la-nguoi-dam-me-nhung-bau-troi-dem-day-sao-dep-den-nao-long-nao.jpg',
+                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/danh-cho-nhung-ban-nao-yeu-thich-su-huyen-bi-cua-mau-den.jpg',
+                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-40-1.jpg'
+                ],
+                currentIndex: 0,
+                next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },
+                prev() { this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length },
+                startSlider() { setInterval(() => this.next(), 5000); }
+            }"
+        x-init="startSlider"
         class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
-    >
+        >
 
-    <!-- Khung ảnh -->
-    <div 
-        class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
-        :style="`transform: translateX(-${currentIndex * 100}%);`"
-    >
-        <template x-for="(image, index) in images" :key="index">
-            <div class="w-full flex-shrink-0 h-full">
-                <img :src="image" class="w-full h-full object-cover" />
-            </div>
-        </template>
-    </div>
+        <!-- Khung ảnh -->
+        <div 
+            class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
+            :style="`transform: translateX(-${currentIndex * 100}%);`"
+        >
+            <template x-for="(image, index) in images" :key="index">
+                <div class="w-full flex-shrink-0 h-full">
+                    <img :src="image" class="w-full h-full object-cover" />
+                </div>
+            </template>
+        </div>
 
-  <!-- Button trái -->
-  <button @click="prev"
-    class="absolute left-3 top-1/2 transform -translate-y-1/2 
-           w-9 h-9 flex items-center justify-center 
-           rounded-full border border-white/50 
-           bg-white/10 text-white hover:bg-white/20 
-           transition">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
-  </button>
+        <!-- Button trái -->
+        <button @click="prev"
+            class="absolute left-3 top-1/2 transform -translate-y-1/2 
+                w-9 h-9 flex items-center justify-center 
+                rounded-full border border-white/50 
+                bg-white/10 text-white hover:bg-white/20 
+                transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
 
-  <!-- Button phải -->
-  <button @click="next"
-    class="absolute right-3 top-1/2 transform -translate-y-1/2 
-           w-9 h-9 flex items-center justify-center 
-           rounded-full border border-white/50 
-           bg-white/10 text-white hover:bg-white/20 
-           transition">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
-  </button>
-</section>
+        <!-- Button phải -->
+        <button @click="next"
+            class="absolute right-3 top-1/2 transform -translate-y-1/2 
+                w-9 h-9 flex items-center justify-center 
+                rounded-full border border-white/50 
+                bg-white/10 text-white hover:bg-white/20 
+                transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+                viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+    </section>
 
-<!-- Danh mục và Tìm kiếm -->
-<div class="bg-white shadow-sm">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <nav>
-                <ul class="flex space-x-6">
-                    <li><a href="{{ route('customer.services.filter', 'Tất Cả Dịch Vụ') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="text-gray-700 hover:text-blue-600">Nhà Mạng</a></li>
-                </ul>
-            </nav>
-            </nav>
-            <form action="{{ route('customer.services.search') }}" method="GET" class="relative w-1/3 mb-4">
+    <!-- Danh mục và Tìm kiếm -->
+    <div class="bg-white shadow-sm mt-5 border border-gray-200 rounded-2xl px-1 py-2">
+        <div class="container mx-auto px-4 py-3 flex gap-x-10 items-center">
+            <form action="{{ route('customer.services.search') }}" method="GET" class="relative w-1/3 mr-6">
                 <input 
                     type="text" 
                     name="query" 
@@ -86,10 +77,10 @@
             </form>
             <nav>
                 <ul class="flex space-x-6">
-                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
-                    <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="text-gray-700 hover:text-blue-600">Nhà Mạng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Mềm</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Cứng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Nhà Mạng</a></li>
                 </ul>
             </nav>
             </nav>
@@ -137,24 +128,24 @@
     </div>
     
     
-<!-- Hiển thị phân trang -->
-<div class="mt-6">
-    <div class="flex justify-center space-x-4">
-        @if ($services->onFirstPage())
-            <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-l-lg">Trang đầu</span>
-        @else
-            <a href="{{ $services->previousPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700">Trang đầu</a>
-        @endif
+    <!-- Hiển thị phân trang -->
+    <div class="mt-6">
+        <div class="flex justify-center space-x-4">
+            @if ($services->onFirstPage())
+                <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-l-lg">Trang đầu</span>
+            @else
+                <a href="{{ $services->previousPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700">Trang đầu</a>
+            @endif
 
-        <span class="px-4 py-2 text-gray-500">Trang {{ $services->currentPage() }} / {{ $services->lastPage() }}</span>
+            <span class="px-4 py-2 text-gray-500">Trang {{ $services->currentPage() }} / {{ $services->lastPage() }}</span>
 
-        @if ($services->hasMorePages())
-            <a href="{{ $services->nextPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Trang sau</a>
-        @else
-            <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-r-lg">Trang sau</span>
-        @endif
+            @if ($services->hasMorePages())
+                <a href="{{ $services->nextPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Trang sau</a>
+            @else
+                <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-r-lg">Trang sau</span>
+            @endif
+        </div>
     </div>
-</div>
 
     {{-- Giới thiệu về web --}}
     <div class="mt-16 bg-gray-100 py-12">
