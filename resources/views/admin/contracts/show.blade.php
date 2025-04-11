@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="mt-6 text-right">
-        <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
+        <a href="{{ route('admin.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
     </div>
 </div>
 

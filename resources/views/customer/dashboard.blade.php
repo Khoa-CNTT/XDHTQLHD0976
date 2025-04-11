@@ -77,7 +77,7 @@
             </form>
             <nav>
                 <ul class="flex space-x-6">
-                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Tất Cả Dịch Vụ') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Mềm</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Cứng</a></li>
                     <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Nhà Mạng</a></li>
