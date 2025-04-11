@@ -1,4 +1,3 @@
-<!-- filepath: c:\Users\ASUS_TUF\Documents\QuanLyHopDong\ConT_management\resources\views\customer\dashboard.blade.php -->
 @extends('layouts.customer')
 
 @section('title', 'Trang Chủ Khách Hàng')
@@ -6,8 +5,64 @@
 @section('content')
 
 <div class="container mx-auto">
-    <!-- Danh mục và Tìm kiếm -->
-    <div class="bg-white shadow-sm">
+    {{-- Thanh hình ảnh chạy - sử dụng Alpine.js --}}
+    <section 
+        x-data="{
+            images: [
+            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/ai-la-nguoi-dam-me-nhung-bau-troi-dem-day-sao-dep-den-nao-long-nao.jpg',
+            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/danh-cho-nhung-ban-nao-yeu-thich-su-huyen-bi-cua-mau-den.jpg',
+            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-40-1.jpg'
+            ],
+            currentIndex: 0,
+            next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },
+            prev() { this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length },
+            startSlider() { setInterval(() => this.next(), 5000); }
+        }"
+         x-init="startSlider"
+        class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
+    >
+
+    <!-- Khung ảnh -->
+    <div 
+        class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
+        :style="`transform: translateX(-${currentIndex * 100}%);`"
+    >
+        <template x-for="(image, index) in images" :key="index">
+            <div class="w-full flex-shrink-0 h-full">
+                <img :src="image" class="w-full h-full object-cover" />
+            </div>
+        </template>
+    </div>
+
+  <!-- Button trái -->
+  <button @click="prev"
+    class="absolute left-3 top-1/2 transform -translate-y-1/2 
+           w-9 h-9 flex items-center justify-center 
+           rounded-full border border-white/50 
+           bg-white/10 text-white hover:bg-white/20 
+           transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Button phải -->
+  <button @click="next"
+    class="absolute right-3 top-1/2 transform -translate-y-1/2 
+           w-9 h-9 flex items-center justify-center 
+           rounded-full border border-white/50 
+           bg-white/10 text-white hover:bg-white/20 
+           transition">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
+         viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+      <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+</section>
+
+<!-- Danh mục và Tìm kiếm -->
+<div class="bg-white shadow-sm">
         <div class="container mx-auto px-4 py-3 flex justify-between items-center">
             <nav>
                 <ul class="flex space-x-6">
@@ -29,6 +84,15 @@
                     <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
                 </svg>
             </form>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="{{ route('customer.services.filter', 'Tất Cả') }}" class="text-gray-700 hover:text-blue-600">Tất Cả Dịch Vụ</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="text-gray-700 hover:text-blue-600">Phần Mềm</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="text-gray-700 hover:text-blue-600">Phần Cứng</a></li>
+                    <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="text-gray-700 hover:text-blue-600">Nhà Mạng</a></li>
+                </ul>
+            </nav>
+            </nav>
         </div>
     </div>
 
@@ -140,5 +204,5 @@
 </div>
 
 
-
+<script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
 @endsection
