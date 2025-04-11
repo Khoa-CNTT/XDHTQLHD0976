@@ -25,6 +25,16 @@
                 <div class="text-gray-500 text-sm">Giá</div>
                 <div class="font-semibold text-gray-900">{{ number_format($service->price, 0, ',', '.') }} VND</div>
             </div>
+            <div>
+                <div class="text-gray-500 text-sm">Sản phẩm hot</div>
+                <div class="text-gray-900">
+                    @if ($service->is_hot)
+                        <span class="inline-block px-3 py-1 bg-red-100 text-red-600 font-semibold rounded-full text-sm">HOT 🔥</span>
+                    @else
+                        <span class="text-gray-500">Không</span>
+                    @endif
+                </div>
+            </div>
         </div>
 
         <div class="space-y-3">

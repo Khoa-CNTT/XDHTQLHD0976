@@ -24,43 +24,40 @@ class ServiceController extends Controller
 
         // Lưu dịch vụ mới vào cơ sở dữ liệu
         public function store(Request $request)
-    {
-         // Xử lý giá tiền: xoá dấu chấm/thập phân và định dạng
-    $rawPrice = $request->input('price');
-    $cleanPrice = str_replace(['.', ','], '', $rawPrice);
-    $formattedPrice = number_format((float)$cleanPrice, 2, '.', '');
-    $request->merge(['price' => $formattedPrice]);
-
-        // Validate dữ liệu
-        $request->validate([
-            'service_name' => 'required|string|max:255',
-            'description' => 'required|string',
-            'content' => 'required|string',
-            'service_type' => 'required|string',
-            'price' => 'required|numeric|min:0',
-
-        ]);
-       
-        $employeeId = optional(Auth::user()->employee)->id;
-
-        if (!$employeeId) {
-            abort(403, 'Không thể tạo dịch vụ vì tài khoản này không có thông tin nhân viên.');
+        {
+            // Làm sạch và định dạng giá
+            $rawPrice = $request->input('price');
+            $cleanPrice = str_replace(['.', ','], '', $rawPrice);
+            $formattedPrice = number_format((float)$cleanPrice, 2, '.', '');
+            $request->merge(['price' => $formattedPrice]);
+        
+            // Validate
+            $data = $request->validate([
+                'service_name' => 'required|string|max:255|unique:services',
+                'description' => 'required|string',
+                'content' => 'required|string',
+                'service_type' => 'required|string',
+                'price' => 'numeric|max:99999999.99',
+            ], [
+                'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
+            ]);
+        
+            // Gán thêm các field phụ
+            $employeeId = optional(Auth::user()->employee)->id;
+        
+            if (!$employeeId) {
+                abort(403, 'Không thể tạo dịch vụ vì tài khoản này không có thông tin nhân viên.');
+            }
+        
+            $data['created_by'] = $employeeId;
+            $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
+        
+            // Lưu
+            Service::create($data);
+        
+            return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công!');
         }
         
-
-        // Lưu dữ liệu vào database
-        Service::create([
-            'service_name' => $request->input('service_name'),
-            'description' => $request->input('description'),
-            'content' => $request->input('content'),
-            'service_type' => $request->input('service_type'),
-            'price' => $request->input('price'),
-            'created_by' => $employeeId,
-        ]);
-
-        // Chuyển hướng với thông báo thành công
-        return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công!');
-    }
 
     // Hiển thị chi tiết một dịch vụ
     public function show($id)
@@ -96,10 +93,11 @@ class ServiceController extends Controller
         'content' => 'required|string',
         'service_type' => 'required|string',
         'price' => 'required|numeric|min:0',
+
     ], [
         'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
     ]);
-
+    $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
     // Không cần cập nhật created_by khi update
     $service->update($data);
 

@@ -37,6 +37,21 @@
             value="{{ number_format(old('price', $service->price), 0, ',', '.') }}"
                    class="w-full border border-gray-300 rounded px-4 py-2" required oninput="formatPrice(this)">
         </div>
+        <div class="mt-4">
+            <label class="inline-flex items-center">
+                <input
+                    type="checkbox"
+                    name="is_hot"
+                    value="1"
+                    class="form-checkbox text-red-600 h-5 w-5"
+                    {{ old('is_hot', $service->is_hot) ? 'checked' : '' }}
+                >
+                <span class="ml-2 text-gray-700 font-medium">
+                    Đánh dấu là sản phẩm <span class="text-red-600 font-semibold">HOT 🔥</span>
+                </span>
+            </label>
+        </div>
+        
         <div class="flex justify-end space-x-3">
             <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
             <button type="submit" class="px-4 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">Cập nhật</button>
