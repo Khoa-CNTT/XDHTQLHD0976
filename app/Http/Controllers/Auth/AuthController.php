@@ -54,42 +54,118 @@ class AuthController extends Controller
         return view('auth.register');
     }
 
- 
-    // Xử lý đăng ký tài khoản
+//    dăng ký
     public function register(Request $request)
-    {
-        $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:6|confirmed',
-            'phone' => 'nullable|string|max:15',
-            'address' => 'nullable|string|max:255',
-            'company_name' => 'required|string|max:255',
-            'tax_code' => 'required|string|max:50|unique:customers,tax_code',
-        ]);
+{
+    $request->validate([
+        'name' => [
+            'required',
+            'string',
+            'max:255',
+            'regex:/^[\p{L}\s]+$/u' , // Chỉ cho phép tên có chữ cái và khoảng trắng
+        ],
+        'email' => [
+            'required',
+            'string',
+            'email',
+            'max:255',
+            'unique:users',
+            'regex:/@gmail\.com$/', // Email phải có đuôi @gmail.com
+        ],
+        'password' => [
+            'required',
+            'string',
+            'min:8',
+            'confirmed',
+            'regex:/[A-Z]/', // Phải có ít nhất một ký tự in hoa
+            'regex:/[0-9]/', // Phải có ít nhất một chữ số
+            'regex:/[@$!%*?&]/', // Phải có ít nhất một ký tự đặc biệt
+        ],
+        'phone' => [
+            'nullable',
+            'string',
+            'max:15',
+            'regex:/^\d{10}$/', // Chỉ cho phép số và độ dài từ 10 
+        ],
+        'address' => 'nullable|string|max:255',
+        'company_name' => 'required|string|max:255',
+        'tax_code' => [
+            'required',
+            'string',
+            'regex:/^\d{10}(\d{3})?$/',
+            'unique:customers,tax_code', // Mã số thuế không được trùng
+        ],
+    ], [
+        'name.regex' => 'Tên chỉ được chứa chữ cái và khoảng trắng, không chứa ký tự đặc biệt.',
+        'email.regex' => 'Email phải có đuôi @gmail.com.',
+        'password.regex' => 'Mật khẩu phải chứa ít nhất một chữ in hoa, một số và một ký tự đặc biệt.',
+        'password.confirmed' => 'Mật khẩu không khớp nhau.',
+        'phone.regex' => 'Số điện thoại chỉ chứa các chữ số.',
+        'phone.min' => 'Số điện thoại phải có 10 số.',
+        'tax_code.regex' => 'Mã số thuế phải là số và có độ dài từ 10 đến 13 ký tự.',
+        'tax_code.unique' => 'Mã số thuế này đã tồn tại.',
+        'tax_code.min' => 'Mã số thuế phải có ít nhất 10 ký tự.',
+    ]);
 
-        // Tạo user
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-            'role' => 'customer', // Mặc định là khách hàng
-            'phone' => $request->phone,
-            'address' => $request->address,
-        ]);
+    
+    $user = User::create([
+        'name' => $request->name,
+        'email' => $request->email,
+        'password' => Hash::make($request->password),
+        'role' => 'customer', 
+        'phone' => $request->phone,
+        'address' => $request->address,
+    ]);
 
-        // Tạo thông tin khách hàng
-        Customer::create([
-            'user_id' => $user->id,
-            'company_name' => $request->company_name,
-            'tax_code' => $request->tax_code,
-        ]);
+    
+    Customer::create([
+        'user_id' => $user->id,
+        'company_name' => $request->company_name,
+        'tax_code' => $request->tax_code,
+    ]);
 
-        // Đăng nhập sau khi đăng ký
-        Auth::login($user);
+    
+    Auth::login($user);
 
-        return redirect()->route('customer.dashboard');
-    }
+    return redirect()->route('customer.dashboard');
+}
+// public function register(Request $request)
+// {
+    
+//     $request->validate([
+//         'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
+//         'email' => 'required|string|email|max:255|unique:users|regex:/^[a-z0-9._%+-]+@gmail\.com$/',
+//         'phone' => 'required|string|regex:/^0[0-9]{9}$/', // Đảm bảo số điện thoại là số và có độ dài 10
+//         'address' => 'required|string|max:255',
+//         'password' => 'required|string|min:6|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/',
+//         'company_name' => 'required|string|max:255',
+//         'tax_code' => 'required|string|size:10|regex:/^[0-9]+$/|unique:customers,tax_code',
+//     ]);
+
+//     // Nếu dữ liệu hợp lệ, tạo tài khoản mới
+//     $user = User::create([
+//         'name' => $request->name,
+//         'email' => $request->email,
+//         'password' => Hash::make($request->password),
+//         'role' => 'customer', // Mặc định là khách hàng
+//         'phone' => $request->phone,
+//         'address' => $request->address,
+//     ]);
+
+//     // Tạo thông tin khách hàng
+//     Customer::create([
+//         'user_id' => $user->id,
+//         'company_name' => $request->company_name,
+//         'tax_code' => $request->tax_code,
+//     ]);
+
+//     // Đăng nhập sau khi đăng ký
+//     Auth::login($user);
+
+//     // Chuyển hướng tới trang dashboard
+//     return redirect()->route('customer.dashboard');
+// }
+
 
     // Đăng xuất
     public function logout(Request $request)
