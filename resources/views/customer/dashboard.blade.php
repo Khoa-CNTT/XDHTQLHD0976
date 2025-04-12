@@ -1,6 +1,6 @@
 @extends('layouts.customer')
 
-@section('title', 'Trang Chủ Khách Hàng')
+@section('title', 'Trang Chủ ')
 
 @section('content')
 

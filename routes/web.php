@@ -53,6 +53,9 @@ Route::middleware('guest')->group(function () {
     Route::get('password/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
     Route::post('password/confirm', [ConfirmPasswordController::class, 'confirm']);
 });
+      // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
+Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('customer.services.filter');
+Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('customer.services.search');
 
 // Route đăng xuất
 Route::post('/logout', function () {
@@ -82,9 +85,6 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
         Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
         Route::get('/services/{id}', [\App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
-        
-        Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('services.search');
-        Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('services.filter');
 
 
 

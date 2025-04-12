@@ -10,6 +10,11 @@ use Illuminate\Support\Facades\Auth;
 
 class ServiceController extends Controller
 {
+    public function __construct()
+{
+    // Chỉ áp dụng middleware cho các phương thức cần thiết
+    $this->middleware('auth')->except(['filter', 'search']);
+}
     public function filter($type)
 {
     // Kiểm tra nếu type là "Tất Cả Dịch Vụ"
