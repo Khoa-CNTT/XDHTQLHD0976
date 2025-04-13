@@ -52,7 +52,7 @@
         <div class="mt-4">
             <label class="inline-flex items-center">
                 <input type="checkbox" name="is_hot" value="1" class="form-checkbox text-red-600 h-5 w-5">
-                <span class="ml-2 text-gray-700 font-medium">Đánh dấu là sản phẩm <span class="text-red-600 font-semibold">HOT 🔥</span></span>
+                <span class="ml-2 text-gray-700 font-medium"><span class="text-red-600 font-semibold">HOT 🔥</span></span>
             </label>
         </div>
         <div class="flex justify-end space-x-3">

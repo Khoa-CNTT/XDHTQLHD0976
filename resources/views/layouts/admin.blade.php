@@ -42,11 +42,12 @@
       <h2 class="text-xl font-semibold mb-4">Menu</h2>
       <ul>
         @if(auth()->user()->role == 'admin')
-          <li><a href="" class="hover:bg-gray-700">Quản lý khách hàng &amp; nhân viên</a></li>
+        <li><a href="{{ route('admin.customers.index') }}" class="hover:bg-gray-700">Quản lý khách hàng</a></li>
+        <li><a href="{{ route('admin.employees.index') }}" class="hover:bg-gray-700">Quản lý nhân viên</a></li>
           <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
           <li><a href="{{ route('admin.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>
           <li><a href="" class="hover:bg-gray-700">Quản lý thanh toán</a></li>
-          <li><a href="" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
+          <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
         @elseif(auth()->user()->role == 'employee')
           <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
           <li><a href="{{ route('admin.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>

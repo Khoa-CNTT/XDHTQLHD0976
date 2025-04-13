@@ -98,20 +98,18 @@ class ServiceController extends Controller
         'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
     ]);
     $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
-    // Không cần cập nhật created_by khi update
     $service->update($data);
 
     return redirect()->route('admin.services.index')->with('success', 'Cập nhật dịch vụ thành công!');
 }
 
-    // Xoá một dịch vụ
+   
     public function destroy($id)
     {
-        Service::destroy($id); // Xoá dịch vụ
+        Service::destroy($id);
         return redirect()->back()->with('success', 'Xoá dịch vụ thành công!');
     }
 
-// Tìm kiếm dịch vụ
 
     public function search(Request $request)
 {

@@ -15,18 +15,23 @@ class Authenticate
      */
     public function handle($request, Closure $next, ...$guards)
 {
-    // Nếu người dùng đã đăng nhập, cho phép tiếp tục xử lý yêu cầu
+    // Nếu người dùng đã đăng nhập
     if (Auth::check()) {
+        // Kiểm tra trạng thái tài khoản
+        if (Auth::user()->status === 'banned') {
+            Auth::logout(); // Đăng xuất người dùng
+            return redirect()->route('login')->withErrors(['error' => 'Tài khoản của bạn đã bị khóa. Vui lòng liên hệ với nhân vien.']);
+        }
+
         return $next($request);
     }
 
-    // Nếu người dùng chưa đăng nhập và đang cố gắng truy cập vào trang của khách hàng
+    
     if ($request->is('customer/dashboard')) {
-        // Cho phép khách chưa đăng nhập truy cập vào trang customer/dashboard
         return $next($request);
     }
 
-    // Nếu không, chuyển hướng về trang login
+  
     return redirect()->route('login');
 }
 }

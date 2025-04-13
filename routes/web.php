@@ -13,7 +13,8 @@ use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
-use App\Http\Controllers\Auth\ConfirmPasswordController;
+use App\Http\Controllers\Auth\ConfirmPasswordController;    
+use App\Http\Controllers\Admin\ReportController;
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
@@ -71,6 +72,15 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('contracts', AdminContractController::class);
         Route::resource('services', AdminServiceController::class);
+
+        Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
+        Route::resource('employees', \App\Http\Controllers\Admin\EmployeeController::class);
+        Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+
+
+        Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class)->except(['create', 'edit', 'store', 'update']);
+        Route::post('customers/{id}/ban', [\App\Http\Controllers\Admin\CustomerController::class, 'ban'])->name('customers.ban');
+        Route::post('customers/{id}/unban', [\App\Http\Controllers\Admin\CustomerController::class, 'unban'])->name('customers.unban');
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])

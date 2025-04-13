@@ -47,7 +47,7 @@
                     {{ old('is_hot', $service->is_hot) ? 'checked' : '' }}
                 >
                 <span class="ml-2 text-gray-700 font-medium">
-                    Đánh dấu là sản phẩm <span class="text-red-600 font-semibold">HOT 🔥</span>
+                   <span class="text-red-600 font-semibold">HOT 🔥</span>
                 </span>
             </label>
         </div>

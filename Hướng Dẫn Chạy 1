@@ -1,8 +1,10 @@
-NẾU HƯỚNG DẪN 1 CHẠY LỖI THÌ VÀO HƯỚNG DẪN 2 ĐỂ CHẠY
+
 # 📌 Hướng Dẫn Cài Đặt Dự Án Laravel
-trước tiên phải có xampp và composer
+trước tiên phải cần có các thứ liên quan
+-cài đặt ở đây:https://www.php.net/downloads.php
 -cài đặt ở đây:https://www.apachefriends.org/download.html
 -cài đặt ở đây:https://getcomposer.org/
+- Tải Node.js tại: https://nodejs.org/
 sau khi cài xampp xong bật Xampp lên : bật Apache và MySQL
 Bật terminal lên hoặc git bash
 ## 🚀 1. Clone Dự Án
