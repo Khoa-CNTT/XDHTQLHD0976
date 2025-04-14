@@ -1,4 +1,3 @@
-#!/bin/bash
 # Sử dụng image PHP
 FROM php:8.2-cli
 
@@ -15,33 +14,43 @@ COPY . /app/.
 RUN chmod +x /app/build.sh
 
 # Chạy build.sh
+WORKDIR /app
 RUN ./build.sh
+# Kiểm tra quyền của các file
+RUN ls -l /app
+
 # In ra các thông tin môi trường để debug
-echo "Running build script..."
+RUN echo "Running build script..."
+RUN ls -l /app/build.sh
+RUN chmod +x /app/build.sh
+RUN ./build.sh
 
 # Kiểm tra PHP và Composer
-php -v
-composer -v
+RUN php -v
+RUN composer -v
 
 # Cài đặt thư viện composer
-composer install --no-dev --optimize-autoloader
+RUN composer install --no-dev --optimize-autoloader
 
 # Cache các cấu hình, routes, và views
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
 # Xóa cache cũ (nếu cần)
-php artisan optimize:clear
+RUN php artisan optimize:clear
 
 # Liên kết thư mục storage
-php artisan storage:link
+RUN php artisan storage:link
 
 # Migrate database nếu có thay đổi schema
-php artisan migrate --force
+RUN php artisan migrate --force
 
 # Tạo các keys cho Laravel Passport (nếu có dùng Passport)
-php artisan passport:keys
+RUN php artisan passport:keys
 
 # Tối ưu hóa app
-php artisan optimize
+RUN php artisan optimize
+
+
+docker build --no-cache -t your-image-name .
