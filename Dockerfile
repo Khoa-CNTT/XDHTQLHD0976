@@ -1,4 +1,4 @@
-# Bắt đầu từ image PHP chính thức
+# Sử dụng image PHP chính thức (php:8.2-cli)
 FROM php:8.2-cli
 
 # Cài đặt các dependencies cần thiết (bao gồm oniguruma cho mbstring)
@@ -8,9 +8,9 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libzip-dev \
     zip \
-    libonig-dev \   # Cài đặt thư viện oniguruma
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql mbstring opcache zip
+    libonig-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd pdo pdo_mysql mbstring opcache zip
 
 # Cài đặt Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
@@ -40,22 +40,4 @@ RUN composer -v
 # Cài đặt thư viện Composer (nếu chưa cài đặt trong build.sh)
 RUN composer install --no-dev --optimize-autoloader
 
-# Cache các cấu hình, routes, và views
-RUN php artisan config:cache
-RUN php artisan route:cache
-RUN php artisan view:cache
-
-# Xóa cache cũ (nếu cần)
-RUN php artisan optimize:clear
-
-# Liên kết thư mục storage
-RUN php artisan storage:link
-
-# Migrate database nếu có thay đổi schema
-RUN php artisan migrate --force
-
-# Tạo các keys cho Laravel Passport (nếu có dùng Passport)
-RUN php artisan passport:keys
-
-# Tối ưu hóa app
-RUN php artisan optimize
+# Cache các cấu
