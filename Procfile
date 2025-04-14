@@ -1,2 +1,2 @@
 web: vendor/bin/heroku-php-nginx public/
-release: php artisan optimize && php artisan cache:clear
+release: php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache
