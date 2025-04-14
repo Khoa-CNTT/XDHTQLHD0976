@@ -1,2 +1,6 @@
-web: php -S 0.0.0.0:$PORT -t public
-release: composer install && php artisan migrate --force && php artisan config:cache && php artisan route:cache && php artisan view:cache
+web:
+php artisan config:clear && \
+     php artisan config:cache && \
+     php artisan route:cache && \
+     php artisan view:cache && \ php -S 0.0.0.0:$PORT -t public
+release: composer install 
