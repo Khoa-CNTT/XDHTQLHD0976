@@ -1,35 +1,43 @@
-# Sử dụng image PHP
+# Bắt đầu từ image PHP chính thức
 FROM php:8.2-cli
+
+# Cài đặt các dependencies cần thiết (bao gồm oniguruma cho mbstring)
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    zip \
+    libonig-dev \   # Cài đặt thư viện oniguruma
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql mbstring opcache zip
 
 # Cài đặt Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Cài đặt các extensions của PHP nếu cần (ví dụ: pdo, mbstring)
-RUN docker-php-ext-install pdo pdo_mysql mbstring
-
 # Copy mã nguồn vào container
 COPY . /app/.
 
-# Chuyển đến thư mục /app và kiểm tra quyền file
+# Chuyển đến thư mục làm việc /app
 WORKDIR /app
 
-# Cấp quyền thực thi cho tất cả các file trong thư mục /app
+# Cấp quyền thực thi cho tất cả các file trong thư mục /app (bao gồm cả build.sh)
 RUN chmod -R +x /app
 
-# Kiểm tra quyền của các file sau khi cấp quyền
+# Kiểm tra quyền file và các file trong thư mục
 RUN ls -l /app
 
 # Chạy build.sh
 RUN ./build.sh
 
-# In ra các thông tin môi trường để debug
+# In ra thông tin môi trường (debug)
 RUN echo "Running build script..."
 
-# Kiểm tra PHP và Composer
+# Kiểm tra phiên bản PHP và Composer
 RUN php -v
 RUN composer -v
 
-# Cài đặt thư viện composer
+# Cài đặt thư viện Composer (nếu chưa cài đặt trong build.sh)
 RUN composer install --no-dev --optimize-autoloader
 
 # Cache các cấu hình, routes, và views
