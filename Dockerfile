@@ -1,25 +1,22 @@
-# Sử dụng image PHP chính thức (php:8.2-cli)
+# Sử dụng image PHP chính thức
 FROM php:8.2-cli
 
-# Cài đặt các dependencies cần thiết (bao gồm oniguruma cho mbstring)
+# Cài đặt các dependencies cần thiết cho PHP extensions (bao gồm cả mbstring, pdo_mysql)
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
     libzip-dev \
-    zip \
     libonig-dev \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install gd pdo pdo_mysql mbstring opcache zip
+    libpq-dev && \
+    docker-php-ext-configure gd --with-freetype --with-jpeg && \
+    docker-php-ext-install gd pdo pdo_mysql mbstring opcache zip
 
 # Cài đặt Composer
 RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
-# Copy chỉ các file cần thiết trước để tận dụng Docker cache hiệu quả
-COPY composer.json composer.lock /app/
-
-# Copy toàn bộ mã nguồn vào container
-COPY . /app/
+# Copy mã nguồn vào container
+COPY . /app/.
 
 # Chuyển đến thư mục làm việc /app
 WORKDIR /app
@@ -30,12 +27,29 @@ RUN chmod -R +x /app
 # Kiểm tra quyền file và các file trong thư mục
 RUN ls -l /app
 
-# Chạy build.sh (lệnh này sẽ chứa các bước tối ưu và config của bạn)
-RUN ./build.sh
+# Cài đặt thư viện Composer (nếu chưa cài đặt trong build.sh)
+RUN composer install --no-dev --optimize-autoloader
 
-# In ra thông tin môi trường (debug)
-RUN echo "Running build script..."
+# Cache các cấu hình, routes, và views
+RUN php artisan config:cache
+RUN php artisan route:cache
+RUN php artisan view:cache
 
-# Kiểm tra phiên bản PHP và Composer
-RUN php -v
-RUN composer -v
+# Xóa cache cũ (nếu cần)
+RUN php artisan optimize:clear
+
+# Liên kết thư mục storage
+RUN php artisan storage:link
+
+# Migrate database nếu có thay đổi schema
+RUN php artisan migrate --force
+
+# Tạo các keys cho Laravel Passport (nếu có dùng Passport)
+RUN php artisan passport:keys
+
+# Tối ưu hóa app
+RUN php artisan optimize
+
+# Khởi động lại queue và chạy các jobs trong queue
+RUN php artisan queue:work --queue=default --timeout=60 --tries=3 --sleep=3 --no-interaction
+RUN php artisan queue:restart
