@@ -1,6 +1,6 @@
 #!/bin/bash
 chmod +x build.sh
-
+COPY composer.json composer.lock /app/
 # Cài đặt thư viện composer
 composer install --no-dev --optimize-autoloader
 
