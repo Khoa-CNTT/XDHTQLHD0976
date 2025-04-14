@@ -1,4 +1,11 @@
 #!/bin/bash
+chmod +x ./build.sh
+# In ra các thông tin môi trường để debug
+echo "Running build script..."
+
+# Kiểm tra PHP và Composer
+php -v
+composer -v
 
 # Cài đặt thư viện composer
 composer install --no-dev --optimize-autoloader
