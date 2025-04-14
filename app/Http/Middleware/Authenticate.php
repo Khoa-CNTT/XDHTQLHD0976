@@ -26,12 +26,6 @@ class Authenticate
         return $next($request);
     }
 
-    
-    if ($request->is('customer/dashboard')) {
-        return $next($request);
-    }
-
-  
-    return redirect()->route('login');
+   
 }
 }
