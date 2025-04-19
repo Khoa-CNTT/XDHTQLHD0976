@@ -16,6 +16,15 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
 use App\Http\Controllers\Admin\ReportController;
 
+//chạy đỡ cái sign-demo
+Route::get('/test-sign', function () {
+    return view('customer.contracts.sign-demo');
+})->name('customer.contracts.sign-demo');
+//chạy đỡ trang hợp đồng của kh mycontract
+Route::get('/khach-hang/hop-dong-cua-toi', function () {
+    return view('customer.contracts.mycontract');
+})->name('customer.contracts.mycontract');
+
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
 Route::get('/', function () {

@@ -45,6 +45,11 @@
                                     </a>
                                 </li>
                                 <li>
+                                    <a href="{{ route('customer.contracts.mycontract') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        Hợp Đồng Của Tôi
+                                    </a>
+                                </li>
+                                <li>
                                     <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         @csrf
                                         <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>

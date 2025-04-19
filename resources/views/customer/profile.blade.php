@@ -43,68 +43,68 @@
 
             {{-- Tab Thông Tin  --}}
             <div id="info-content" class="bg-white rounded-lg shadow-md p-6 mb-8">
-                <h2 class="text-xl font-semibold mb-4">Thông Tin Cá Nhân</h2>
+                <h2 class="text-xl font-semibold mb-4">Thông tin cá nhân</h2>
                 <form id="personal-info-form" action="{{ route('customer.profile.update') }}" method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label for="name" class="block text-gray-700">Tên:</label>
+                        <label for="name" class="block text-gray-700">Tên</label>
                         <input type="text" id="name" name="name" class="w-full p-2 border rounded" value="{{ auth()->user()->name }}" required>
                         @error('name')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="email" class="block text-gray-700">Email:</label>
+                        <label for="email" class="block text-gray-700">Email</label>
                         <input type="email" id="email" name="email" class="w-full p-2 border rounded" value="{{ auth()->user()->email }}" required>
                         @error('email')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="phone" class="block text-gray-700">Số Điện Thoại</label>
+                        <label for="phone" class="block text-gray-700">Số điện thoại</label>
                         <input type="text" id="phone" name="phone" class="w-full p-2 border rounded" value="{{ auth()->user()->phone }}" required>
                         @error('phone')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="address" class="block text-gray-700">Địa chỉ:</label>
+                        <label for="address" class="block text-gray-700">Địa chỉ</label>
                         <input type="text" id="address" name="address" class="w-full p-2 border rounded" value="{{ auth()->user()->address }}" required>
                         @error('address')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Cập Nhật Thông Tin</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Cập nhật thông tin</button>
                 </form>
             </div>
 
             {{-- Tab Đổi Mật Khẩu --}}
             <div id="password-content" class="bg-white rounded-lg shadow-md p-6 hidden">
-                <h2 class="text-xl font-semibold mb-4">Đổi Mật Khẩu</h2>
+                <h2 class="text-xl font-semibold mb-4">Đổi mật khẩu</h2>
                 <form id="change-password-form" action="{{ route('customer.profile.change-password') }}" method="POST">
                     @csrf
                     <div class="mb-4">
-                        <label for="old-password" class="block text-gray-700">Mật Khẩu Cũ:</label>
+                        <label for="old-password" class="block text-gray-700">Mật khẩu cũ</label>
                         <input type="password" id="old-password" name="old_password" class="w-full p-2 border rounded" required>
                         @error('old_password')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="new-password" class="block text-gray-700">Mật Khẩu Mới:</label>
+                        <label for="new-password" class="block text-gray-700">Mật khẩu mới</label>
                         <input type="password" id="new-password" name="new_password" class="w-full p-2 border rounded" required>
                         @error('new_password')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="mb-4">
-                        <label for="confirm-password" class="block text-gray-700">Xác Nhận Mật Khẩu Mới:</label>
+                        <label for="confirm-password" class="block text-gray-700">Xác nhận mật khẩu mới</label>
                         <input type="password" id="confirm-password" name="new_password_confirmation" class="w-full p-2 border rounded" required>
                         @error('new_password_confirmation')
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
-                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Đổi Mật Khẩu</button>
+                    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Đổi mật khẩu</button>
                 </form>
             </div>
         </div>

@@ -36,7 +36,9 @@ class ContractController extends Controller
             'total_price' => 'required|numeric|min:0',
         ]);
              // Loại bỏ dấu phẩy khỏi giá trị price
-        $validatedData['total_price'] = str_replace(',', '', $request->price);
+  
+        $validatedData['total_price'] = str_replace(',', '', $request->total_price);
+
         // Lưu hợp đồng
         Contract::create(array_merge($validatedData, [
             'signed_document' => null, // Để trống, khách hàng sẽ ký sau

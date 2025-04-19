@@ -29,7 +29,7 @@
       background: #fff;
       width: 100%;
       max-width: 600px;
-      padding: 1.5rem;
+      padding: 2rem;
       border-radius: 10px;
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
       animation: fadeIn 0.8s ease-in-out;
@@ -45,30 +45,27 @@
       font-size: 1.8rem;
       font-weight: bold;
       color: #333;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .register-container .form-group {
-      display: flex;
-      align-items: center;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
     }
 
     .register-container label {
-      width: 150px; /* Chiều rộng cố định cho nhãn */
-      margin-right: 1rem;
+      display: block;
+      margin-bottom: 0.5rem;
       color: #555;
       font-weight: bold;
       font-size: 0.9rem;
-      text-align: right; /* Căn phải nhãn */
     }
 
     .register-container input {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.8rem;
       border: 1px solid #ddd;
       border-radius: 5px;
-      font-size: 0.9rem;
+      font-size: 1rem;
       transition: border-color 0.3s;
     }
 
@@ -79,10 +76,10 @@
 
     .register-container button {
       width: 100%;
-      padding: 0.7rem;
+      padding: 0.8rem;
       background: #667eea;
       color: #fff;
-      font-size: 1rem;
+      font-size: 1.1rem;
       border: none;
       border-radius: 5px;
       cursor: pointer;
@@ -95,7 +92,7 @@
 
     .register-container p {
       text-align: center;
-      margin-top: 1rem;
+      margin-top: 1.5rem;
       font-size: 0.9rem;
       color: #444;
     }
@@ -114,7 +111,7 @@
       background: #ffe6e6;
       border: 1px solid #ffcccc;
       padding: 0.75rem;
-      margin-bottom: 1rem;
+      margin-bottom: 1.5rem;
       border-radius: 5px;
       color: #cc0000;
       font-size: 0.9rem;

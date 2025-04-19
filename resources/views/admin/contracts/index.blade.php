@@ -41,7 +41,7 @@
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
                     <td class="py-3 px-6">{{ $contract->contract_number }}</td>
                     <td class="py-3 px-6">{{ optional($contract->service)->service_name }}</td>
-                    <td class="py-3 px-6 text-center">
+                    <td class="py-3 px-6">
                         <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
                             @switch($contract->status)
                                 @case('Hoạt động') bg-green-100 text-green-800 @break

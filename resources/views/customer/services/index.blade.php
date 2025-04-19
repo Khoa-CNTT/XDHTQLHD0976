@@ -138,7 +138,6 @@
                 <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-r-lg">Trang sau</span>
             @endif
         </div>
-        {{ $services->links() }}
     </div>
     
 </div>
