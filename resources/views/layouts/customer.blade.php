@@ -9,31 +9,30 @@
     
 </head>
 <body class="bg-gray-50">
-    <!-- Header -->
-    <header class="bg-blue-600 text-white py-0 shadow-md">
-        <div class="container mx-auto px-4 flex justify-between items-center">
-            <div class="flex items-center">
+    <header class="bg-blue-600 text-white py-4 shadow-md">
+        <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
+            <div class="flex items-center space-x-4">
                 <div class="logo">
-                    <a href="{{ route('customer.dashboard') }}"><img src="{{ asset('images/logo1.png') }}" alt="Logo" style="height: 85px;"></a>
+                    <a href="{{ route('customer.dashboard') }}">
+                        <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-16 md:h-20 max-w-full">
+                    </a>
                 </div>
-                <h1 class="text-2xl font-bold">Dịch Vụ Công Nghệ Thông Tin</h1>
+                <h1 class="text-lg md:text-2xl font-bold">Dịch Vụ Công Nghệ Thông Tin</h1>
             </div>
-            <nav class="flex items-center space-x-6">
-                <ul class="flex space-x-6 mr-4">
-                    <li><a href="{{ route('customer.dashboard') }}" class="hover:text-blue-200">Trang Chủ</a></li>
-                    <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200">Dịch Vụ</a></li>
+            <nav class="flex flex-wrap items-center space-x-4 mt-4 md:mt-0">
+                <ul class="flex flex-wrap space-x-4">
+                    <li><a href="{{ route('customer.dashboard') }}" class="hover:text-blue-200 text-sm md:text-base">Trang Chủ</a></li>
+                    <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200 text-sm md:text-base">Dịch Vụ</a></li>
                 </ul>
-                
-                <!-- Dropdown Trang Cá Nhân -->
                 @if(auth()->check())
-                    <div class="relative">
+                    <div class="relative mt-4 md:mt-0">
                         <button id="user-menu-button" class="flex items-center focus:outline-none">
-                            <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-10 h-10 mr-2">
+                            <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-8 h-8 md:w-10 md:h-10 mr-2">
                             <svg class="w-4 h-4 ml-1" fill="currentColor" viewBox="0 0 20 20">
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                             </svg>
                         </button>
-                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                             <div class="px-4 py-3 border-b">
                                 <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
                                 <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
@@ -58,12 +57,12 @@
                             </ul>
                         </div>
                     </div>
-                @else   
-                    <div class="relative">
-                        <button id="guest-menu-button" class="px-4 py-2 rounded-full bg-blue-500 text-white hover:bg-blue-600 transition">
+                @else
+                    <div class="relative mt-4 md:mt-0">
+                        <button id="guest-menu-button" class="px-3 py-2 rounded-full bg-blue-500 text-sm md:text-base text-white hover:bg-blue-600 transition">
                             Đăng nhập
                         </button>
-                        <div id="guest-dropdown" class="hidden absolute right-0 mt-2 w-56 bg-white rounded-lg shadow-lg z-10">
+                        <div id="guest-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
                             <ul class="py-1">
                                 <li>
                                     <a href="{{ route('login') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
@@ -79,48 +78,44 @@
                         </div>
                     </div>
                 @endif
-                </div>
-                </div>
             </nav>
         </div>
     </header>
-
-    <!-- Sidebar và Nội Dung -->
-    <div class="flex">
+        <!-- Sidebar và Nội Dung -->
+        <div class="flex">
        
 
-        <!-- Main Content -->
-        <main class="flex-1 bg-white p-6">
-            @yield('content')
-        </main>
-    </div>
-
-     <!-- Footer -->
-     <footer class="bg-gray-800 text-white py-8">
+            <!-- Main Content -->
+            <main class="flex-1 bg-white p-6">
+                @yield('content')
+            </main>
+        </div>
+    <!-- Footer -->
+    <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">
-            <div class="grid md:grid-cols-3 gap-6">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Cột 1 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Về Chúng Tôi</h3>
-                    <p class="text-gray-400">Chúng tôi cung cấp các giải pháp công nghệ thông tin hiện đại, giúp doanh nghiệp của bạn phát triển mạnh mẽ.</p>
+                    <p class="text-gray-400 text-sm md:text-base">Chúng tôi cung cấp các giải pháp công nghệ thông tin hiện đại, giúp doanh nghiệp của bạn phát triển mạnh mẽ.</p>
                 </div>
                 <!-- Cột 2 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Kết Nhanh</h3>
                     <ul class="space-y-2">
-                        <li><a href="{{ route('customer.dashboard') }}" class="hover:underline">Trang Chủ</a></li>
-                        <li><a href="{{ route('customer.contracts.index') }}" class="hover:underline">Hợp Đồng</a></li>
-                        <li><a href="#" class="hover:underline">Dịch Vụ</a></li>
+                        <li><a href="{{ route('customer.dashboard') }}" class="hover:underline text-sm md:text-base">Trang Chủ</a></li>
+                        <li><a href="{{ route('customer.contracts.index') }}" class="hover:underline text-sm md:text-base">Hợp Đồng</a></li>
+                        <li><a href="#" class="hover:underline text-sm md:text-base">Dịch Vụ</a></li>
                     </ul>
                 </div>
                 <!-- Cột 3 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Hệ</h3>
-                    <p class="text-gray-400">Email: support@congnghe.com</p>
-                    <p class="text-gray-400">Hotline: 0123-456-789</p>
+                    <p class="text-gray-400 text-sm md:text-base">Email: support@congnghe.com</p>
+                    <p class="text-gray-400 text-sm md:text-base">Hotline: 0123-456-789</p>
                 </div>
             </div>
-            <div class="mt-6 text-gray-400">
+            <div class="mt-6 text-gray-400 text-sm md:text-base">
                 &copy; 2025 Dịch Vụ Công Nghệ Thông Tin. Bảo lưu mọi quyền.
             </div>
         </div>
