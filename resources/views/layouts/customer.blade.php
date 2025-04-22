@@ -111,12 +111,12 @@
                 <!-- Cột 3 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Hệ</h3>
-                    <p class="text-gray-400 text-sm md:text-base">Email: support@congnghe.com</p>
-                    <p class="text-gray-400 text-sm md:text-base">Hotline: 0123-456-789</p>
+                    <p class="text-gray-400 text-sm md:text-base">Email: okamibada@gmail.com</p>
+                    <p class="text-gray-400 text-sm md:text-base">Hotline: 0987-653-214</p>
                 </div>
             </div>
             <div class="mt-6 text-gray-400 text-sm md:text-base">
-                &copy; 2025 Dịch Vụ Công Nghệ Thông Tin. Bảo lưu mọi quyền.
+                &copy;  Dịch Vụ Công Nghệ Thông Tin. Bảo lưu mọi quyền.
             </div>
         </div>
     </footer>
