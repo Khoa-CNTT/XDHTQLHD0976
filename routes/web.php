@@ -16,14 +16,7 @@ use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
 use App\Http\Controllers\Admin\ReportController;
 
-//chạy đỡ cái sign-demo
-Route::get('/test-sign', function () {
-    return view('customer.contracts.sign-demo');
-})->name('customer.contracts.sign-demo');
-//chạy đỡ trang hợp đồng của kh mycontract
-Route::get('/khach-hang/hop-dong-cua-toi', function () {
-    return view('customer.contracts.mycontract');
-})->name('customer.contracts.mycontract');
+
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
@@ -99,8 +92,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
-        Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('customer.contracts.sign');
-        Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('customer.contracts.sendOtp');
+        Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('contracts.sign');
+        Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
 
         Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
         Route::get('/services/{id}', [\App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
@@ -110,5 +103,16 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/profile', [App\Http\Controllers\CustomerProfileController::class, 'profile'])->name('profile');
         Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
+         
+
+               // Route cho trang ký hợp đồng demo
+               Route::get('/test-sign', function () {
+                return view('customer.contracts.sign-demo');
+            })->name('contracts.sign-demo');
+    
+            // Route cho trang "My Contract"
+            Route::get('/my-contract', function () {
+                return view('customer.contracts.mycontract');
+            })->name('contracts.mycontract');
         
     }); 
