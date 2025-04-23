@@ -1,10 +1,17 @@
 <?php
 use App\Http\Controllers\Auth\AuthController;
-use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
+use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
+use App\Http\Controllers\Customer\ContractController as CustomerContractController;
+
+
+
+
+
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
-use App\Http\Controllers\Customer\ContractController as CustomerContractController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Middleware\AdminOrEmployeeMiddleware;
@@ -19,6 +26,12 @@ use App\Http\Controllers\Admin\ReportController;
 
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
+
+Route::get('/services/{id}', [CustomerServiceController::class, 'show'])->name('customer.services.show');
+
+Route::get('services', [CustomerServiceController::class, 'index'])->name('customer.services.index');
+
+
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -55,6 +68,10 @@ Route::middleware('guest')->group(function () {
     // Xác nhận mật khẩu
     Route::get('password/confirm', [ConfirmPasswordController::class, 'showConfirmForm'])->name('password.confirm');
     Route::post('password/confirm', [ConfirmPasswordController::class, 'confirm']);
+    
+    
+
+
 });
       // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
 Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('customer.services.filter');
@@ -95,8 +112,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('contracts.sign');
         Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
 
-        Route::get('services', [CustomerContractController::class, 'index'])->name('services.index');
-        Route::get('/services/{id}', [\App\Http\Controllers\Customer\ServiceController::class, 'show'])->name('services.show');
+     
 
 
 

@@ -13,7 +13,7 @@ class ServiceController extends Controller
     public function __construct()
 {
     // Chỉ áp dụng middleware cho các phương thức cần thiết
-    $this->middleware('auth')->except(['filter', 'search']);
+    $this->middleware('auth')->except(['show', 'filter', 'search', 'index']);
 }
     public function filter($type)
 {
@@ -35,7 +35,13 @@ class ServiceController extends Controller
     $service = Service::findOrFail($id); // Lấy dịch vụ theo ID
     return view('customer.services.show', compact('service'));
 }
+public function index()
+    {
+       
+        $services = Service::paginate(10); 
 
+        return view('customer.services.index', compact('services'));
+    }
 
 public function search(Request $request)
 {

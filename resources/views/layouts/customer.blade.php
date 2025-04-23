@@ -94,12 +94,10 @@
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Cột 1 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Về Chúng Tôi</h3>
                     <p class="text-gray-400 text-sm md:text-base">Chúng tôi cung cấp các giải pháp công nghệ thông tin hiện đại, giúp doanh nghiệp của bạn phát triển mạnh mẽ.</p>
                 </div>
-                <!-- Cột 2 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Kết Nhanh</h3>
                     <ul class="space-y-2">
@@ -108,7 +106,6 @@
                         <li><a href="#" class="hover:underline text-sm md:text-base">Dịch Vụ</a></li>
                     </ul>
                 </div>
-                <!-- Cột 3 -->
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Hệ</h3>
                     <p class="text-gray-400 text-sm md:text-base">Email: okamibada@gmail.com</p>
@@ -123,7 +120,6 @@
 
    
 <script>
-    // Dropdown logic
     const userMenuButton = document.getElementById('user-menu-button');
     const userDropdown = document.getElementById('user-dropdown');
     const guestMenuButton = document.getElementById('guest-menu-button');
