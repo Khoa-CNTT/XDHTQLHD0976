@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th4 25, 2025 lúc 11:49 AM
+-- Thời gian đã tạo: Th4 25, 2025 lúc 01:15 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -65,7 +65,7 @@ CREATE TABLE `contracts` (
   `contract_number` varchar(255) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
-  `status` enum('Chờ xử lý','Hoạt động','Hoàn thành','Đã huỷ') NOT NULL DEFAULT 'Chờ xử lý',
+  `status` enum('Chờ xử lý','Hoàn thành','Đã huỷ') NOT NULL DEFAULT 'Chờ xử lý',
   `total_price` decimal(10,2) NOT NULL,
   `signed_document` varchar(255) DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -77,7 +77,8 @@ CREATE TABLE `contracts` (
 --
 
 INSERT INTO `contracts` (`id`, `service_id`, `customer_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
-(4, 19, 5, 'HD-1745573190', '2025-04-25', '2025-10-25', 'Chờ xử lý', 310000.00, NULL, '2025-04-25 02:26:30', '2025-04-25 02:26:30');
+(4, 19, 5, 'HD-1745573190', '2025-04-25', '2025-10-25', 'Đã huỷ', 310000.00, NULL, '2025-04-25 02:26:30', '2025-04-25 03:34:37'),
+(5, 20, 5, 'HD-1745579249', '2025-04-25', '2025-10-25', 'Chờ xử lý', 240000.00, NULL, '2025-04-25 04:07:29', '2025-04-25 04:09:15');
 
 -- --------------------------------------------------------
 
@@ -337,7 +338,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('gmlSgsHaD7hHJAHI4gbvWXUhtljIHOfRA0w0WtBy', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbmh4V1VnNGRsa3liRGRKVkZBMWRDdFNUVGsxU0ZFOVBTSXNJblpoYkhWbElqb2lhSFprYUU1VWNuTnVNbE5GZUd3dk9GcEdlbFZRY1dRM1ZXNXlkelZYSzJOMFRXOHJlRkJMZEdGWGNFeEJVWEZQVWtGRU1uWldLMnQ1ZWt0aFQzQXJkVFpyV1VOME1WcG1TbUZzYzI0d09XNWpRMll3VURsT1RXeGxlbE5ITm1WNFFUUm5VakJtTmxkNmJtaDZVaXRLTURFNFZrUk5hV0poZUVGQlN6WjNkRmR0VW5KMk1rNWxkV1ZNVTI4MFUxcDZNbVZwT1VwdWVEbGFPR0lyU0ZwRldtaEdTVGhwTW5KbGEyUkJUVWhQUjJKUmFtZHphVzVrSzFSeFNsZFRTR3BXY1RScVYyWXljMWh1VldGRGFHUkJTRU5oTW1wbFNEUndPWFJOVFV0U1drdFlSRU1yVVc5U1QxZzRhSEJKYW5jMFowOVJaSEp6U1RZNE1FaGFORVZMWTJadkswRXJjbkZLTDI5UmEwNXFOM1JUVldzMWNHMXVjVlIzVTJaSlJVOVhSV3BpYVRoTWJVbGFiMGxUZHpoWmFFTkRjazFhVVN0dk9GUkRSRVZPYzIwNVJFdHFZVlJ3WmxSNGFIQkdTVnBtY0VWQmRXTnFWSFJ6ZDNOSVZHaHRWbTFoVVRCS1VUQTFRV3BGUFNJc0ltMWhZeUk2SW1ZM05HTmhNemt6WTJOalpXRTNNemM1WVRneU9XUTJNRGMzT0RFeU4ySXdaRFExWVRsallqbGxNREl3TkRjMk5XWmhZemxqWmpJNE1qbGlNVEExWTJJaUxDSjBZV2NpT2lJaWZRPT0=', 1745574537);
+('6jVYok2yhYaKadXMjTGHdQ9GRPp5sV4OfIuyLyi3', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJa2x5UVRsM1NGVlBiRk51T0hwTVEzQXpRV2xHZDFFOVBTSXNJblpoYkhWbElqb2lNalZLVm5wUGFIRkxkemMwYTNFemNHRm9SakpFTmtwaE9UWnVabmh2V1VWMVZUSlJUemM0YW1ONU5rTlJMM041UkhSUmNIWk1SM05CTVROMFdUTnlZVzh5VVVwU1JVRklXVmhZYzI1R2NYSllaVVZrVEV0ek5WVjRkbkZNV2pCMFdIZHFjRVphU0ZWWU9VcGlaWE5sY1hORVlrbDBURUpGYmpGNU9HaDBWMnN4YjNvNWFFbFZVWFF3ZGxaS1RFdHROMFpvZVdoRlZXRklSbXhMTTJobllYaGxZM1U1ZEdOa2NuZFhhVUZNYlhoT2IwcHJSRXhVZFZORGEyUlJMMWhLVjJodU56UXJWM2QzV1hoa1lYUTNVbEpMTlVaRllWbG5OazlSTkhJM1ZGTXJNMmwyTms5VlIwWm5ibEJYWlRCeFJscFBWMUZFVDJoU1VXdEJSbkpzVUc4NU56WlpaVzh2Wm04elEwdHVXbUpUVkZSYWVsSnpkazlKTDJKWVVXRkNXVWgwTjNCd1NHcFFPRlZuTjFWS1FYQlpSa2w0U0dvNFltMVFSbXB2TkZOWmMzWkJSWGxrYUdvM2FrdHhWREpDTURkSllVeHBXRGhpWjJzMWFXdDFWbTVNVm1SeFdGVkJVbHByUFNJc0ltMWhZeUk2SWpZM00yWTBOREZrTVdNME56ZGlaR1l4TURNeVltVmtOekZoTmpOa05ERTBaVEJtTkRaa1pqWTFaR0prWldNd1pqWmxZbUU1TUdFNU9XVmpOMlZtTnpVaUxDSjBZV2NpT2lJaWZRPT0=', 1745579355),
+('f7cGtm2YcFH31JSYCFZjvreFzu2XIws1ycaojBDh', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbFV3TVZkTFRYaDBVamRMVFVoMldVczNNVVZNSzBFOVBTSXNJblpoYkhWbElqb2lkbXhPWVdwek4wOTBOMDVvYkhkVlNsVkNlRnBpVjJGaEsxSlFSblEyTW14c1NITjNUbmhZZVd3NVJsUTBZbmRoTkVaT1JrUlpibk5aYmtkNFJUQkZZVGRUY0hrMFVIRXpVbGRzUzFKSWREZDBWazVGYW1ReWVDOTRSM3B4YTB3NVYzTnJkVnB4ZDB4WGFWQk5TbTFzZUdSaVZWUlhVek0wYzJOaFNURnFLM1UxTDJkcFJtRlZiM0YxYzFCaE5WTkNhbWw0VWpjelpIQlRhWGhuYVc5TmNubDFVVFowZWpsdFdrZEhjMFJpVjJ4aGMxTkJWMHAwTHpkQlRIUlNkekJuVUhaNE1YWXJZbHBJZVhKVGFuSlFORVF3VmpjNFVGSm9lR1ZLTDFKQ1JFTllSRFZCTTJkRlR6aHVOa1o1WTJWelRIVTNhemhvYVc1MlVIVnFVR3N6Ym5CNk9WRnlSVmR1YlVOc2JubGFWakl6YWxjdmEwNVlNMUpIUVhadFprTlBUWFJZYm5WcldEYzVTVzV0VVU5b2NEZHFNRkE1T1ZkaU1FNHJOM1IxV2sxMFZIVmxhRTVGTkdkVWRtTXJPRTFFV21GdGJsUklkbFJuTUdoUFNuUlliVVUzSzBVd1lVZ3llalEwUFNJc0ltMWhZeUk2SW1ZME16ZGxPR0ZsTkRjelkyRmhOakk0WXpKbFl6aG1NR05sTURWak1EZGtOekl5WlRBMFl6Tm1ZbVptTnpCaU56RmxZalpsT0daalpXUXhZVE5oTnpBaUxDSjBZV2NpT2lJaWZRPT0=', 1745579364);
 
 -- --------------------------------------------------------
 
@@ -364,7 +366,8 @@ CREATE TABLE `signatures` (
 --
 
 INSERT INTO `signatures` (`id`, `contract_id`, `customer_name`, `customer_email`, `signature_data`, `identity_card`, `duration`, `status`, `signed_at`, `created_at`, `updated_at`) VALUES
-(1, 4, 'Ngà Chó Điên', 'okamibada@gmail.com', '867638', '123456789101', '1_nam', 'Đang xử lý', '2025-04-25 02:48:56', '2025-04-25 02:48:56', '2025-04-25 02:48:56');
+(1, 4, 'Ngà Chó Điên', 'okamibada@gmail.com', '867638', '123456789101', '1 năm', 'Đang xử lý', '2025-04-25 11:02:06', '2025-04-25 02:48:56', '2025-04-25 02:48:56'),
+(2, 5, 'Ngà Chó Điên', 'okamibada@gmail.com', '118813', '123456789101', '3 năm', 'Đang xử lý', '2025-04-25 04:07:29', '2025-04-25 04:07:29', '2025-04-25 04:07:29');
 
 -- --------------------------------------------------------
 
@@ -519,7 +522,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
 -- AUTO_INCREMENT cho bảng `customers`
@@ -573,7 +576,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT cho bảng `signatures`
 --
 ALTER TABLE `signatures`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
