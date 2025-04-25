@@ -8,7 +8,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     
 </head>
-<body class="bg-gray-50">
+<body class="bg-gray-50 flex flex-col min-h-screen">
     <header class="bg-blue-600 text-white py-4 shadow-md">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
             <div class="flex items-center space-x-4">
@@ -83,9 +83,6 @@
     </header>
         <!-- Sidebar và Nội Dung -->
         <div class="flex">
-       
-
-            <!-- Main Content -->
             <main class="flex-1 bg-white p-6">
                 @yield('content')
             </main>
@@ -113,11 +110,10 @@
                 </div>
             </div>
             <div class="mt-6 text-gray-400 text-sm md:text-base">
-                &copy;  Dịch Vụ Công Nghệ Thông Tin. Bảo lưu mọi quyền.
+                &copy; Dịch Vụ Công Nghệ Thông Tin. Bảo lưu mọi quyền.
             </div>
         </div>
     </footer>
-
    
 <script>
     const userMenuButton = document.getElementById('user-menu-button');
