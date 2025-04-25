@@ -14,6 +14,9 @@ class Signature extends Model
     'customer_name',
     'customer_email',
     'signature_data',
+    'identity_card',
+    'duration', // Thời hạn hợp đồng
+        'status',
     'signed_at',
 ];
 

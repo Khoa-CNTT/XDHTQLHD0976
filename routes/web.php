@@ -32,6 +32,11 @@ Route::get('/services/{id}', [CustomerServiceController::class, 'show'])->name('
 Route::get('services', [CustomerServiceController::class, 'index'])->name('customer.services.index');
 
 
+      // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
+      Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('customer.services.filter');
+      Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('customer.services.search');
+
+
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -73,9 +78,7 @@ Route::middleware('guest')->group(function () {
 
 
 });
-      // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
-Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('customer.services.filter');
-Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('customer.services.search');
+
 
 // Route đăng xuất
 Route::post('/logout', function () {
@@ -100,6 +103,11 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class)->except(['create', 'edit', 'store', 'update']);
         Route::post('customers/{id}/ban', [\App\Http\Controllers\Admin\CustomerController::class, 'ban'])->name('customers.ban');
         Route::post('customers/{id}/unban', [\App\Http\Controllers\Admin\CustomerController::class, 'unban'])->name('customers.unban');
+
+
+      
+        Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
+
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
@@ -109,10 +117,11 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
-        Route::post('contracts/{id}/sign', [CustomerContractController::class, 'sign'])->name('contracts.sign');
-        Route::post('contracts/{id}/send-otp', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
 
-     
+        Route::get('contracts/sign/{id}', [CustomerContractController::class, 'showSignForm'])->name('contracts.sign');
+        Route::post('contracts/send-otp/{id}', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
+        Route::post('contracts/sign/{id}', [CustomerContractController::class, 'sign'])->name('contracts.sign.submit');
+        
 
 
 
@@ -121,14 +130,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
          
 
-               // Route cho trang ký hợp đồng demo
-               Route::get('/test-sign', function () {
-                return view('customer.contracts.sign-demo');
-            })->name('contracts.sign-demo');
+              
     
-            // Route cho trang "My Contract"
-            Route::get('/my-contract', function () {
-                return view('customer.contracts.mycontract');
-            })->name('contracts.mycontract');
+          
+      
         
     }); 

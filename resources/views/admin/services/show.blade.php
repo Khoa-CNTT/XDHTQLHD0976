@@ -56,6 +56,14 @@
             </div>
         </div>
     </div>
+    <div class="mt-6">
+        <div class="text-gray-500 text-sm mb-2">Ảnh dịch vụ</div>
+        @if ($service->image)
+            <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="w-full h-auto rounded-lg shadow-md">
+        @else
+            <p class="text-gray-500">Không có ảnh</p>
+        @endif
+    </div>
     <div class="mt-6 text-right">
         <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
     </div>

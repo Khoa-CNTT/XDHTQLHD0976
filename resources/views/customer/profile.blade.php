@@ -74,6 +74,12 @@
                             <div class="text-red-600">{{ $message }}</div>
                         @enderror
                     </div>
+                    
+
+
+
+
+
                     <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">Cập nhật thông tin</button>
                 </form>
             </div>

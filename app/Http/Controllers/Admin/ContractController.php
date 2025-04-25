@@ -8,16 +8,28 @@ use App\Models\Customer;
 use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Mail\OtpMail;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
+
 
 class ContractController extends Controller
 {
-    public function index()
-{
-    // Lấy tất cả hợp đồng cùng với thông tin dịch vụ
-    $contracts = Contract::with('service')->paginate(10); // Phân trang 10 hợp đồng mỗi trang
+  
 
-    return view('admin.contracts.index', compact('contracts'));
-}
+
+
+
+
+
+    public function index()
+    {
+        // Lấy danh sách tất cả hợp đồng
+        $contracts = Contract::with('service', 'customer')->paginate(10);
+    
+        // Trả về view hiển thị danh sách hợp đồng
+        return view('admin.contracts.index', compact('contracts'));
+    }
 
     public function create()
     {
@@ -62,23 +74,31 @@ class ContractController extends Controller
         return view('admin.contracts.edit', compact('contract', 'customers', 'services'));
     }
     public function update(Request $request, $id)
-    {
-        $contract = Contract::findOrFail($id);
+{
+    $contract = Contract::findOrFail($id);
     
-        $data = $request->validate([
-            'service_id' => 'required',
-            'contract_number' => 'required',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date|after_or_equal:start_date',
-            'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
-            'total_price' => 'required|numeric|min:0',
-        ]);
+    $data = $request->validate([
+        'service_id' => 'required',
+        'contract_number' => 'required',
+        'start_date' => 'required|date',
+        'end_date' => 'required|date|after_or_equal:start_date',
+        'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
+        'total_price' => 'required|numeric|min:0',
+    ]);
     
-        $contract->update($data);
-    
-        return redirect()->route('admin.contracts.index')->with('success', 'Cập nhật hợp đồng thành công!');
-        
+  
+    $contract->update($data);
+
+    if ($data['status'] === 'Hoàn thành') {
+        foreach ($contract->signatures as $signature) {
+            $signature->update([
+                'status' => 'Đã ký', 
+            ]);
+        }
     }
+
+    return redirect()->route('admin.contracts.index')->with('success', 'Cập nhật hợp đồng thành công!');
+}
 
     public function destroy($id)
     {
@@ -105,5 +125,19 @@ class ContractController extends Controller
     ]);
 
     return redirect()->route('customer.dashboard')->with('success', 'Hợp đồng đã được ký thành công!');
+}
+public function updateStatus(Request $request, $id)
+{
+    $contract = Contract::findOrFail($id);
+
+    $request->validate([
+        'status' => 'required|in:Chờ xử lý,Hoàn thành,Đã huỷ',
+    ]);
+
+    $contract->update([
+        'status' => $request->input('status'),
+    ]);
+
+    return redirect()->route('admin.contracts.index')->with('success', 'Trạng thái hợp đồng đã được cập nhật.');
 }
 }

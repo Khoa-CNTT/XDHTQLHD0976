@@ -9,9 +9,12 @@
     <section 
         x-data="{
                 images: [
-                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/ai-la-nguoi-dam-me-nhung-bau-troi-dem-day-sao-dep-den-nao-long-nao.jpg',
-                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/danh-cho-nhung-ban-nao-yeu-thich-su-huyen-bi-cua-mau-den.jpg',
-                'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-40-1.jpg'
+                '/banners/banner1.jpg',
+                '/banners/banner2.png',
+                '/banners/banner.jpg',
+                '/banners/banner4.png',
+                '/banners/gpt.png',
+       
                 ],
                 currentIndex: 0,
                 next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },

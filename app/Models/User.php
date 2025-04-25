@@ -63,7 +63,7 @@ class User extends Authenticatable
     }
     public function customer()
     {
-        return $this->hasOne(Customer::class);
+        return $this->hasOne(Customer::class, 'user_id');
     }
 }
 //Model này dùng để xác định các trường trong bảng users

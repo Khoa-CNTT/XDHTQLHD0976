@@ -44,7 +44,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a href="{{ route('customer.contracts.mycontract') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <a href="{{ route('customer.contracts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         Hợp Đồng Của Tôi
                                     </a>
                                 </li>

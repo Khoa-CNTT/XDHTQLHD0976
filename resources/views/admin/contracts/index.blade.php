@@ -32,6 +32,7 @@
                 <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Mã hợp đồng</th>
                     <th class="py-3 px-6 text-left">Dịch vụ</th>
+                    <th class="py-3 px-6 text-left">Khách hàng</th>
                     <th class="py-3 px-6 text-left">Trạng thái</th>
                     <th class="py-3 px-6 text-center">Hành động</th>
                 </tr>
@@ -41,12 +42,14 @@
                 <tr class="border-b border-gray-200 hover:bg-gray-100">
                     <td class="py-3 px-6">{{ $contract->contract_number }}</td>
                     <td class="py-3 px-6">{{ optional($contract->service)->service_name }}</td>
+                    <td class="py-3 px-6">{{ optional($contract->customer)->name }}</td>
                     <td class="py-3 px-6">
                         <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
                             @switch($contract->status)
-                                @case('Hoạt động') bg-green-100 text-green-800 @break
+                                @case('Chờ xử lý') bg-green-100 text-green-800 @break
                                 @case('Hoàn thành') bg-blue-100 text-blue-800 @break
                                 @case('Đã huỷ') bg-red-100 text-red-800 @break
+                                
                                 @default bg-yellow-100 text-yellow-800
                             @endswitch">
                             {{ $contract->status }}
@@ -63,15 +66,30 @@
                                 Sửa
                             </a>
                             <form action="{{ route('admin.contracts.destroy', $contract->id) }}"
-                                  method="POST" onsubmit="confirmDelete(event)">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit"
-                                        class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
-                                    Xóa
-                                </button>
-                            </form>
+                                method="POST" onsubmit="confirmDelete(event)">
+                              @csrf
+                              @method('DELETE')
+                              <button type="submit"
+                                      class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
+                                  Xóa
+                              </button>
+                          </form>
                         </div>
+                    </td>
+                    <td class="py-3 px-6 text-center">
+                        <form action="{{ route('admin.contracts.updateStatus', $contract->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <select name="status" class="form-select text-sm px-2 py-1 rounded-lg border-gray-300">
+                                <option value="Chờ xử lý" {{ $contract->status === 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
+                                <option value="Hoàn thành" {{ $contract->status === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
+                                <option value="Đã huỷ" {{ $contract->status === 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
+                            </select>
+                            <button type="submit"
+                                    class="bg-green-500 hover:bg-green-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
+                                Cập nhật
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach

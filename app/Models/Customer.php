@@ -18,12 +18,13 @@ class Customer extends Model
     protected $fillable = ['user_id', 'company_name', 'tax_code'];
 
     // Thiết lập quan hệ với model User (một khách hàng thuộc một người dùng)
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
+    public function user()
+{
+    return $this->belongsTo(User::class, 'user_id');
+}
     
     public function contracts()
-    {
-        return $this->hasMany(Contract::class);
-    }
+{
+    return $this->hasMany(Contract::class, 'customer_id');
+}
 }

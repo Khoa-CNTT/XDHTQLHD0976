@@ -5,7 +5,7 @@
 <div class="max-w-3xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-xl border border-gray-300">
 
     <h2 class="text-2xl font-semibold mb-6">Chỉnh sửa dịch vụ</h2>
-    <form action="{{ route('admin.services.update', $service->id) }}" method="POST">
+    <form action="{{ route('admin.services.update', $service->id) }}" method="POST" enctype="multipart/form-data">
         @csrf @method('PUT')
         <div class="mb-4">
             <label class="block mb-1 font-medium">Tên dịch vụ</label>
@@ -22,6 +22,16 @@
         <div class="mb-4">
             <label class="block mb-1 font-medium">Nội dung chi tiết</label>
             <textarea name="content" class="w-full border border-gray-300 rounded px-4 py-2" rows="5" required>{{ old('content', $service->content) }}</textarea>
+        </div>
+        <div class="mb-4">
+            <label class="block mb-1 font-medium">Ảnh dịch vụ</label>
+            @if ($service->image)
+                <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ" class="w-32 h-32 object-cover mb-2">
+            @endif
+            <input type="file" name="image" class="w-full border border-gray-300 rounded px-4 py-2">
+            @error('image')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
         <div class="mb-4">
             <label class="block mb-1 font-medium">Loại dịch vụ</label>

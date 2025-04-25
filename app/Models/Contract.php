@@ -9,13 +9,15 @@ class Contract extends Model
 {
     use HasFactory;
 
-    protected $fillable = [ 'service_id', 'contract_number', 'start_date', 'end_date', 'status', 'total_price', 'signed_document'];
+    protected $fillable = [ 'service_id', 'customer_id',
+    'contract_number', 'start_date', 'end_date', 'status', 'total_price', 'signed_document'];
     
 
     // Quan hệ với user (khách hàng)
-    public function customer() {
-        return $this->belongsTo(Customer::class);
-    }
+    public function customer()
+{
+    return $this->belongsTo(Customer::class, 'customer_id');
+}
     public function service() {
         return $this->belongsTo(Service::class);
     }
@@ -26,9 +28,9 @@ class Contract extends Model
         return $this->hasMany(Payment::class);
     }
 
-    public function signature()
+    public function signatures()
     {
-        return $this->hasOne(Signature::class);
+        return $this->hasMany(Signature::class, 'contract_id');
     }
 
 }

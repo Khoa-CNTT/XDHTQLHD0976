@@ -7,6 +7,7 @@ use App\Models\Service;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Employee; 
+use Illuminate\Support\Facades\Storage;
 class ServiceController extends Controller
 {
     // Hiển thị danh sách các dịch vụ
@@ -38,9 +39,14 @@ class ServiceController extends Controller
                 'content' => 'required|string',
                 'service_type' => 'required|string',
                 'price' => 'numeric|max:99999999.99',
+                'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,jfif|max:2048',
             ], [
                 'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
             ]);
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('services', 'public'); // Lưu ảnh vào thư mục storage/app/public/services
+                $data['image'] = $imagePath;
+            }
         
             // Gán thêm các field phụ
             $employeeId = optional(Auth::user()->employee)->id;
@@ -93,10 +99,24 @@ class ServiceController extends Controller
         'content' => 'required|string',
         'service_type' => 'required|string',
         'price' => 'required|numeric|min:0',
+        'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,jfif|max:2048',
 
     ], [
         'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
     ]);
+    if ($request->hasFile('image')) {
+        // Xóa ảnh cũ nếu có
+        if ($service->image) {
+            Storage::disk('public')->delete($service->image);
+        }
+
+        // Lưu ảnh mới
+        $imagePath = $request->file('image')->store('services', 'public');
+        $data['image'] = $imagePath;
+    } else {
+        // Giữ lại ảnh cũ
+        $data['image'] = $service->image;
+    }
     $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
     $service->update($data);
 

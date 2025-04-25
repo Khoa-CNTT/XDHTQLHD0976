@@ -40,13 +40,16 @@
 }
 </style>
 @section('content')
-{{-- Thanh hình ảnh chạy - sử dụng Alpine.js --}}
+<div class="container mx-auto">
 <section 
 x-data="{
-        images: [
-        'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/ai-la-nguoi-dam-me-nhung-bau-troi-dem-day-sao-dep-den-nao-long-nao.jpg',
-        'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/danh-cho-nhung-ban-nao-yeu-thich-su-huyen-bi-cua-mau-den.jpg',
-        'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-may-tinh-dep-a-40-1.jpg'
+         images: [
+                '/banners/banner1.jpg',
+                '/banners/banner2.png',
+                '/banners/banner.jpg',
+                '/banners/banner4.png',
+                '/banners/gpt.png',
+        
         ],
         currentIndex: 0,
         next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },
@@ -69,7 +72,6 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     </template>
 </div>
 
-<!-- Button trái -->
 <button @click="prev"
     class="absolute left-3 top-1/2 transform -translate-y-1/2 
         w-9 h-9 flex items-center justify-center 
@@ -82,7 +84,6 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     </svg>
 </button>
 
-<!-- Button phải -->
 <button @click="next"
     class="absolute right-3 top-1/2 transform -translate-y-1/2 
         w-9 h-9 flex items-center justify-center 
@@ -119,6 +120,7 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
         </ul>
     </nav>
     </nav>
+</div>
 </div>
 </div>
 

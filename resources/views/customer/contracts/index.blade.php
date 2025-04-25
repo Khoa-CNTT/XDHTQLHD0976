@@ -1,26 +1,66 @@
 @extends('layouts.customer')
 
-@section('title', 'Danh sách hợp đồng')
+@section('title', 'Hợp Đồng Của Tôi')
 
 @section('content')
-<div class="container mt-4">
-    <h2 class="text-xl font-bold mb-4">Danh sách hợp đồng</h2>
-    <div class="grid md:grid-cols-3 gap-6">
-        @forelse($contracts as $contract)
-            <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all">
-                <h3 class="text-xl font-semibold text-gray-800 mb-4">{{ $contract->service->service_name }}</h3>
-                <p class="text-gray-600 mb-2"><strong>Số hợp đồng:</strong> {{ $contract->contract_number }}</p>
-                <p class="text-gray-600 mb-2"><strong>Ngày bắt đầu:</strong> {{ $contract->start_date }}</p>
-                <p class="text-gray-600 mb-2"><strong>Ngày kết thúc:</strong> {{ $contract->end_date }}</p>
-                <p class="text-gray-600 mb-2"><strong>Trạng thái:</strong> {{ $contract->status }}</p>
-                <p class="text-gray-600 mb-4"><strong>Tổng tiền:</strong> {{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
-                <a href="{{ route('customer.contracts.show', $contract->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors">
-                    Xem Chi Tiết
-                </a>
-            </div>
-        @empty
-            <p class="text-gray-600">Không có hợp đồng nào.</p>
-        @endforelse
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-4xl font-bold mb-8 text-center mt-2 text-black">
+        Hợp Đồng Của Tôi
+    </h1>
+
+    <!-- Danh Sách Hợp Đồng -->
+    <div class="bg-white rounded-lg shadow-md p-6">
+        <h2 class="text-xl font-semibold mb-4">Danh Sách Hợp Đồng</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full border border-gray-200 rounded-lg">
+                <thead>
+                    <tr class="bg-blue-600 text-white text-left px-3 py-1 text-sm">
+                        <th class="p-3 w-48">Tên Dịch Vụ</th>
+                        <th class="p-3 w-40">Ngày Ký Hợp Đồng</th>
+                        <th class="p-3 w-40">Trạng Thái</th>
+                        <th class="p-3 w-60 text-center">Hành Động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse ($contracts as $contract)
+                        <tr class="border-b">
+                            <td class="p-3">{{ $contract->service->service_name }}</td>
+                            <td class="p-3">{{ $contract->start_date }}</td>
+                            <td class="p-3">
+                                <span class="px-3 py-1 rounded-full text-sm inline-block
+                                    @if ($contract->status === 'Chờ xử lý') bg-yellow-100 text-yellow-600
+                                    @elseif ($contract->status === 'Hoạt động') bg-green-100 text-green-600
+                                    @elseif ($contract->status === 'Hoàn thành') bg-blue-100 text-blue-600
+                                    @elseif ($contract->status === 'Đã huỷ') bg-red-100 text-red-600
+                                    @endif">
+                                    {{ $contract->status }}
+                                </span>
+                            </td>
+                            <td class="p-3 flex space-x-2">
+                                <a href="{{ route('customer.contracts.show', $contract->id) }}"
+                                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                                    📄 <span class="ml-1">Xem</span>
+                                </a>
+                                @if ($contract->status !== 'Đã huỷ')
+                                    <form action="" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <button type="submit"
+                                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                            ❌ <span class="ml-1">Hủy</span>
+                                        </button>
+                                    </form>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="6" class="p-3 text-center text-gray-500">Không có hợp đồng nào.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
 @endsection

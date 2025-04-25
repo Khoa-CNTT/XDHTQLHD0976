@@ -1,38 +1,50 @@
-<!-- filepath: c:\Users\ASUS_TUF\Documents\QuanLyHopDong\ConT_management\resources\views\customer\contracts\show.blade.php -->
 @extends('layouts.customer')
 
+@section('title', 'Chi Tiết Hợp Đồng')
+
 @section('content')
-<div class="container mx-auto mt-6">
-    <h2 class="text-2xl font-bold mb-4">Chi Tiết Hợp Đồng</h2>
+<div class="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-xl shadow-xl border border-gray-300">
+    <h1 class="text-2xl font-bold mb-6 text-center">Chi Tiết Hợp Đồng</h1>
 
-    <div class="bg-white shadow-md rounded-lg p-6">
-        <p><strong>Mã Hợp Đồng:</strong> {{ $contract->contract_number }}</p>
-        <p><strong>Dịch Vụ:</strong> {{ $contract->service->service_name }}</p>
-        <p><strong>Ngày Bắt Đầu:</strong> {{ $contract->start_date }}</p>
-        <p><strong>Ngày Kết Thúc:</strong> {{ $contract->end_date }}</p>
-        <p><strong>Tổng Tiền:</strong> {{ number_format($contract->total_price, 0, ',', '.') }} đ</p>
-        <p><strong>Nội Dung:</strong></p>
-        <div class="border p-3 bg-gray-50 rounded">{{ $contract->content }}</div>
+    <!-- Thông tin dịch vụ -->
+    <div class="mb-6">
+        <h3 class="text-xl font-semibold">Dịch vụ</h3>
+        <p class="text-gray-600">Tên dịch vụ: {{ $contract->service->service_name }}</p>
+        <p class="text-gray-600">Loại dịch vụ: {{ $contract->service->service_type }}</p>
+        <p class="text-gray-600">Giá: {{ number_format($contract->service->price, 0, ',', '.') }} VND</p>
     </div>
 
-    @if(!$contract->is_signed)
-    <div class="mt-6">
-        <form action="{{ route('customer.contracts.sign', $contract->id) }}" method="POST" class="mb-4">
-            @csrf
-            <label for="otp" class="block text-sm font-medium text-gray-700 mb-2">Nhập mã OTP để ký hợp đồng:</label>
-            <input type="text" name="otp" id="otp" class="w-full border-gray-300 rounded-lg shadow-sm focus:ring-blue-500 focus:border-blue-500 mb-4" required>
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-700">Xác Nhận Ký</button>
-        </form>
+    <!-- Thông tin khách hàng -->
+    <div class="mb-6">
+        <h3 class="text-xl font-semibold">Thông tin khách hàng</h3>
+        @if ($contract->customer)
+            <p class="text-gray-600">Tên: {{ $contract->customer->user->name }}</p>
+            <p class="text-gray-600">Email: {{ $contract->customer->user->email }}</p>
+            <p class="text-gray-600">Số điện thoại: {{ $contract->customer->user->phone }}</p>
+            <p class="text-gray-600">Địa chỉ: {{ $contract->customer->user->address }}</p>
+        @else
+            <p class="text-gray-600 text-red-500">Thông tin khách hàng không khả dụng.</p>
+        @endif
+    </div>
 
-        <form action="{{ route('customer.contracts.sendOtp', $contract->id) }}" method="POST">
-            @csrf
-            <button type="submit" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-700">Gửi Lại OTP</button>
-        </form>
+    <!-- Thông tin hợp đồng -->
+    <div class="mb-6">
+        <h3 class="text-xl font-semibold">Thông tin hợp đồng</h3>
+        <p class="text-gray-600">Ngày bắt đầu: {{ $contract->start_date }}</p>
+        <p class="text-gray-600">Trạng thái: 
+            <span class="px-3 py-1 rounded-full text-sm inline-block
+                @if ($contract->status === 'Chờ xử lý') bg-yellow-100 text-yellow-600
+                @elseif ($contract->status === 'Hoàn thành') bg-blue-100 text-blue-600
+                @elseif ($contract->status === 'Đã huỷ') bg-red-100 text-red-600
+                @endif">
+                {{ $contract->status }}
+            </span>
+        </p>
+        @foreach ($contract->signatures as $signature)
+        <p class="text-gray-600">Thời hạn: {{ $signature->duration }}</p>
+        @endforeach
     </div>
-    @else
-    <div class="mt-6 bg-green-100 text-green-700 p-4 rounded">
-        Bạn đã ký hợp đồng này vào {{ $contract->signed_at->format('d/m/Y H:i') }}.
+        <p class="text-gray-600">Tổng giá trị hợp đồng: {{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
     </div>
-    @endif
 </div>
 @endsection
