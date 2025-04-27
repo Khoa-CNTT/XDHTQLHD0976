@@ -11,7 +11,6 @@
 
   <div class="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md animate-fadeIn">
     <h1 class="text-2xl font-bold text-center text-gray-800 mb-6">Đăng nhập</h1>
-
     {{-- Hiển thị lỗi --}}
     @if($errors->any())
       <div class="bg-red-100 border border-red-300 text-red-700 p-3 rounded mb-4">
