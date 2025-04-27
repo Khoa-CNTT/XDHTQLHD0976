@@ -92,6 +92,13 @@
                                 Cập nhật
                             </button>
                         </form>
+                        <form action="{{ route('admin.contracts.complete', $contract->id) }}" method="POST">
+                            @csrf
+                            @method('PUT')
+                            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                                Đánh dấu Hoàn thành
+                            </button>
+                        </form>
                     </td>
                 </tr>
                 @endforeach

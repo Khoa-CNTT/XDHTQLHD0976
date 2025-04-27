@@ -75,5 +75,40 @@
             <p class="text-red-500">Thông tin khách hàng không khả dụng.</p>
         @endif
     </div>
+
+    <!-- Thông tin hợp đồng -->
+    <div class="mb-6">
+        <h3 class="text-xl font-semibold">Thông tin hợp đồng</h3>
+        <p class="text-gray-600">Ngày bắt đầu: {{ $contract->start_date }}</p>
+        <p class="text-gray-600">Trạng thái: 
+            <span class="px-3 py-1 rounded-full text-sm inline-block
+                @if ($contract->status === 'Chờ xử lý') bg-yellow-100 text-yellow-600
+                @elseif ($contract->status === 'Hoàn thành') bg-blue-100 text-blue-600
+                @elseif ($contract->status === 'Đã huỷ') bg-red-100 text-red-600
+                @endif">
+                {{ $contract->status }}
+            </span>
+        </p>
+        @foreach ($contract->signatures as $signature)
+        <p class="text-gray-600">Thời hạn: {{ $signature->duration }}</p>
+        @endforeach
+    </div>
+    <p class="text-gray-600">Tổng giá trị hợp đồng: {{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
+    
+
+    @if ($contract->status === 'Chờ xử lý')
+    <form action="{{ route('customer.momo.payment', $contract->id) }}" method="POST">
+        @csrf
+        <div class="flex justify-between mt-6">
+          
+            <a href="{{ route('customer.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
+                Quay lại
+            </a>
+            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
+                Thanh Toán Qua MoMo
+            </button>
+        </div>
+    </form>
+    @endif
 </div>
 @endsection

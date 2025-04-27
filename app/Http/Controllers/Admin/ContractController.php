@@ -140,4 +140,13 @@ public function updateStatus(Request $request, $id)
 
     return redirect()->route('admin.contracts.index')->with('success', 'Trạng thái hợp đồng đã được cập nhật.');
 }
+
+public function markAsCompleted($id)
+{
+    $contract = Contract::findOrFail($id);
+    $contract->status = 'Hoàn thành';
+    $contract->save();
+
+    return redirect()->route('admin.contracts.index')->with('success', 'Hợp đồng đã được đánh dấu là hoàn thành.');
+}
 }

@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ContractController as CustomerContractController;
+use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController;
 
 
 
@@ -14,14 +15,13 @@ use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
-use App\Http\Middleware\AdminOrEmployeeMiddleware;
-use App\Http\Middleware\CustomerMiddleware;
-use App\Http\Controllers\Customer\CustomerProfileController;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
 use App\Http\Controllers\Admin\ReportController;
+
+
 
 
 
@@ -107,6 +107,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
+        Route::put('/admin/contracts/{id}/complete', [AdminContractController::class, 'markAsCompleted'])->name('admin.contracts.complete');
 
     });
 // Customer routes
@@ -129,7 +130,11 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
          
-
+        Route::post('/contracts/{id}/payment', [MoMoPaymentController::class, 'createPayment'])->name('momo.payment');
+        Route::post('/momo/payment/{id}', [MoMoPaymentController::class, 'createPayment'])->name('momo.payment');
+        Route::post('/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
+        Route::get('/momo/success', [MoMoPaymentController::class, 'paymentSuccess'])->name('momo.success');
+        
               
     
           
