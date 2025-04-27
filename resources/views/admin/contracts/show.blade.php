@@ -21,6 +21,7 @@
                 <div class="text-gray-500 text-sm">Trạng thái</div>
                 <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
                             @switch($contract->status)
+                                @case('Chờ xử lý') bg-yellow-100 text-yellow-800 @break
                                 @case('Hoạt động') bg-green-100 text-green-800 @break
                                 @case('Hoàn thành') bg-blue-100 text-blue-800 @break
                                 @case('Đã huỷ') bg-red-100 text-red-800 @break

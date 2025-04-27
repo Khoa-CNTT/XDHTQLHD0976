@@ -46,7 +46,7 @@
                     <td class="py-3 px-6">
                         <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
                             @switch($contract->status)
-                                @case('Chờ xử lý') bg-green-100 text-green-800 @break
+                                @case('Hoạt động') bg-green-100 text-green-800 @break
                                 @case('Hoàn thành') bg-blue-100 text-blue-800 @break
                                 @case('Đã huỷ') bg-red-100 text-red-800 @break
                                 
@@ -82,6 +82,7 @@
                             @method('PUT')
                             <select name="status" class="form-select text-sm px-2 py-1 rounded-lg border-gray-300">
                                 <option value="Chờ xử lý" {{ $contract->status === 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
+                                <option value="Hoạt động" {{ $contract->status === 'Hoạt động' ? 'selected' : '' }}>Hoạt động</option>
                                 <option value="Hoàn thành" {{ $contract->status === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                                 <option value="Đã huỷ" {{ $contract->status === 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
                             </select>
