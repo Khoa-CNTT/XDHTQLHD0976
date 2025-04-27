@@ -35,6 +35,7 @@
                     <th class="py-3 px-6 text-left">Khách hàng</th>
                     <th class="py-3 px-6 text-left">Trạng thái</th>
                     <th class="py-3 px-6 text-center">Hành động</th>
+                    <th class="py-3 px-6 text-center"></th>
                 </tr>
             </thead>
             <tbody class="text-gray-600 text-sm font-light">

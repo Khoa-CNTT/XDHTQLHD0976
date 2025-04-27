@@ -151,6 +151,9 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     
         <!-- Nội dung dịch vụ -->
         <div>
+            <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
+            alt="{{ $service->service_name }}" 
+            class="w-full h-48 object-cover mb-4 rounded-lg">
             <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
             <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
             <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
