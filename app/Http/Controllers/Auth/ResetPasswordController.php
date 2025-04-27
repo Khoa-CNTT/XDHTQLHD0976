@@ -72,7 +72,7 @@ if (!$resetRecord || !Hash::check($token, $resetRecord->token)) {
 
         // Kiểm tra kết quả trả về từ reset
         return $response == Password::PASSWORD_RESET
-            ? redirect($this->redirectPath())->with('status', 'Mật khẩu đã thay đổi thành công!')
+            ? redirect($this->redirectPath())->with('status', 'Mật khẩu đã được đặt lại!')
             : back()->withErrors(['email' => [trans($response)]]);
     }
 
