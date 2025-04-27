@@ -131,7 +131,7 @@ public function updateStatus(Request $request, $id)
     $contract = Contract::findOrFail($id);
 
     $request->validate([
-        'status' => 'required|in:Chờ xử lý,Hoàn thành,Đã huỷ',
+        'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
     ]);
 
     $contract->update([
