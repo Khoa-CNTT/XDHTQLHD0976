@@ -1,7 +1,35 @@
 @extends('layouts.customer')
 
 @section('title', 'Hợp Đồng Của Tôi')
+<!-- Thêm SweetAlert2 từ CDN vào phần <head> -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+    <!-- Kiểm tra và hiển thị thông báo nếu có -->
+    @if (session('success'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: '{{ session('success') }}',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true,
+                    background: '#ffffff',
+                    color: '#111827',
+                    iconColor: '#22c55e',  
+                    customClass: {
+                        popup: 'rounded-md shadow-md px-4 py-2 text-sm'  
+                    }
+                }).then(function() {
+                // Reload lại trang sau khi thông báo hiển thị
+                location.reload();  // Reload lại trang
+                });
+            });
+        </script>
+    @endif
+    
 @section('content')
 <div class="max-w-4xl mx-auto">
     <h1 class="text-4xl font-bold mb-8 text-center mt-2 text-black">
@@ -38,20 +66,22 @@
                             </td>
                             <td class="p-3 flex space-x-2">
                                 <a href="{{ route('customer.contracts.show', $contract->id) }}"
-                                   class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg flex items-center">
+                                   class="flex items-center justify-center bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-lg w-24 h-10 text-sm">
                                     📄 <span class="ml-1">Xem</span>
                                 </a>
+                            
                                 @if ($contract->status !== 'Đã huỷ')
-                                    <form action="" method="POST">
+                                    <form action="" method="POST" class="inline-flex">
                                         @csrf
                                         @method('PUT')
                                         <button type="submit"
-                                                class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg flex items-center">
+                                                class="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg w-24 h-10 text-sm">
                                             ❌ <span class="ml-1">Hủy</span>
                                         </button>
                                     </form>
                                 @endif
                             </td>
+                            
                         </tr>
                     @empty
                         <tr>
