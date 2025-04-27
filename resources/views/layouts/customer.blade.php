@@ -8,6 +8,29 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
     
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+@if (session('status'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'success',
+            title: '{{ session('status') }}',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+            background: '#ffffff',
+            color: '#111827',
+            iconColor: '#22c55e',  
+            customClass: {
+                popup: 'rounded-md shadow-md px-4 py-2 text-sm'  
+            }
+        });
+    });
+</script>
+@endif
 <body class="bg-gray-50 flex flex-col min-h-screen">
     <header class="bg-blue-600 text-white py-4 shadow-md">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
