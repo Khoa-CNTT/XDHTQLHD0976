@@ -28,11 +28,10 @@ class ContractController extends Controller
 
 public function show($id)
 {
-    
-    $contract = Contract::with(['customer.user', 'signatures'])->findOrFail($id);
+    $contract = Contract::with('customer.user', 'service', 'signatures')->findOrFail($id);
+
     return view('customer.contracts.show', compact('contract'));
 }
-
     public function showSignForm(Request $request, $serviceId)
 {
     

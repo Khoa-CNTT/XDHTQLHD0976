@@ -107,7 +107,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
-        Route::put('/admin/contracts/{id}/complete', [AdminContractController::class, 'markAsCompleted'])->name('admin.contracts.complete');
+        Route::put('/contracts/{id}/complete', [AdminContractController::class, 'markAsComplete'])->name('contracts.complete');
+        
 
     });
 // Customer routes
@@ -131,9 +132,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
          
         Route::post('/contracts/{id}/payment', [MoMoPaymentController::class, 'createPayment'])->name('momo.payment');
-        Route::post('/momo/payment/{id}', [MoMoPaymentController::class, 'createPayment'])->name('momo.payment');
         Route::post('/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
         Route::get('/momo/success', [MoMoPaymentController::class, 'paymentSuccess'])->name('momo.success');
+        Route::get('/momo/query/{orderId}', [MoMoPaymentController::class, 'queryTransaction'])->name('momo.query');
         
               
     

@@ -113,10 +113,10 @@ class ContractController extends Controller
     $validated = $request->validate([
         'customer_name' => 'required|string|max:255',
         'customer_email' => 'required|email|max:255',
-        'signature_data' => 'required', // Dữ liệu chữ ký
+        'signature_data' => 'required',
     ]);
 
-    // Lưu chữ ký
+    
     \App\Models\Signature::create([
         'contract_id' => $id,
         'customer_name' => $validated['customer_name'],
@@ -141,12 +141,17 @@ public function updateStatus(Request $request, $id)
     return redirect()->route('admin.contracts.index')->with('success', 'Trạng thái hợp đồng đã được cập nhật.');
 }
 
-public function markAsCompleted($id)
+public function markAsComplete($id)
 {
     $contract = Contract::findOrFail($id);
-    $contract->status = 'Hoàn thành';
-    $contract->save();
 
-    return redirect()->route('admin.contracts.index')->with('success', 'Hợp đồng đã được đánh dấu là hoàn thành.');
+    if ($contract->status !== 'Hoàn thành') {
+        $contract->status = 'Hoàn thành';
+        $contract->save();
+
+        return redirect()->route('admin.contracts.index')->with('success', 'Hợp đồng đã được đánh dấu là hoàn thành.');
+    }
+
+    return redirect()->route('admin.contracts.index')->with('warning', 'Hợp đồng đã ở trạng thái hoàn thành.');
 }
 }

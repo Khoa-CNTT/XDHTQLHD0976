@@ -26,34 +26,37 @@ class MoMoPaymentController extends Controller
         $partnerCode = env('MOMO_PARTNER_CODE');
         $accessKey = env('MOMO_ACCESS_KEY');
         $secretKey = env('MOMO_SECRET_KEY');
-
-        // Dữ liệu thanh toán
-    $orderId = time(); // Mã đơn hàng duy nhất
+        Log::info('MoMo Config:', [
+            'partnerCode' => $partnerCode,
+            'accessKey' => $accessKey,
+            'secretKey' => $secretKey,
+        ]);
+  
+    $orderId = time(); 
     $orderInfo = "Thanh toán hợp đồng #" . $contract->id;
-    $amount = (int) $contract->total_price; // Số tiền thanh toán (định dạng số nguyên)
-    $redirectUrl = route('customer.momo.success'); // URL chuyển hướng sau khi thanh toán thành công
-    $ipnUrl = route('customer.momo.ipn'); // URL nhận thông báo từ MoMo
-    $extraData = ""; // Dữ liệu bổ sung nếu cần
+    $amount = (int) $contract->total_price; 
+    $redirectUrl = route('customer.momo.success'); 
+    $ipnUrl = route('customer.momo.ipn'); 
+    $extraData = ""; 
     
         
     $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$orderId&requestType=captureWallet";
     $signature = hash_hmac("sha256", $rawHash, $secretKey);
     
-        
-        $data = [
-            'partnerCode' => $partnerCode,
-            'accessKey' => $accessKey,
-            'requestId' => $orderId,
-            'amount' => $amount,
-            'orderId' => $orderId,
-            'orderInfo' => $orderInfo,
-            'redirectUrl' => $redirectUrl,
-            'ipnUrl' => $ipnUrl,
-            'extraData' => $extraData,
-            'requestType' => 'captureWallet',
-            'signature' => $signature
-        ];
-    
+    $data = [
+        'partnerCode' => $partnerCode,
+        'accessKey' => $accessKey,
+        'requestId' => $orderId,
+        'amount' => $amount,
+        'orderId' => $orderId,
+        'orderInfo' => $orderInfo,
+        'redirectUrl' => $redirectUrl,
+        'ipnUrl' => $ipnUrl,
+        'extraData' => $extraData,
+        'requestType' => 'captureWallet',
+        'signature' => $signature,
+    ];
+    Log::info('MoMo API Endpoint:', ['endpoint' => $endpoint]);
        
         Log::info('MoMo API Request Data:', $data);
         $response = Http::post($endpoint, $data);
@@ -61,25 +64,13 @@ class MoMoPaymentController extends Controller
         Log::info('MoMo API Response:', $result);
     
         
-        // Kiểm tra phản hồi từ MoMo
+    
     if (isset($result['payUrl'])) {
-        Payment::create([
-            'contract_id' => $contract->id,
-            'amount' => $amount,
-            'status' => 'Chờ xử lý',
-            'method' => 'MoMo',
-            'date' => now(),
-        ]);
-
-        return view('customer.payments.payment', [
-            'contract' => $contract,
-            'payUrl' => $result['payUrl'], 
-            'qrCodeUrl' => $result['qrCodeUrl'] ?? null, 
-            'orderId' => $orderId,
-        ]);
+        return redirect($result['payUrl']);
     } else {
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo thanh toán: ' . $result['message']);
     }
+
     }
 
     public function paymentSuccess(Request $request)
@@ -132,5 +123,31 @@ class MoMoPaymentController extends Controller
             Log::warning("Chữ ký không hợp lệ. Giao dịch có thể bị giả mạo.");
         }
             }
+
+
+
+
+            public function queryTransaction($orderId)
+{
+    $endpoint = "https://test-payment.momo.vn/v2/gateway/api/query";
+    $partnerCode = env('MOMO_PARTNER_CODE');
+    $accessKey = env('MOMO_ACCESS_KEY');
+    $secretKey = env('MOMO_SECRET_KEY');
+    $requestId = time();
+
+    $rawHash = "accessKey=$accessKey&orderId=$orderId&partnerCode=$partnerCode&requestId=$requestId";
+    $signature = hash_hmac("sha256", $rawHash, $secretKey);
+
+    $data = [
+        'partnerCode' => $partnerCode,
+        'requestId' => $requestId,
+        'orderId' => $orderId,
+        'requestType' => 'transactionStatus',
+        'signature' => $signature,
+    ];
+
+    $response = Http::post($endpoint, $data);
+    return $response->json();
+}
 }
 
