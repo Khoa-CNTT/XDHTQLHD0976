@@ -18,60 +18,69 @@ class MoMoPaymentController extends Controller
 
     return view('customer.payments.payment', compact('contract'));
 }
-    public function createPayment(Request $request, $id)
-    {
-        $contract = Contract::findOrFail($id);
+public function createPayment(Request $request, $id)
+{
+    $contract = Contract::findOrFail($id);
+
+    // Lấy thông tin từ file .env
+    $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
+    $partnerCode = env('MOMO_PARTNER_CODE');
+    $accessKey = env('MOMO_ACCESS_KEY');
+    $secretKey = env('MOMO_SECRET_KEY');
+    $redirectUrl = env('MOMO_REDIRECT_URL');
+    $ipnUrl = env('MOMO_IPN_URL');
+
     
-        $endpoint = "https://test-payment.momo.vn/v2/gateway/api/create";
-        $partnerCode = env('MOMO_PARTNER_CODE');
-        $accessKey = env('MOMO_ACCESS_KEY');
-        $secretKey = env('MOMO_SECRET_KEY');
-        Log::info('MoMo Config:', [
-            'partnerCode' => $partnerCode,
-            'accessKey' => $accessKey,
-            'secretKey' => $secretKey,
-        ]);
-  
-    $orderId = time(); 
+    $orderId = uniqid();
     $orderInfo = "Thanh toán hợp đồng #" . $contract->id;
-    $amount = (int) $contract->total_price; 
-    $redirectUrl = route('customer.momo.success'); 
-    $ipnUrl = route('customer.momo.ipn'); 
+    $amount = (int) $contract->total_price;
+    $requestId = time() . "";
+    $requestType = "captureWallet";
     $extraData = ""; 
-    
-        
-    $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$orderId&requestType=captureWallet";
+
+    $rawHash = "accessKey=$accessKey&amount=$amount&extraData=$extraData&ipnUrl=$ipnUrl&orderId=$orderId&orderInfo=$orderInfo&partnerCode=$partnerCode&redirectUrl=$redirectUrl&requestId=$requestId&requestType=$requestType";
+
+ 
     $signature = hash_hmac("sha256", $rawHash, $secretKey);
-    
+
     $data = [
         'partnerCode' => $partnerCode,
         'accessKey' => $accessKey,
-        'requestId' => $orderId,
+        'requestId' => $requestId,
         'amount' => $amount,
         'orderId' => $orderId,
         'orderInfo' => $orderInfo,
         'redirectUrl' => $redirectUrl,
         'ipnUrl' => $ipnUrl,
         'extraData' => $extraData,
-        'requestType' => 'captureWallet',
+        'requestType' => $requestType,
         'signature' => $signature,
     ];
-    Log::info('MoMo API Endpoint:', ['endpoint' => $endpoint]);
-       
-        Log::info('MoMo API Request Data:', $data);
-        $response = Http::post($endpoint, $data);
-        $result = $response->json();
-        Log::info('MoMo API Response:', $result);
-    
-        
-    
+    Payment::create([
+        'contract_id' => $contract->id,
+        'amount' => $amount,
+        'date' => now(),
+        'method' => 'MoMo',
+        'status' => 'Đang Đợi',
+        'order_id' => $orderId,
+        'payment_type' => $requestType,
+    ]);
+    $response = Http::post($endpoint, $data);
+    $result = $response->json();
+
+    Log::info('Generated Order ID:', ['orderId' => $orderId]);
+    Log::info('MoMo API Request Data:', $data);
+    Log::info('MoMo API Response:', $result);
+    Log::info('Raw Hash:', ['rawHash' => $rawHash]);
+Log::info('Generated Signature:', ['signature' => $signature]);
+
+   
     if (isset($result['payUrl'])) {
         return redirect($result['payUrl']);
     } else {
         return redirect()->back()->with('error', 'Có lỗi xảy ra khi tạo thanh toán: ' . $result['message']);
     }
-
-    }
+}
 
     public function paymentSuccess(Request $request)
     {
@@ -80,52 +89,50 @@ class MoMoPaymentController extends Controller
     }
 
     public function paymentIpn(Request $request)
-    {
-        $data = $request->all();
-        $partnerCode = $data['partnerCode'];
-        $accessKey = $data['accessKey'];
-        $orderId = $data['orderId'];
-        $amount = $data['amount'];
-        $orderInfo = $data['orderInfo'];
-        $errorCode = $data['errorCode'];
-        $transId = $data['transId'];
-        $message = $data['message'];
-        $localMessage = $data['localMessage'];
-        $responseTime = $data['responseTime'];
-        $payType = $data['payType'];
-        $extraData = $data['extraData'];
-        $m2signature = $data['signature'];
+{
+    $data = $request->all();
 
-   
-        $rawHash = "partnerCode=$partnerCode&accessKey=$accessKey&requestId=$orderId&amount=$amount&orderId=$orderId&orderInfo=$orderInfo&orderType=captureWallet&transId=$transId&message=$message&localMessage=$localMessage&responseTime=$responseTime&errorCode=$errorCode&payType=$payType&extraData=$extraData";
-        $partnerSignature = hash_hmac("sha256", $rawHash, "YOUR_SECRET_KEY");
 
-        if ($m2signature == $partnerSignature) {
-            if ($errorCode == '0') {
-                $contractId = explode('#', $orderInfo)[1];
-                $contract = Contract::findOrFail($contractId);
-                $contract->status = 'Hoàn thành';
-                $contract->save();
-        
-                Payment::create([
-                    'contract_id' => $contract->id,
-                    'amount' => $amount,
-                    'date' => now(),
-                    'method' => 'MoMo',
-                    'status' => 'Hoàn Thành',
-                ]);
-            } else {
-                // Thanh toán thất bại
-                Log::warning("Thanh toán MoMo thất bại, lỗi: $message");
-            }
+    $partnerCode = env('MOMO_PARTNER_CODE');
+    $accessKey = env('MOMO_ACCESS_KEY');
+    $secretKey = env('MOMO_SECRET_KEY');
+
+    $orderId = $data['orderId'];
+    $requestId = $data['requestId'];
+    $amount = $data['amount'];
+    $orderInfo = $data['orderInfo'];
+    $orderType = $data['orderType'];
+    $transId = $data['transId'];
+    $message = $data['message'];
+    $localMessage = $data['localMessage'];
+    $responseTime = $data['responseTime'];
+    $errorCode = $data['errorCode'];
+    $payType = $data['payType'];
+    $extraData = $data['extraData'];
+    $m2signature = $data['signature'];
+
+ 
+    $rawHash = "partnerCode=$partnerCode&accessKey=$accessKey&requestId=$requestId&amount=$amount&orderId=$orderId&orderInfo=$orderInfo&orderType=$orderType&transId=$transId&message=$message&localMessage=$localMessage&responseTime=$responseTime&errorCode=$errorCode&payType=$payType&extraData=$extraData";
+
+
+    $partnerSignature = hash_hmac("sha256", $rawHash, $secretKey);
+
+    
+    if ($m2signature == $partnerSignature) {
+        if ($errorCode == '0') {
+            Payment::where('order_id', $orderId)->update(['status' => 'Thành Công']);
+            Log::info("Giao dịch thành công: $orderId");
+            return response()->json(['message' => 'Giao dịch thành công'], 200);
         } else {
-            // Kiểm tra chữ ký không hợp lệ
-            Log::warning("Chữ ký không hợp lệ. Giao dịch có thể bị giả mạo.");
+            Payment::where('order_id', $orderId)->update(['status' => 'Thất Bại']);
+            Log::warning("Giao dịch thất bại: $message");
+            return response()->json(['message' => 'Giao dịch thất bại'], 400);
         }
-            }
-
-
-
+    } else {
+        Log::error("Chữ ký không hợp lệ. Giao dịch có thể bị giả mạo.");
+        return response()->json(['message' => 'Chữ ký không hợp lệ'], 400);
+    }
+}
 
             public function queryTransaction($orderId)
 {
@@ -145,9 +152,14 @@ class MoMoPaymentController extends Controller
         'requestType' => 'transactionStatus',
         'signature' => $signature,
     ];
-
+    $transactionStatus = $this->queryTransaction($orderId);
+Log::info('Transaction Status:', $transactionStatus);
     $response = Http::post($endpoint, $data);
-    return $response->json();
+    $result = $response->json();
+
+    Log::info('Transaction Query Response:', $result);
+
+    return $result;
 }
 }
 
