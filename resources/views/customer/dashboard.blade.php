@@ -28,8 +28,7 @@
         <!-- Khung ảnh -->
         <div 
             class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
-            :style="transform: translateX(-${currentIndex * 100}%);"
-        >
+            :style="{ transform: 'translateX(-' + currentIndex * 100 + '%)' }" >
             <template x-for="(image, index) in images" :key="index">
                 <div class="w-full flex-shrink-0 h-full">
                     <img :src="image" class="w-full h-full object-cover" />
