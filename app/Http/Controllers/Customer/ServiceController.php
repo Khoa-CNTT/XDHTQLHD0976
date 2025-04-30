@@ -15,14 +15,17 @@ class ServiceController extends Controller
     // Chỉ áp dụng middleware cho các phương thức cần thiết
     $this->middleware('auth')->except(['show', 'filter', 'search', 'index']);
 }
-    public function filter($type)
+public function filter($type)
 {
-    // Kiểm tra nếu type là "Tất Cả Dịch Vụ"
     if ($type === 'Tất Cả Dịch Vụ') {
-        $services = Service::paginate(9); // Lấy tất cả dịch vụ và phân trang
+        $services = Service::orderByDesc('is_hot')
+            ->orderByDesc('created_at')
+            ->paginate(9);
     } else {
-        // Lọc theo loại dịch vụ và phân trang
-        $services = Service::where('service_type', $type)->paginate(9);
+        $services = Service::where('service_type', $type)
+            ->orderByDesc('is_hot')
+            ->orderByDesc('created_at')
+            ->paginate(9);
     }
 
     return view('customer.services.index', [
@@ -30,36 +33,40 @@ class ServiceController extends Controller
         'type' => $type,
     ]);
 }
+
     public function show($id)
 {
     $service = Service::findOrFail($id); // Lấy dịch vụ theo ID
     return view('customer.services.show', compact('service'));
 }
 public function index()
-    {
-       
-        $services = Service::paginate(10); 
+{
+    $services = Service::orderByDesc('is_hot')
+        ->orderByDesc('created_at')
+        ->paginate(10);
 
-        return view('customer.services.index', compact('services'));
-    }
+    return view('customer.services.index', compact('services'));
+}
+
 
 public function search(Request $request)
 {
-    $query = $request->input('query'); // Lấy từ khóa tìm kiếm từ request
+    $query = $request->input('query');
 
-    // Tìm kiếm dịch vụ theo từ khóa
     $services = Service::query()
         ->when($query, function ($q) use ($query) {
             $q->where('service_name', 'LIKE', "%{$query}%")
               ->orWhere('description', 'LIKE', "%{$query}%")
               ->orWhere('service_type', 'LIKE', "%{$query}%")
-              ->orWhere('price', '=', $query); // Tìm kiếm chính xác trong cột 'price'
+              ->orWhere('price', '=', $query);
         })
-        ->paginate(9); // Phân trang kết quả
+        ->orderByDesc('is_hot')
+        ->orderByDesc('created_at')
+        ->paginate(9);
 
-    // Nếu có từ khóa tìm kiếm, hiển thị tiêu đề phù hợp
     $type = $query ? "Kết quả tìm kiếm cho: '{$query}'" : 'Tất Cả Dịch Vụ';
 
     return view('customer.services.index', compact('services', 'query', 'type'));
 }
+
 }

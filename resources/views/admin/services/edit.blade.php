@@ -54,7 +54,8 @@
                     name="is_hot"
                     value="1"
                     class="form-checkbox text-red-600 h-5 w-5"
-                    {{ old('is_hot', $service->is_hot) ? 'checked' : '' }}
+                    {{ old('is_hot', $service->is_hot) == 1 ? 'checked' : '' }}
+
                 >
                 <span class="ml-2 text-gray-700 font-medium">
                    <span class="text-red-600 font-semibold">HOT 🔥</span>

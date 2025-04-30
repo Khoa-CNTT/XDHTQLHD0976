@@ -20,8 +20,10 @@ class DashboardController extends Controller
         $user = $isLoggedIn ? Auth::user() : null;
     
         // Lấy danh sách dịch vụ
-        $services = Service::select('id', 'image','service_name', 'description', 'service_type', 'price', 'created_by', 'created_at', 'is_hot')->paginate(9); // Phân trang
-    
+        $services = Service::select('id', 'image','service_name', 'description', 'service_type', 'price', 'created_by', 'created_at', 'is_hot')
+        ->orderByDesc('is_hot')           // Ưu tiên dịch vụ hot
+        ->orderByDesc('created_at')       // Sau đó đến mới nhất
+        ->paginate(9);                    // Phân trang
         return view('customer.dashboard', compact('isLoggedIn', 'user', 'services'));
     }
     public function show($id)

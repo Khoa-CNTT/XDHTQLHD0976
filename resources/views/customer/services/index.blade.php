@@ -136,14 +136,14 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px] relative">
 
         <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
-        @if($service->created_at && $service->created_at->gt(now()->subDays(2)) && !$service->is_hot)
+        @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)
             <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
                 Mới
             </span>
         @endif
     
         <!-- Nhãn "Hot" (Bao phủ góc trên phải) -->
-        @if($service->is_hot && $service->created_at->gt(now()->subDays(1)))
+        @if($service->is_hot)
             <span class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-bl-full">
                 Hot
             </span>

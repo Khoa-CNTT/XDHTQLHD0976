@@ -28,7 +28,7 @@
         <!-- Khung ảnh -->
         <div 
             class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
-            :style="`transform: translateX(-${currentIndex * 100}%);`"
+            :style="transform: translateX(-${currentIndex * 100}%);"
         >
             <template x-for="(image, index) in images" :key="index">
                 <div class="w-full flex-shrink-0 h-full">
@@ -93,27 +93,29 @@
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
         @forelse($services as $service)
-        <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px] relative">
-
+        <div class="bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
+            
             <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
             @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)
-                <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
-                    Mới
-                </span>
+            <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
+                Mới
+            </span>
             @endif
-        
+
             <!-- Nhãn "Hot" (Bao phủ góc trên phải) -->
-            @if($service->is_hot && $service->created_at->gt(now()->subDays(7)))
+            @if($service->is_hot)
                 <span class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-bl-full">
                     Hot
                 </span>
             @endif
+
         
             <!-- Nội dung dịch vụ -->
             <div>
-                <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
-                alt="{{ $service->service_name }}" 
-                class="w-full h-48 object-cover mb-4 rounded-lg">
+                <div class="w-100 h-64 overflow-hidden rounded-lg">
+                    <img class="w-full h-full object-cover" src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
+                    alt="{{ $service->service_name }}" >
+                </div>  
                 <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
                 <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
                 <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
