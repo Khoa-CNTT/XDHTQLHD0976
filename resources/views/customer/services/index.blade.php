@@ -130,30 +130,32 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     $colors = ['text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500', 'text-purple-500'];
 @endphp
 <div class="container mx-auto">
-     {{-- Danh sách hợp đồng dịch vụ --}}
-     <div class="grid md:grid-cols-3 gap-6 mt-6">
+{{-- Danh sách hợp đồng dịch vụ --}}
+<div class="grid md:grid-cols-3 gap-6 mt-6">
     @forelse($services as $service)
-    <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-xl transition-all border border-gray-200 flex flex-col justify-between min-h-[280px] relative">
-
+    <div class="bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
+        
         <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
         @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)
-            <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
-                Mới
-            </span>
+        <span class="absolute top-0 left-0 bg-green-600 text-white text-xs font-semibold px-3 py-1 rounded-br-full">
+            Mới
+        </span>
         @endif
-    
+
         <!-- Nhãn "Hot" (Bao phủ góc trên phải) -->
         @if($service->is_hot)
             <span class="absolute top-0 right-0 bg-red-600 text-white text-xs font-semibold px-3 py-1 rounded-bl-full">
                 Hot
             </span>
         @endif
+
     
         <!-- Nội dung dịch vụ -->
         <div>
-            <img src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
-            alt="{{ $service->service_name }}" 
-            class="w-full h-48 object-cover mb-4 rounded-lg">
+            <div class="w-100 h-64 overflow-hidden rounded-lg">
+                <img class="w-full h-full object-cover" src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
+                alt="{{ $service->service_name }}" >
+            </div>  
             <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
             <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
             <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
@@ -168,8 +170,8 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
             </a>
         </div>
     </div>
-        @empty
-        <p class="no-services">Chúng tôi rất tiếc, không có dịch vụ nào bạn đang tìm kiếm cả!!!</p>
+    @empty
+    <p class="text-gray-600">Chúng tôi rất tiếc ,không có dịch vụ nào bạn đang tìm kiếm cả!!!</p>
     @endforelse
 </div>
 
