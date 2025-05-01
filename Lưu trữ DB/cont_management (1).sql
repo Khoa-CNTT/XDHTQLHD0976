@@ -2,8 +2,8 @@
 -- version 5.2.1
 -- https://www.phpmyadmin.net/
 --
--- Máy chủ: 127.0.0.1:3306
--- Thời gian đã tạo: Th4 30, 2025 lúc 06:03 AM
+-- Máy chủ: 127.0.0.1
+-- Thời gian đã tạo: Th5 01, 2025 lúc 08:16 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -32,13 +32,6 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
---
--- Đang đổ dữ liệu cho bảng `cache`
---
-
-INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
-('laravel_cache_otp_', 'i:105737;', 1745516373);
 
 -- --------------------------------------------------------
 
@@ -71,6 +64,13 @@ CREATE TABLE `contracts` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `contracts`
+--
+
+INSERT INTO `contracts` (`id`, `service_id`, `customer_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `signed_document`, `created_at`, `updated_at`) VALUES
+(19, 102, 5, 'HD-1746078645', '2025-05-01', '2025-11-01', 'Chờ xử lý', 1000.00, NULL, '2025-04-30 22:50:45', '2025-04-30 22:50:45');
 
 -- --------------------------------------------------------
 
@@ -203,7 +203,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (11, '2025_04_23_053048_add_image_to_services_table', 7),
 (12, '2025_04_24_160742_add_identity_card_to_users_table', 8),
 (13, '2025_04_24_164725_add_duration_and_status_to_signatures_table', 9),
-(14, '2025_04_25_085025_add_customer_id_to_contracts_table', 10);
+(14, '2025_04_25_085025_add_customer_id_to_contracts_table', 10),
+(15, '2025_05_01_055336_add_momo_fields_to_payments_table', 11);
 
 -- --------------------------------------------------------
 
@@ -229,10 +230,22 @@ CREATE TABLE `payments` (
   `amount` decimal(10,2) NOT NULL,
   `date` date NOT NULL,
   `method` varchar(255) NOT NULL,
-  `status` enum('Hoàn Thành','Đã Huỷ','Đang Đợi','') NOT NULL,
+  `transaction_id` varchar(255) DEFAULT NULL,
+  `order_id` varchar(255) DEFAULT NULL,
+  `payment_type` varchar(255) DEFAULT NULL,
+  `payment_response` text DEFAULT NULL,
+  `request_id` varchar(255) DEFAULT NULL,
+  `status` enum('Hoàn Thành','Đã Huỷ','Đang Đợi','Đang Xử Lý','Thất Bại') NOT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `payments`
+--
+
+INSERT INTO `payments` (`id`, `contract_id`, `amount`, `date`, `method`, `transaction_id`, `order_id`, `payment_type`, `payment_response`, `request_id`, `status`, `created_at`, `updated_at`) VALUES
+(1, 19, 1000.00, '2025-05-01', 'MoMo', NULL, '6813112fea1db', 'captureWallet', NULL, NULL, 'Đang Đợi', '2025-04-30 23:14:07', '2025-04-30 23:14:07');
 
 -- --------------------------------------------------------
 
@@ -301,7 +314,7 @@ INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `image`,
 (86, 'Giám sát hệ thống mạng từ xa', 'Theo dõi uptime, cảnh báo', 'Zabbix, PRTG, email alert.', 'services/WMJw5RoHAklzZl9KVC1UlPLZxmPYWxwG7mCbfgyk.jpg', 'Nhà mạng', 3200000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:40:17', 0),
 (87, 'Cung cấp thiết bị mạng chuyên dụng', 'Router, firewall, WiFi mesh', 'Cisco, Mikrotik, Aruba.', 'services/9IHOTBgOE9tzjYq1WQPWxHHMtOnlU3urdtJYZ0QZ.jpg', 'Nhà mạng', 8000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:00', 0),
 (89, 'Bảo trì định kỳ hệ thống mạng', 'Kiểm tra thiết bị và backup cấu hình', 'Khắc phục sự cố định kỳ.', 'services/xsNIYTPBm9FktUmavCB7WUPLQ1IdIvJaVrHI9mnH.jpg', 'Nhà mạng', 2000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:22', 0),
-(102, 'Dịch vụ bảo mật dữ liệu cao cấp', '123', '123', 'services/h75W6Ak1PCiodTECxwqSmyTxiUZSmoJ1sQm8yrex.jpg', 'Phần mềm', 123123.00, 3, '2025-04-28 14:12:09', '2025-04-29 13:45:42', 1);
+(102, 'Dịch vụ bảo mật dữ liệu cao cấp', '123', '123', 'services/h75W6Ak1PCiodTECxwqSmyTxiUZSmoJ1sQm8yrex.jpg', 'Phần mềm', 1000.00, 3, '2025-04-28 14:12:09', '2025-04-30 22:15:32', 1);
 
 -- --------------------------------------------------------
 
@@ -323,8 +336,7 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('5IqPWmgJXpZe9o6HdYZWcG4AARH5IGZzbxAZisVO', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTozOntzOjY6Il90b2tlbiI7czo0MDoieEFUYXhUakFMSlh6SmQ3eFZMQlVDd2VzdlFXeldVa3RtSTNlUVF1SiI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6NDA6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jdXN0b21lci9kYXNoYm9hcmQiO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX19', 1745900562),
-('nMEQjyIIatS49dciOK4QcwgJXLtuzSCq7LI98NL8', 13, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36', 'YTo0OntzOjY6Il90b2tlbiI7czo0MDoiczc4dU9tQUJTdHB3ZlZUS1I0cVdQTFFCMmhTUnAzUW5FdE96a0M5ZyI7czo5OiJfcHJldmlvdXMiO2E6MTp7czozOiJ1cmwiO3M6Nzk6Imh0dHA6Ly8xMjcuMC4wLjE6ODAwMC9jdXN0b21lci9zZXJ2aWNlcy9zZWFyY2g/cXVlcnk9cGglRTElQkElQTduJTIwbSVFMSVCQiU4MW0iO31zOjY6Il9mbGFzaCI7YToyOntzOjM6Im9sZCI7YTowOnt9czozOiJuZXciO2E6MDp7fX1zOjUwOiJsb2dpbl93ZWJfNTliYTM2YWRkYzJiMmY5NDAxNTgwZjAxNGM3ZjU4ZWE0ZTMwOTg5ZCI7aToxMzt9', 1745985753);
+('lfcl6dS8pYkO9o6XZEN89AWnrCyGcj2dQ9P00D6y', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJa3RRT0d4cFVsVXhNSFJRUzNkMFRHOU1UVWwyTUVFOVBTSXNJblpoYkhWbElqb2lURkZUT0dsSlNHVnBhREY1WkZreU5YZHVRVEZuWlRkUU1rMXdURkpxUm1aa05XVXJZMGhVYzBZNFZFUTBRMVJoV2xNM2RtaGtiR1Z3Vm0xUVRqZHdXbE5DVWxCTWVHUldhMUp1TmpRMFZESkRhMkUwZFVWQ1puVlZkRXh3TmpkT1lubGhaVGgwTkM5SFowRTFaVTl4YzFOb1VsVmpNemhzWmpOME4zcEVZM3B6V2xCbFJ6aENSVE5MVmpsS1dUbExSbFU1TW5sUWR6WkxZWGhUTjBoQlZYbEVaSGQyVDA0MmNEQlFVSEZSTjNWamIwMHhTblJTWlZvellqTnpVVlEzWlZod1lWbGtUSGgyWmxsSVYxbEdRbFEzTlRac1UxQlpOVmRSZURJdlQxRXJUa296UkdNMmJrSjNaVkZvVlc0emFuVm1WV3hGVUVwTU5YWmlkWFJuY25reVpsQjJhR1ozUVdndk9ITk1UVkJWUzFOU1ozQjJhbFIxY0UxdmFsaEllVFpDVlRCVWVGQkNkV2xZV1ZGUU5YbFdabXRUUkZZMFZqRllhbTlhUWtWaVMyZE1aVmhwWWtOTFluWlFWRWRTTVhGdWVGTnNSWFZ4WlZaM1IwaFJlVU01Y2sxdGNIVXZlVlJDTkc4MGJISlBNRUp2TlVWNk5sZEpOV05FVkRneUlpd2liV0ZqSWpvaU1UVXdOek01TUdZeE5qQXhNRGd5WlRBM01qaGlNVGhoTUdNME16WXhaVGRoTkRjMll6Sm1OalZrWkRZeE56WTJNakJsTkdWaU9XVmxPVEU0Tm1aaFl5SXNJblJoWnlJNklpSjk=', 1746080049);
 
 -- --------------------------------------------------------
 
@@ -345,6 +357,13 @@ CREATE TABLE `signatures` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `signatures`
+--
+
+INSERT INTO `signatures` (`id`, `contract_id`, `customer_name`, `customer_email`, `signature_data`, `identity_card`, `duration`, `status`, `signed_at`, `created_at`, `updated_at`) VALUES
+(26, 19, 'Ngà Chó Điên', 'okamibada@gmail.com', '435181', '044230334231', '1_nam', 'Đang xử lý', '2025-04-30 22:50:45', '2025-04-30 22:50:45', '2025-04-30 22:50:45');
 
 -- --------------------------------------------------------
 
@@ -500,7 +519,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `contracts`
 --
 ALTER TABLE `contracts`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT cho bảng `customers`
@@ -530,13 +549,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=15;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
 --
 ALTER TABLE `payments`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `permissions`
@@ -554,7 +573,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT cho bảng `signatures`
 --
 ALTER TABLE `signatures`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=27;
 
 --
 -- AUTO_INCREMENT cho bảng `users`

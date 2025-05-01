@@ -15,11 +15,21 @@ class Payment extends Model
         'date',
         'method',
         'status',
-        'order_id',
         'transaction_id',
-        'response_message',
+        'order_id',
         'payment_type',
-        'ipn_received',
+        'payment_response',
+        'request_id'
+    ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'date' => 'datetime',
+        'amount' => 'decimal:2',
     ];
 
 

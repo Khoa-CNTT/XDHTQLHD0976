@@ -49,33 +49,31 @@
                 <div class="flex space-x-4 mb-6">
                     @php
                         $durations = [
-                            '6 tháng' => '6 Tháng',
-                            '1 năm' => '1 Năm',
-                            '3 năm' => '3 Năm'
+                            '6_thang' => '6 Tháng',
+                            '1_nam' => '1 Năm',
+                            '3_nam' => '3 Năm'
                         ];
                     @endphp
             
-                    <!-- Các nút bấm chọn thời gian hợp đồng -->
+             
                     @foreach($durations as $key => $label)
                         <button type="button" 
                                 class="contract-option px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200" 
-                                onclick="document.getElementById('duration').value = '{{ $key }}'">
+                                onclick="selectDuration('{{ $key }}', this)">
                             {{ $label }}
                         </button>
                     @endforeach
                 </div>
             
                 <!-- Trường ẩn để lưu giá trị thời gian hợp đồng -->
-                <input type="hidden" id="duration" name="duration" value="6_thang">
-            
+                <input type="hidden" id="duration" name="duration" value="">
+
                 <div class="flex flex-col space-y-3 mt-4">
-                    <!-- Nút quay lại -->
                     <a href="{{ route('customer.dashboard') }}"
                        class="w-full text-center bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 hover:scale-105 transition">
                         ← Quay Lại
                     </a>
             
-                    <!-- Nút gửi yêu cầu hợp đồng -->
                     <button type="submit" 
                             class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition transform duration-300 ease-in-out text-center block">
                         📝 Gửi Yêu Cầu Hợp Đồng
@@ -104,21 +102,25 @@
 
 
 
+    function selectDuration(value, button) {
+        // Gán giá trị thời hạn hợp đồng vào input ẩn
+        document.getElementById('duration').value = value;
 
-    const buttons = document.querySelectorAll('.contract-option');
-
-    buttons.forEach(button => {
-        button.addEventListener('click', function() {
-            buttons.forEach(btn => {
-                btn.classList.remove('bg-blue-600', 'text-white');
-            });
-
-            this.classList.add('bg-blue-600', 'text-white');
+        // Thay đổi giao diện nút được chọn
+        const buttons = document.querySelectorAll('.contract-option');
+        buttons.forEach(btn => {
+            btn.classList.remove('bg-blue-600', 'text-white');
         });
+        button.classList.add('bg-blue-600', 'text-white');
+    }
 
-        button.addEventListener('mouseenter', function() {
-            this.classList.remove('hover:bg-blue-100');
-        });
-    });
+    // Kiểm tra trước khi gửi form
+    document.getElementById('contractForm').onsubmit = function(event) {
+        var duration = document.getElementById('duration').value;
+        if (!duration) {
+            event.preventDefault();
+            alert("Vui lòng chọn thời hạn hợp đồng trước khi gửi.");
+        }
+    };
 </script>
 @endsection

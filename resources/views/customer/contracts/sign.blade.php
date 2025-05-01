@@ -38,7 +38,7 @@
                 ];
 
                 // Gán lại duration đúng dạng chuẩn
-                $selectedDuration = array_key_exists($duration, $durations) ? $durations[$duration] : '6 Tháng';
+                $selectedDuration = $durations[$duration] ?? 'Không xác định';
                 
             @endphp
             {{ $selectedDuration }}

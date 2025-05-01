@@ -32,13 +32,19 @@ public function show($id)
 
     return view('customer.contracts.show', compact('contract'));
 }
-    public function showSignForm(Request $request, $serviceId)
+public function showSignForm(Request $request, $serviceId)
 {
-    
     $service = Service::findOrFail($serviceId);
 
+   
+    $duration = $request->query('duration');
+
     
-    $duration = $request->query('duration', '6_thang');
+    $validDurations = ['6_thang', '1_nam', '3_nam'];
+    if (!in_array($duration, $validDurations)) {
+        return redirect()->route('customer.services.show', $serviceId)
+                         ->withErrors(['duration' => 'Vui lòng chọn thời hạn hợp đồng hợp lệ.']);
+    }
 
     return view('customer.contracts.sign', compact('service', 'duration'));
 }

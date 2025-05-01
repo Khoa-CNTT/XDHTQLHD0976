@@ -5,6 +5,7 @@ use App\Http\Controllers\Customer\DashboardController as CustomerDashboardContro
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ContractController as CustomerContractController;
 use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController;
+use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
 
 
 
@@ -135,6 +136,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
         Route::get('/momo/success', [MoMoPaymentController::class, 'paymentSuccess'])->name('momo.success');
         Route::get('/momo/query/{orderId}', [MoMoPaymentController::class, 'queryTransaction'])->name('momo.query');
+
+        Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
+        Route::get('/vnpay/success', [VNPayPaymentController::class, 'paymentSuccess'])->name('vnpay.success');   
         
               
     
