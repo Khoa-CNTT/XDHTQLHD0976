@@ -9,11 +9,12 @@
     <section 
         x-data="{
                 images: [
-                '/banners/banner1.jpg',
-                '/banners/banner2.png',
-                '/banners/banner.jpg',
-                '/banners/banner4.png',
-                '/banners/gpt.png',
+                
+                '/banners/bbb.png',
+                '/banners/bbb1.png',
+                '/banners/bbb2.png',
+                '/banners/bbb3.png',
+        
        
                 ],
                 currentIndex: 0,
