@@ -6,6 +6,8 @@
     <title>@yield('title', 'Dịch Vụ Công Nghệ Thông Tin')</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.css" rel="stylesheet">
+
     
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -167,5 +169,6 @@
 </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 </body>
 </html>

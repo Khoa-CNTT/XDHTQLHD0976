@@ -1,0 +1,129 @@
+1. Bảng service_categories
+Chức năng:
+
+Phân loại dịch vụ thành các nhóm (ví dụ: "Phần mềm", "Phần cứng", "Nhà mạng").
+
+Giúp khách hàng dễ dàng lọc dịch vụ theo danh mục.
+
+Liên kết:
+
+Một danh mục (service_categories) có nhiều dịch vụ (services) qua khóa ngoại category_id.
+
+Ví dụ: Danh mục "Phần mềm" chứa các dịch vụ "Phát triển Website", "Ứng dụng di động".
+
+Trường quan trọng:
+
+name: Tên danh mục (ví dụ: "Dịch vụ Cloud").
+
+description: Mô tả ngắn về danh mục.
+
+2. Bảng contract_amendments
+Chức năng:
+
+Theo dõi các thay đổi/phụ lục hợp đồng (ví dụ: gia hạn, điều chỉnh giá).
+
+Lưu lịch sử sửa đổi để đảm bảo minh bạch.
+
+Liên kết:
+
+Một hợp đồng (contracts) có nhiều phụ lục (contract_amendments).
+
+Trường quan trọng:
+
+amendment_reason: Lý do thay đổi (ví dụ: "Khách hàng yêu cầu thêm tính năng").
+
+changes_made: Chi tiết thay đổi (ví dụ: "Tăng thời gian sử dụng từ 6 tháng lên 1 năm").
+
+effective_date: Ngày thay đổi có hiệu lực.
+
+3. Bảng service_reviews
+Chức năng:
+
+Cho phép khách hàng đánh giá dịch vụ sau khi sử dụng.
+
+Giúp bạn cải thiện chất lượng dịch vụ và uy tín.
+
+Liên kết:
+
+Một dịch vụ (services) có nhiều đánh giá (service_reviews).
+
+Một khách hàng (customers) có thể đánh giá nhiều dịch vụ.
+
+Trường quan trọng:
+
+rating: Điểm từ 1-5 sao.
+
+comment: Nội dung đánh giá (ví dụ: "Hỗ trợ kỹ thuật rất tốt").
+
+4. Bảng notifications
+Chức năng:
+
+Gửi thông báo đến người dùng (ví dụ: "Hợp đồng #HD-123 sắp hết hạn").
+
+Có thể tích hợp với email hoặc hiển thị trên dashboard.
+
+Liên kết:
+
+Một người dùng (users) nhận nhiều thông báo.
+
+Trường quan trọng:
+
+is_read: Đánh dấu đã đọc/chưa đọc.
+
+message: Nội dung thông báo (ví dụ: "Thanh toán thành công 10,000,000 VNĐ").
+
+5. Bảng contract_documents
+Chức năng:
+
+Lưu trữ file đính kèm liên quan đến hợp đồng (ví dụ: file PDF, biên bản nghiệm thu).
+
+Thay thế cho trường signed_document trong bảng contracts (nếu cần lưu nhiều file).
+
+Liên kết:
+
+Một hợp đồng (contracts) có nhiều tài liệu.
+
+File được upload bởi một người dùng (users).
+
+Trường quan trọng:
+
+file_path: Đường dẫn lưu file (ví dụ: /uploads/contracts/HD-123.pdf).
+
+document_name: Tên hiển thị (ví dụ: "Biên bản ký kết").
+
+6. Cột deleted_at (Soft Delete)
+Chức năng:
+
+Đánh dấu bản ghi đã "xóa mềm" thay vì xóa vật lý.
+
+Dữ liệu vẫn được lưu trữ để phục hồi nếu cần.
+
+Áp dụng cho:
+
+services, contracts, customers.
+
+Khi query, thêm điều kiện WHERE deleted_at IS NULL để bỏ qua bản ghi đã xóa.
+
+7. Các Indexes mới
+Chức năng:
+
+Tăng tốc độ tìm kiếm trên các trường thường dùng:
+
+Tìm khách hàng qua email hoặc phone.
+
+Tra cứu hợp đồng qua contract_number.
+
+Lọc dịch vụ theo tên (service_name).
+
+📌 Tích hợp với hệ thống hiện tại
+Flow ví dụ:
+
+Khách hàng đăng ký dịch vụ → Tạo contracts + signatures.
+
+Upload file hợp đồng vào contract_documents.
+
+Nếu có thay đổi, thêm phụ lục vào contract_amendments.
+
+Sau khi hoàn thành, khách hàng đánh giá dịch vụ trong service_reviews.
+
+Hệ thống gửi thông báo (notifications) khi hợp đồng sắp hết hạn.

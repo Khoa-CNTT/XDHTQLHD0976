@@ -93,7 +93,12 @@
         </div>
     </form> --}}
     
-    <form action="{{ route('customer.momo.payment', $contract->id) }}" method="POST">
+    <form action="{{ route('customer.momo.create', $contract->id) }}" method="POST">
+        @if (session('error'))
+    <div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">
+        {{ session('error') }}
+    </div>
+@endif
         @csrf
         <div class="flex justify-between mt-6">
             <a href="{{ route('customer.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">

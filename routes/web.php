@@ -132,10 +132,10 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
          
-        Route::post('/contracts/{id}/payment', [MoMoPaymentController::class, 'createPayment'])->name('momo.payment');
-        Route::post('/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
-        Route::get('/momo/success', [MoMoPaymentController::class, 'paymentSuccess'])->name('momo.success');
-        Route::get('/momo/query/{orderId}', [MoMoPaymentController::class, 'queryTransaction'])->name('momo.query');
+        Route::get('contracts/{id}/payment/momo', [MoMoPaymentController::class, 'showPaymentForm'])->name('momo.form');
+        Route::post('contracts/{id}/payment/momo', [MoMoPaymentController::class, 'createPayment'])->name('momo.create');
+        Route::get('momo/success', [MoMoPaymentController::class, 'paymentReturn'])->name('momo.success');
+        Route::post('payment/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
 
         Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
         Route::get('/vnpay/success', [VNPayPaymentController::class, 'paymentSuccess'])->name('vnpay.success');   
@@ -146,3 +146,11 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
       
         
     }); 
+
+    // IPN và return URL không cần auth (để bên ngoài group customer)
+    Route::post('payment/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])
+    ->middleware('throttle:60,1')
+    ->name('momo.ipn');
+
+Route::get('/payment/momo/return', [MoMoPaymentController::class, 'paymentReturn'])
+->name('momo.return');

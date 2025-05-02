@@ -155,53 +155,69 @@
         </div>
     </div>
 
-    {{-- Giới thiệu về web --}}
-    <div class="mt-16 bg-gray-100 py-12">
-        <div class="container mx-auto text-center">
+   <!-- Hero -->
+   <section class="bg-gradient-to-r from-blue-500 to-indigo-600 text-white py-20">
+    <div class="container mx-auto px-6 text-center" data-aos="fade-down">
+        <h1 class="text-4xl md:text-5xl font-extrabold mb-6">Chào mừng đến với dịch vụ của chúng tôi</h1>
+        <p class="text-lg mb-8">Giải pháp số toàn diện, giúp doanh nghiệp phát triển bền vững.</p>
+        <a href="#" class="bg-white text-blue-600 px-6 py-3 rounded shadow hover:bg-gray-100 transition">Khám phá ngay</a>
+    </div>
+</section>
+
+<!-- Giới thiệu -->
+<section class="bg-white py-20">
+    <div class="container mx-auto flex flex-col md:flex-row items-center px-6">
+        <div class="md:w-1/2 mb-10 md:mb-0" data-aos="fade-right">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTOY6FMqknMhKDaKPvZB0LJVNtpu954LaK3WA&s" alt="Ảnh giới thiệu" class="w-full rounded-lg shadow-md">
+        </div>
+        <div class="md:w-1/2 md:pl-12" data-aos="fade-left">
             <h2 class="text-3xl font-bold mb-4">Giới Thiệu Về Chúng Tôi</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">Chúng tôi cung cấp các giải pháp công nghệ thông tin hiện đại, giúp doanh nghiệp của bạn phát triển mạnh mẽ trong thời đại số hóa.</p>
+            <p class="text-gray-700 text-lg">Chúng tôi cung cấp các giải pháp công nghệ tiên tiến, giúp doanh nghiệp thích nghi và phát triển mạnh mẽ trong kỷ nguyên số.</p>
         </div>
     </div>
+</section>
 
-    {{-- Thông tin chi tiết --}}
-    <div class="mt-16 bg-white py-12">
-        <div class="container mx-auto">
-            <h2 class="text-3xl font-bold mb-6 text-center">Thông Tin Chi Tiết</h2>
-            <div class="grid md:grid-cols-3 gap-6">
-                <div class="text-center">
-                    <h3 class="text-xl font-semibold mb-2">Dịch Vụ Đa Dạng</h3>
-                    <p class="text-gray-600">Chúng tôi cung cấp nhiều dịch vụ từ phát triển phần mềm đến quản trị hệ thống.</p>
-                </div>
-                <div class="text-center">
-                    <h3 class="text-xl font-semibold mb-2">Đội Ngũ Chuyên Nghiệp</h3>
-                    <p class="text-gray-600">Đội ngũ chuyên gia giàu kinh nghiệm, luôn sẵn sàng hỗ trợ bạn.</p>
-                </div>
-                <div class="text-center">
-                    <h3 class="text-xl font-semibold mb-2">Hỗ Trợ 24/7</h3>
-                    <p class="text-gray-600">Chúng tôi luôn sẵn sàng hỗ trợ bạn mọi lúc, mọi nơi.</p>
-                </div>
+<!-- Dịch vụ -->
+<section class="bg-gray-50 py-20">
+    <div class="container mx-auto px-6 text-center">
+        <h2 class="text-3xl font-bold mb-12" data-aos="zoom-in">Dịch Vụ Nổi Bật</h2>
+        <div class="grid md:grid-cols-3 gap-8">
+            <div data-aos="flip-left" class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold mb-2">Thiết kế website</h3>
+                <p class="text-gray-600">Trang web hiện đại, chuẩn SEO, dễ sử dụng và tương thích đa thiết bị.</p>
+            </div>
+            <div data-aos="flip-up" class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold mb-2">Ứng dụng di động</h3>
+                <p class="text-gray-600">Xây dựng ứng dụng Android & iOS hiệu quả, linh hoạt theo yêu cầu.</p>
+            </div>
+            <div data-aos="flip-right" class="bg-white p-6 rounded shadow hover:shadow-lg transition">
+                <h3 class="text-xl font-semibold mb-2">Tư vấn chuyển đổi số</h3>
+                <p class="text-gray-600">Tư vấn chiến lược và triển khai công nghệ cho doanh nghiệp hiện đại.</p>
             </div>
         </div>
     </div>
+</section>
 
-    {{-- Tổng quan sản phẩm --}}
-    <div class="mt-16 bg-gray-100 py-12">
-        <div class="container mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-4">Tổng Quan Sản Phẩm</h2>
-            <p class="text-gray-600 max-w-2xl mx-auto">Khám phá các sản phẩm và dịch vụ nổi bật của chúng tôi, được thiết kế để đáp ứng mọi nhu cầu của bạn.</p>
-        </div>
+<!-- Liên hệ -->
+<section class="bg-indigo-600 text-white py-20 text-center">
+    <div class="container mx-auto px-6" data-aos="zoom-in-up">
+        <h2 class="text-3xl font-bold mb-4">Liên Hệ Với Chúng Tôi</h2>
+        <p class="mb-6 text-lg">Chúng tôi luôn sẵn sàng lắng nghe và đồng hành cùng bạn.</p>
+        <a href="#" class="bg-white text-indigo-600 px-8 py-4 rounded-lg text-lg shadow hover:bg-gray-200 transition">Liên hệ ngay</a>
     </div>
+</section>
 
-    {{-- Liên hệ --}}
-    <div class="mt-16 bg-white py-12">
-        <div class="container mx-auto text-center">
-            <h2 class="text-3xl font-bold mb-4">Liên Hệ Với Chúng Tôi</h2>
-            <p class="text-gray-600 mb-6">Nếu bạn có bất kỳ câu hỏi nào, đừng ngần ngại liên hệ với chúng tôi.</p>
-            <a href="#" class="bg-blue-600 text-white px-6 py-3 rounded hover:bg-blue-700 transition-colors">Liên Hệ Ngay</a>
-        </div>
-    </div>
-</div>
+<!-- AOS script -->
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
+<script>
+    AOS.init({
+        duration: 1000,
+        once: true
+    });
+</script>
+    
 
 
 <script src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+<script src="https://cdn.jsdelivr.net/npm/aos@2.3.4/dist/aos.js"></script>
 @endsection
