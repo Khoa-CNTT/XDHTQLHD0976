@@ -43,7 +43,7 @@ public function index()
 {
     $services = Service::orderByDesc('is_hot')
         ->orderByDesc('created_at')
-        ->paginate(10);
+        ->paginate(9);
 
     return view('customer.services.index', compact('services'));
 }

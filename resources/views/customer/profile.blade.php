@@ -3,9 +3,10 @@
 @section('title', 'Trang Cá Nhân')
 
 @section('content')
-    <div class="max-w-4xl mx-auto p-6 bg-white shadow-md rounded-lg mt-6">
-        <h1 class="text-3xl font-semibold text-center text-gray-800 mb-6">Thông Tin Cá Nhân</h1>
-
+    <div class="max-w-4xl mx-auto p-6 bg-white  rounded-lg mt-6">
+        <h1 class="text-4xl font-bold mb-8 text-center mt-2 text-black">
+             Thông Tin Cá Nhân
+         </h1>
         <!-- Success and Error Messages -->
         @if (session('success'))
             <div class="bg-green-100 border border-green-400 text-green-700 px-6 py-4 rounded-lg shadow-md mb-6">
@@ -34,11 +35,15 @@
         @endif
 
         <!-- Tabs -->
-        <div class="flex justify-center mb-6 space-x-4">
-            <button id="info-tab" class="px-6 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition" onclick="showTab('info')">
+        <div class="grid w-full grid-cols-2 bg-gray-200 dark:bg-gray-800 mb-6 rounded-lg overflow-hidden">
+            <button id="info-tab"
+                class="p-4 text-gray-800 bg-purple-600 text-white font-medium hover:bg-purple-700 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+                onclick="showTab('info')">
                 Thông Tin Cá Nhân
             </button>
-            <button id="password-tab" class="px-6 py-3 bg-gray-300 text-gray-800 rounded-lg hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 transition" onclick="showTab('password')">
+            <button id="password-tab"
+                class="p-4 text-gray-800 bg-gray-300 font-medium hover:bg-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-600 transition"
+                onclick="showTab('password')">
                 Đổi Mật Khẩu
             </button>
         </div>
@@ -46,7 +51,7 @@
         <!-- Tab Contents -->
         <div class="w-full">
             {{-- Thông Tin Cá Nhân Tab --}}
-            <div id="info-content" class="bg-white rounded-lg shadow-md p-8 mb-8 transition-opacity">
+            <div id="info-content" class="bg-white rounded-lg border-2 shadow-md p-6 mb-8">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Cập nhật thông tin cá nhân</h2>
                 <form id="personal-info-form" action="{{ route('customer.profile.update') }}" method="POST">
                     @csrf
@@ -91,7 +96,7 @@
             </div>
 
             {{-- Đổi Mật Khẩu Tab --}}
-            <div id="password-content" class="bg-white rounded-lg shadow-md p-8 hidden">
+            <div id="password-content" class="bg-white rounded-lg border-2 shadow-md p-6 mb-8">
                 <h2 class="text-2xl font-semibold text-gray-800 mb-4">Đổi mật khẩu</h2>
                 <form id="change-password-form" action="{{ route('customer.profile.change-password') }}" method="POST">
                     @csrf
@@ -131,24 +136,30 @@
 
     <script>
         function showTab(tab) {
-            const infoTab = document.getElementById('info-tab');
-            const passwordTab = document.getElementById('password-tab');
-            const infoContent = document.getElementById('info-content');
-            const passwordContent = document.getElementById('password-content');
+        const infoTab = document.getElementById('info-tab');
+        const passwordTab = document.getElementById('password-tab');
+        const infoContent = document.getElementById('info-content');
+        const passwordContent = document.getElementById('password-content');
 
-            if (tab === 'info') {
-                infoTab.classList.add('bg-purple-600', 'text-white');
-                passwordTab.classList.remove('bg-purple-600', 'text-white');
-                infoContent.classList.remove('hidden');
-                passwordContent.classList.add('hidden');
-            } else {
-                passwordTab.classList.add('bg-purple-600', 'text-white');
-                infoTab.classList.remove('bg-purple-600', 'text-white');
-                passwordContent.classList.remove('hidden');
-                infoContent.classList.add('hidden');
-            }
+        if (tab === 'info') {
+            infoTab.classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+            infoTab.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            passwordTab.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            passwordTab.classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+
+            infoContent.classList.remove('hidden');
+            passwordContent.classList.add('hidden');
+        } else {
+            passwordTab.classList.add('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+            passwordTab.classList.remove('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            infoTab.classList.add('bg-gray-300', 'text-gray-800', 'hover:bg-gray-400');
+            infoTab.classList.remove('bg-purple-600', 'text-white', 'hover:bg-purple-700');
+
+            passwordContent.classList.remove('hidden');
+            infoContent.classList.add('hidden');
         }
-
+        }
+    
         document.addEventListener('DOMContentLoaded', function () {
             @if (session('success') || session('error'))
                 @if (session('tab') === 'password')
@@ -156,7 +167,10 @@
                 @else
                     showTab('info');
                 @endif
+            @else
+                showTab('info'); 
             @endif
         });
     </script>
+    
 @endsection

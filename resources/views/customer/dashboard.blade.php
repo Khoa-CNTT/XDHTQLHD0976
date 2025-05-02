@@ -93,7 +93,7 @@
     {{-- Danh sách hợp đồng dịch vụ --}}
     <div class="grid md:grid-cols-3 gap-6 mt-6">
         @forelse($services as $service)
-        <div class="bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
+        <div class="flex flex-col justify-between bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
             
             <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
             @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)

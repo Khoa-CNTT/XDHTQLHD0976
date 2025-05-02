@@ -44,11 +44,10 @@
 <section 
 x-data="{
          images: [
-                '/banners/banner1.jpg',
-                '/banners/banner2.png',
-                '/banners/banner.jpg',
-                '/banners/banner4.png',
-                '/banners/gpt.png',
+                '/banners/bbb.png',
+                '/banners/bbb1.png',
+                '/banners/bbb2.png',
+                '/banners/bbb3.png',
         
         ],
         currentIndex: 0,
@@ -133,7 +132,7 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
 {{-- Danh sách hợp đồng dịch vụ --}}
 <div class="grid md:grid-cols-3 gap-6 mt-6">
     @forelse($services as $service)
-    <div class="bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
+    <div class="flex flex-col justify-between bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
         
         <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
         @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)
