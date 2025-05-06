@@ -10,7 +10,7 @@ class Service extends Model
     use HasFactory;
 
     protected $table = 'services'; 
-    protected $fillable = ['service_name', 'description', 'content', 'service_type', 'price', 'created_by', 'created_at', 'is_hot','image',];
+    protected $fillable = ['service_name', 'description', 'content', 'price', 'created_by', 'image', 'is_hot', 'category_id'];
 
     public function employee()
     {
@@ -21,4 +21,13 @@ class Service extends Model
     {
         return $this->hasMany(Contract::class);
     }
+    public function reviews()
+{
+    return $this->hasMany(ServiceReview::class);
+}
+
+public function category()
+{
+    return $this->belongsTo(ServiceCategory::class, 'category_id');
+}
 }

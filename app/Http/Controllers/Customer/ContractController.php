@@ -131,5 +131,10 @@ public function sign(Request $request, $serviceId)
     return redirect()->route('customer.contracts.index')->with('success', 'Hợp đồng đã được ký thành công!');
 }
 
+
+
+
+
+
     
 }

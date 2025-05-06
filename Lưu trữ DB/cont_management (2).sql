@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 02, 2025 lúc 08:16 AM
+-- Thời gian đã tạo: Th5 03, 2025 lúc 03:18 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -54,7 +54,7 @@ CREATE TABLE `cache_locks` (
 CREATE TABLE `contracts` (
   `id` bigint(20) UNSIGNED NOT NULL,
   `service_id` bigint(20) UNSIGNED NOT NULL,
-  `customer_id` bigint(20) UNSIGNED DEFAULT NULL,
+  `customer_id` bigint(20) UNSIGNED NOT NULL,
   `contract_number` varchar(255) NOT NULL,
   `start_date` date NOT NULL,
   `end_date` date NOT NULL,
@@ -238,7 +238,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (13, '2025_04_24_164725_add_duration_and_status_to_signatures_table', 9),
 (14, '2025_04_25_085025_add_customer_id_to_contracts_table', 10),
 (15, '2025_05_01_055336_add_momo_fields_to_payments_table', 11),
-(16, '2025_05_01_132452_add_momo_fields_to_payments_table', 12);
+(16, '2025_05_01_132452_add_momo_fields_to_payments_table', 12),
+(17, '2025_05_03_131510_remove_service_type_from_services_table', 13);
 
 -- --------------------------------------------------------
 
@@ -347,7 +348,6 @@ CREATE TABLE `services` (
   `description` text NOT NULL,
   `content` text DEFAULT NULL,
   `image` varchar(255) DEFAULT NULL,
-  `service_type` varchar(255) NOT NULL,
   `price` decimal(15,2) NOT NULL,
   `created_by` bigint(20) UNSIGNED DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
@@ -361,36 +361,36 @@ CREATE TABLE `services` (
 -- Đang đổ dữ liệu cho bảng `services`
 --
 
-INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `image`, `service_type`, `price`, `created_by`, `created_at`, `updated_at`, `is_hot`, `category_id`, `deleted_at`) VALUES
-(19, 'HOME 3_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'services/1JovvZvowJ9UO7yDvNyW7ECwSWHs7ozKf7GIbVZb.jpg', 'Nhà mạng', 310000.00, NULL, '2025-04-13 23:14:48', '2025-04-29 13:25:12', 1, NULL, NULL),
-(20, 'Home 2_NGT MESH', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'services/Xr3saG0IKWg33biYULRBBYUdmCgK0RfsI2Y3w4QK.jpg', 'Nhà mạng', 240000.00, NULL, '2025-04-10 01:30:46', '2025-04-29 13:25:31', 1, NULL, NULL),
-(21, 'HOME 4_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', '1. Ưu đãi gói cước\r\n- Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\n- Trang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\n+  Wifi Mesh 5: \r\n     * Wifi Mesh 5 iGate EW12ST là sự kết hợp giữa chuẩn Wifi 5 và công nghệ Mesh Wifi, phù hợp với hộ gia đình với mọi cấu trúc nhà ở. \r\n     * Tốc độ lên đến 1200Mbps trên cả 2 băng tần 2,4-5GHz\r\n     * Kết nối liền mạch, chỉ tạo tên 1 Wifi duy nhất\r\n     * Hỗ trợ đồng thời 40 thiết bị\r\n     * Cài đặt dễ dàng, triển khai linh hoạt.\r\n+ Wifi Mesh 6:\r\n     *Wifi Mesh 6 iGate EW30SX là sự kết hợp giữa chuẩn Wifi 6 và công nghệ Mesh, phù hợp với các doanh nghiệp, tổ chức vừa và nhỏ, các gia đình có nhu cầu sử dụng internet cao. \r\n     * Tốc độ lên đến 3Gbps, trên cả hai băng tần 2,4 – 5GHz\r\n     * Kết nối liền mạch, phù hợp mọi ngóc ngách\r\n     * Hỗ trợ đồng thời 100 thiết bị\r\n     * Độ trễ giảm 50%. \r\n- Lắp đặt nhanh chóng, chăm sóc và hỗ trợ khách hàng 24/7\r\n\r\n2. Cước đấu nối hòa mạng\r\n - Cước đấu nối hòa mạng áp dụng cho thuê bao đăng ký mới dịch vụ cho Khách hàng cá nhân, Hộ gia đình: 300.000 VNĐ/thuê bao (đã bao gồm VAT)\r\n\r\n3. Khu vực áp dụng\r\n - Áp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố\r\n\r\n4. Tổng đài hỗ trợ \r\n - Để được hỗ trợ về dịch vụ internet và truyền hình, Quý khách vui lòng liên hệ 1800 1166 (miễn phí)', 'services/dhsRznFd88xlLjRqbmxbjntocSGLDuB77E0EQicB.jpg', 'Phần mềm', 1000000.00, NULL, '2025-04-10 01:34:14', '2025-04-29 13:25:46', 0, NULL, NULL),
-(60, 'Phát triển Website Bán Hàng', 'Website thương mại điện tử hiện đại', 'Tích hợp giỏ hàng, thanh toán online, responsive.', 'services/TjYf6sBR4VkfuRtr9EzPL1pznKI48XfxTs8BjHak.jpg', 'Phần mềm', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:02', 0, NULL, NULL),
-(61, 'Ứng dụng di động Android/iOS', 'Lập trình app mobile đa nền tảng', 'Sử dụng Flutter, React Native, tích hợp API.', 'services/khDB2z0sjR4ttHlKFWsEiAqy7HiwMRnfnZphfV2C.jpg', 'Phần mềm', 7000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:20', 0, NULL, NULL),
-(62, 'Tư vấn triển khai ERP', 'Tư vấn ERP toàn diện cho doanh nghiệp', 'Kế toán, nhân sự, bán hàng, kho, CRM.', 'services/2Y4b65MHox9WCxOvKMZR5LLH3rMgCCIDZ8LO5w8D.png', 'Phần mềm', 8000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:41', 0, NULL, NULL),
-(63, 'Xây dựng hệ thống LMS', 'Nền tảng học trực tuyến chuyên nghiệp', 'Video, quiz, chấm điểm, chứng chỉ.', 'services/UH1gGPYAkyeSuUB7hPTSiPrqiOliQoy3cGhCaVOy.jpg', 'Phần mềm', 10000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:27:00', 0, NULL, NULL),
-(64, 'Tối ưu Cơ sở Dữ liệu', 'Tối ưu tốc độ và dung lượng dữ liệu', 'Query, index, backup, mô hình hóa.', 'services/ujEM9p21S3379g6zw03vMg4EPgCPpV59AKw6Vspl.jpg', 'Phần mềm', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:28:34', 0, NULL, NULL),
-(65, 'Giải pháp CRM khách hàng', 'Quản lý khách hàng và bán hàng hiệu quả', 'Quản lý pipeline, email marketing, báo cáo.', 'services/dtOOyPjSWNgKGFqCNCS0zQOzP1gUGffrU7OC5cPr.png', 'Phần mềm', 4000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:29:07', 0, NULL, NULL),
-(66, 'Dịch vụ DevOps', 'Tự động hóa CI/CD và hạ tầng', 'Docker, Jenkins, GitLab CI, cloud deploy.', 'services/a0It4W6kxOqUz6TUERtlYswPsw4kwBwgCUhUhc9o.jpg', 'Phần mềm', 4500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:07', 0, NULL, NULL),
-(67, 'Bảo mật ứng dụng Web', 'Phân tích và bảo vệ hệ thống', 'Kiểm thử lỗ hổng OWASP, tường lửa ứng dụng.', 'services/XzM84aFmFHps8HVRSSWjjxJ3Q3P5PzIWjcxlN8mP.jpg', 'Phần mềm', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:56', 0, NULL, NULL),
-(68, 'Dịch vụ API Gateway', 'Tích hợp API trung gian', 'Quản lý version, bảo mật, định tuyến thông minh.', 'services/8qwNnayx5Bj1mlcGHnzSWJhj3UdOkcvam12XKMZr.jpg', 'Phần mềm', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:37', 0, NULL, NULL),
-(69, 'Triển khai hệ thống Chatbot', 'Chatbot cho website, Facebook', 'Tích hợp AI, hỗ trợ khách hàng 24/7.', 'services/HfnKc7VVSZjgGry25COri0qCuScrWeeoEqi8qyuO.png', 'Phần mềm', 4500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:31:26', 0, NULL, NULL),
-(70, 'Lắp đặt Camera IP', 'Triển khai giám sát văn phòng', 'Xem từ xa, ghi hình đám mây.', 'services/5o0wdDrxO52xIH0t9rIuO2GPs1Rs0bgAOEq2xtY8.jpg', 'Phần cứng', 4000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:00', 0, NULL, NULL),
-(71, 'Bảo trì máy chủ định kỳ', 'Vá lỗi, tối ưu hiệu suất server', 'Check phần cứng, OS, RAID.', 'services/R3hwPKYAq0NyncGO4dq5iRtS4QBhgpKiybk8krFG.jpg', 'Phần cứng', 2500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:24', 0, NULL, NULL),
-(72, 'Nâng cấp máy tính doanh nghiệp', 'RAM, SSD, vệ sinh thiết bị', 'Tăng hiệu suất máy văn phòng.', 'services/KB50qsTT30zQnNyPJX8ktlH7Hqua9524MPz730E2.jpg', 'Phần cứng', 1500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:48', 0, NULL, NULL),
-(73, 'Lắp đặt mạng nội bộ LAN', 'Switch, router, phân vùng mạng', 'Setup hạ tầng nội bộ.', 'services/TTvjEsVYCNWJ4M8XekJOcZFbsvkto5Cc09StjmYC.jpg', 'Phần cứng', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:33:09', 0, NULL, NULL),
-(74, 'Cung cấp máy tính văn phòng', 'Máy bộ, màn hình, phụ kiện', 'Bảo hành 12 tháng.', 'services/RvyDUOiQOmZDL0VczKivzrIv2MHs0qKZHCSAFfcb.jpg', 'Phần cứng', 7000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:43:26', 0, NULL, NULL),
-(77, 'Thi công tủ rack và cáp mạng', 'Tổ chức tủ mạng chuyên nghiệp', 'Patch panel, chuẩn hóa dây cáp.', 'services/xGMhcCJuIPFFmLwTACsF9brt3xDp4Vp49LBzT6Yg.jpg', 'Phần cứng', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:34:13', 0, NULL, NULL),
-(78, 'Cài đặt phần cứng máy chủ', 'Lắp CPU, RAM, RAID, NIC', 'Cấu hình BIOS, test ổn định.', 'services/roXAdH5gY3MNMLkG7bzLhRpje2gkEULP4atrKw4Q.jpg', 'Phần cứng', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:34:47', 0, NULL, NULL),
-(79, 'Bảo trì thiết bị mạng', 'Switch, router, firewall', 'Firmware update, kiểm tra lỗi.', 'services/k4L11F5PcjtrvU3Tz11hloddbnMjvGGY5x6Ei4BT.jpg', 'Phần cứng', 1800000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:43:49', 0, NULL, NULL),
-(80, 'Đăng ký Internet doanh nghiệp', 'Tốc độ cao, có IP tĩnh', 'Hỗ trợ 24/7, hợp đồng linh hoạt.', 'services/PxPzLNOneDCPgr2SPI3NpeH6auZuG4nmI1OjCJSO.png', 'Nhà mạng', 2000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:37:50', 0, NULL, NULL),
-(81, 'Triển khai tổng đài nội bộ (PBX)', 'Liên lạc nội bộ và gọi ngoài', 'VoIP, ghi âm, phân luồng.', 'services/SwOXBzWKh8biErzRVzUDVg0kMm4ja1EhCohzG76y.jpg', 'Nhà mạng', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:22', 0, NULL, NULL),
-(83, 'Triển khai mạng VPN', 'Bảo mật dữ liệu từ xa', 'OpenVPN, IPsec cho doanh nghiệp.', 'services/4sp7PAba8SMksCZ8JjJW04j1guTkNXboFZNYnfiF.jpg', 'Nhà mạng', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:38', 0, NULL, NULL),
-(84, 'Tư vấn an ninh mạng', 'Firewall, IDS/IPS', 'Đảm bảo an toàn hệ thống.', 'services/MpRu3kcPi8e07M9V28sZsuJgbQWZyKGHwlblSfJo.png', 'Nhà mạng', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:59', 0, NULL, NULL),
-(86, 'Giám sát hệ thống mạng từ xa', 'Theo dõi uptime, cảnh báo', 'Zabbix, PRTG, email alert.', 'services/WMJw5RoHAklzZl9KVC1UlPLZxmPYWxwG7mCbfgyk.jpg', 'Nhà mạng', 3200000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:40:17', 0, NULL, NULL),
-(87, 'Cung cấp thiết bị mạng chuyên dụng', 'Router, firewall, WiFi mesh', 'Cisco, Mikrotik, Aruba.', 'services/9IHOTBgOE9tzjYq1WQPWxHHMtOnlU3urdtJYZ0QZ.jpg', 'Nhà mạng', 8000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:00', 0, NULL, NULL),
-(89, 'Bảo trì định kỳ hệ thống mạng', 'Kiểm tra thiết bị và backup cấu hình', 'Khắc phục sự cố định kỳ.', 'services/xsNIYTPBm9FktUmavCB7WUPLQ1IdIvJaVrHI9mnH.jpg', 'Nhà mạng', 2000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:22', 0, NULL, NULL),
-(102, 'Dịch vụ bảo mật dữ liệu cao cấp', '123', '123', 'services/h75W6Ak1PCiodTECxwqSmyTxiUZSmoJ1sQm8yrex.jpg', 'Phần mềm', 1000.00, 3, '2025-04-28 14:12:09', '2025-04-30 22:15:32', 1, NULL, NULL);
+INSERT INTO `services` (`id`, `service_name`, `description`, `content`, `image`, `price`, `created_by`, `created_at`, `updated_at`, `is_hot`, `category_id`, `deleted_at`) VALUES
+(19, 'HOME 3_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', 'services/1JovvZvowJ9UO7yDvNyW7ECwSWHs7ozKf7GIbVZb.jpg', 310000.00, NULL, '2025-04-13 23:14:48', '2025-04-29 13:25:12', 1, NULL, NULL),
+(20, 'Home 2_NGT MESH', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'Đường truyền Internet tốc độ 500Mbps\r\n\r\nTrang bị thêm Wifi Mesh 5/6 chỉ với 30.000đ/tháng', 'services/Xr3saG0IKWg33biYULRBBYUdmCgK0RfsI2Y3w4QK.jpg', 240000.00, NULL, '2025-04-10 01:30:46', '2025-04-29 13:25:31', 1, NULL, NULL),
+(21, 'HOME 4_NgT (Mesh)', 'Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\nTrang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\nÁp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố', '1. Ưu đãi gói cước\r\n- Đường truyền Internet tốc độ từ 500 Mbps lên tới 1000 Mbps tuỳ thuộc khoảng cách tới thiết bị phát Wifi, chủng loại thiết bị và hạ tầng tại từng khu vực\r\n- Trang bị 01 Wifi Mesh 5 hoặc 01 Wifi Mesh 6\r\n+  Wifi Mesh 5: \r\n     * Wifi Mesh 5 iGate EW12ST là sự kết hợp giữa chuẩn Wifi 5 và công nghệ Mesh Wifi, phù hợp với hộ gia đình với mọi cấu trúc nhà ở. \r\n     * Tốc độ lên đến 1200Mbps trên cả 2 băng tần 2,4-5GHz\r\n     * Kết nối liền mạch, chỉ tạo tên 1 Wifi duy nhất\r\n     * Hỗ trợ đồng thời 40 thiết bị\r\n     * Cài đặt dễ dàng, triển khai linh hoạt.\r\n+ Wifi Mesh 6:\r\n     *Wifi Mesh 6 iGate EW30SX là sự kết hợp giữa chuẩn Wifi 6 và công nghệ Mesh, phù hợp với các doanh nghiệp, tổ chức vừa và nhỏ, các gia đình có nhu cầu sử dụng internet cao. \r\n     * Tốc độ lên đến 3Gbps, trên cả hai băng tần 2,4 – 5GHz\r\n     * Kết nối liền mạch, phù hợp mọi ngóc ngách\r\n     * Hỗ trợ đồng thời 100 thiết bị\r\n     * Độ trễ giảm 50%. \r\n- Lắp đặt nhanh chóng, chăm sóc và hỗ trợ khách hàng 24/7\r\n\r\n2. Cước đấu nối hòa mạng\r\n - Cước đấu nối hòa mạng áp dụng cho thuê bao đăng ký mới dịch vụ cho Khách hàng cá nhân, Hộ gia đình: 300.000 VNĐ/thuê bao (đã bao gồm VAT)\r\n\r\n3. Khu vực áp dụng\r\n - Áp dụng tại ngoại thành Hà Nội, TP.HCM & 61 Tỉnh/thành phố\r\n\r\n4. Tổng đài hỗ trợ \r\n - Để được hỗ trợ về dịch vụ internet và truyền hình, Quý khách vui lòng liên hệ 1800 1166 (miễn phí)', 'services/dhsRznFd88xlLjRqbmxbjntocSGLDuB77E0EQicB.jpg', 1000000.00, NULL, '2025-04-10 01:34:14', '2025-04-29 13:25:46', 0, NULL, NULL),
+(60, 'Phát triển Website Bán Hàng', 'Website thương mại điện tử hiện đại', 'Tích hợp giỏ hàng, thanh toán online, responsive.', 'services/TjYf6sBR4VkfuRtr9EzPL1pznKI48XfxTs8BjHak.jpg', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:02', 0, NULL, NULL),
+(61, 'Ứng dụng di động Android/iOS', 'Lập trình app mobile đa nền tảng', 'Sử dụng Flutter, React Native, tích hợp API.', 'services/khDB2z0sjR4ttHlKFWsEiAqy7HiwMRnfnZphfV2C.jpg', 7000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:20', 0, NULL, NULL),
+(62, 'Tư vấn triển khai ERP', 'Tư vấn ERP toàn diện cho doanh nghiệp', 'Kế toán, nhân sự, bán hàng, kho, CRM.', 'services/2Y4b65MHox9WCxOvKMZR5LLH3rMgCCIDZ8LO5w8D.png', 8000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:26:41', 0, NULL, NULL),
+(63, 'Xây dựng hệ thống LMS', 'Nền tảng học trực tuyến chuyên nghiệp', 'Video, quiz, chấm điểm, chứng chỉ.', 'services/UH1gGPYAkyeSuUB7hPTSiPrqiOliQoy3cGhCaVOy.jpg', 10000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:27:00', 0, NULL, NULL),
+(64, 'Tối ưu Cơ sở Dữ liệu', 'Tối ưu tốc độ và dung lượng dữ liệu', 'Query, index, backup, mô hình hóa.', 'services/ujEM9p21S3379g6zw03vMg4EPgCPpV59AKw6Vspl.jpg', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:28:34', 0, NULL, NULL),
+(65, 'Giải pháp CRM khách hàng', 'Quản lý khách hàng và bán hàng hiệu quả', 'Quản lý pipeline, email marketing, báo cáo.', 'services/dtOOyPjSWNgKGFqCNCS0zQOzP1gUGffrU7OC5cPr.png', 4000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:29:07', 0, NULL, NULL),
+(66, 'Dịch vụ DevOps', 'Tự động hóa CI/CD và hạ tầng', 'Docker, Jenkins, GitLab CI, cloud deploy.', 'services/a0It4W6kxOqUz6TUERtlYswPsw4kwBwgCUhUhc9o.jpg', 4500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:07', 0, NULL, NULL),
+(67, 'Bảo mật ứng dụng Web', 'Phân tích và bảo vệ hệ thống', 'Kiểm thử lỗ hổng OWASP, tường lửa ứng dụng.', 'services/XzM84aFmFHps8HVRSSWjjxJ3Q3P5PzIWjcxlN8mP.jpg', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:56', 0, NULL, NULL),
+(68, 'Dịch vụ API Gateway', 'Tích hợp API trung gian', 'Quản lý version, bảo mật, định tuyến thông minh.', 'services/8qwNnayx5Bj1mlcGHnzSWJhj3UdOkcvam12XKMZr.jpg', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:30:37', 0, NULL, NULL),
+(69, 'Triển khai hệ thống Chatbot', 'Chatbot cho website, Facebook', 'Tích hợp AI, hỗ trợ khách hàng 24/7.', 'services/HfnKc7VVSZjgGry25COri0qCuScrWeeoEqi8qyuO.png', 4500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:31:26', 0, NULL, NULL),
+(70, 'Lắp đặt Camera IP', 'Triển khai giám sát văn phòng', 'Xem từ xa, ghi hình đám mây.', 'services/5o0wdDrxO52xIH0t9rIuO2GPs1Rs0bgAOEq2xtY8.jpg', 4000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:00', 0, NULL, NULL),
+(71, 'Bảo trì máy chủ định kỳ', 'Vá lỗi, tối ưu hiệu suất server', 'Check phần cứng, OS, RAID.', 'services/R3hwPKYAq0NyncGO4dq5iRtS4QBhgpKiybk8krFG.jpg', 2500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:24', 0, NULL, NULL),
+(72, 'Nâng cấp máy tính doanh nghiệp', 'RAM, SSD, vệ sinh thiết bị', 'Tăng hiệu suất máy văn phòng.', 'services/KB50qsTT30zQnNyPJX8ktlH7Hqua9524MPz730E2.jpg', 1500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:32:48', 0, NULL, NULL),
+(73, 'Lắp đặt mạng nội bộ LAN', 'Switch, router, phân vùng mạng', 'Setup hạ tầng nội bộ.', 'services/TTvjEsVYCNWJ4M8XekJOcZFbsvkto5Cc09StjmYC.jpg', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:33:09', 0, NULL, NULL),
+(74, 'Cung cấp máy tính văn phòng', 'Máy bộ, màn hình, phụ kiện', 'Bảo hành 12 tháng.', 'services/RvyDUOiQOmZDL0VczKivzrIv2MHs0qKZHCSAFfcb.jpg', 7000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:43:26', 0, NULL, NULL),
+(77, 'Thi công tủ rack và cáp mạng', 'Tổ chức tủ mạng chuyên nghiệp', 'Patch panel, chuẩn hóa dây cáp.', 'services/xGMhcCJuIPFFmLwTACsF9brt3xDp4Vp49LBzT6Yg.jpg', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:34:13', 0, NULL, NULL),
+(78, 'Cài đặt phần cứng máy chủ', 'Lắp CPU, RAM, RAID, NIC', 'Cấu hình BIOS, test ổn định.', 'services/roXAdH5gY3MNMLkG7bzLhRpje2gkEULP4atrKw4Q.jpg', 5000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:34:47', 0, NULL, NULL),
+(79, 'Bảo trì thiết bị mạng', 'Switch, router, firewall', 'Firmware update, kiểm tra lỗi.', 'services/k4L11F5PcjtrvU3Tz11hloddbnMjvGGY5x6Ei4BT.jpg', 1800000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:43:49', 0, NULL, NULL),
+(80, 'Đăng ký Internet doanh nghiệp', 'Tốc độ cao, có IP tĩnh', 'Hỗ trợ 24/7, hợp đồng linh hoạt.', 'services/PxPzLNOneDCPgr2SPI3NpeH6auZuG4nmI1OjCJSO.png', 2000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:37:50', 0, NULL, NULL),
+(81, 'Triển khai tổng đài nội bộ (PBX)', 'Liên lạc nội bộ và gọi ngoài', 'VoIP, ghi âm, phân luồng.', 'services/SwOXBzWKh8biErzRVzUDVg0kMm4ja1EhCohzG76y.jpg', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:22', 0, NULL, NULL),
+(83, 'Triển khai mạng VPN', 'Bảo mật dữ liệu từ xa', 'OpenVPN, IPsec cho doanh nghiệp.', 'services/4sp7PAba8SMksCZ8JjJW04j1guTkNXboFZNYnfiF.jpg', 3000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:38', 0, NULL, NULL),
+(84, 'Tư vấn an ninh mạng', 'Firewall, IDS/IPS', 'Đảm bảo an toàn hệ thống.', 'services/MpRu3kcPi8e07M9V28sZsuJgbQWZyKGHwlblSfJo.png', 3500000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:39:59', 0, NULL, NULL),
+(86, 'Giám sát hệ thống mạng từ xa', 'Theo dõi uptime, cảnh báo', 'Zabbix, PRTG, email alert.', 'services/WMJw5RoHAklzZl9KVC1UlPLZxmPYWxwG7mCbfgyk.jpg', 3200000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:40:17', 0, NULL, NULL),
+(87, 'Cung cấp thiết bị mạng chuyên dụng', 'Router, firewall, WiFi mesh', 'Cisco, Mikrotik, Aruba.', 'services/9IHOTBgOE9tzjYq1WQPWxHHMtOnlU3urdtJYZ0QZ.jpg', 8000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:00', 0, NULL, NULL),
+(89, 'Bảo trì định kỳ hệ thống mạng', 'Kiểm tra thiết bị và backup cấu hình', 'Khắc phục sự cố định kỳ.', 'services/xsNIYTPBm9FktUmavCB7WUPLQ1IdIvJaVrHI9mnH.jpg', 2000000.00, 3, '2025-04-10 21:27:26', '2025-04-29 13:41:22', 0, NULL, NULL),
+(102, 'Dịch vụ bảo mật dữ liệu cao cấp', '123', '123', 'services/h75W6Ak1PCiodTECxwqSmyTxiUZSmoJ1sQm8yrex.jpg', 1000.00, 3, '2025-04-28 14:12:09', '2025-04-30 22:15:32', 1, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -405,6 +405,15 @@ CREATE TABLE `service_categories` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `service_categories`
+--
+
+INSERT INTO `service_categories` (`id`, `name`, `description`, `created_at`, `updated_at`) VALUES
+(1, 'Phần mềm', 'Các dịch vụ liên quan đến phần mềm', '2025-05-03 13:06:11', '2025-05-03 13:06:11'),
+(2, 'Phần cứng', 'Các dịch vụ liên quan đến phần cứng', '2025-05-03 13:06:11', '2025-05-03 13:06:11'),
+(3, 'Nhà mạng', 'Các dịch vụ liên quan đến nhà mạng', '2025-05-03 13:06:11', '2025-05-03 13:06:11');
 
 -- --------------------------------------------------------
 
@@ -442,6 +451,9 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
+('33HcqoLUFdnfgDxyCtb6KwAKixNhPUI0o8bu9XDg', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJazl3YzJsTFRWbE5SMWR1VWpSTFprNHZTWGh5ZFdjOVBTSXNJblpoYkhWbElqb2labTFIVERVMGIxTjNhVEp6TlhGV1NVNUdPRFZqTWsxWFZsSldOMnhEVGpCSFIyTm9PVk5LTlhoMFQzazJibFZhV0V4V1JsTkVVM2RTVjIxeUsxQXpia0ZxSzJocVp6ZFZLMEZMWmt4SWNYaHhkbEprVFVSMU1XWnljSEZWUzFock0yMXpaaTh2YzBObGJHMUROVTlRYzA5M1ZFWnhRM1JzV1c1TlpsVlBXUzlhTkhGUFJYRkhTVlJzTWl0d1JGTkZRVGt5VVVKYWRsQnplQzlEVG14M1RqSjRRMWxyWlVkaFdYbFZVaTh6VjNSSWVqZHdaMFpNWWxwS1prY3ZNMmhGYURRM1VVbHVUWGwwYTNaWlpuWk9XVXBhWlU0NVkzWndZazlwTXpkd2FsWmhTbEJ4U0RrNWRFTm1SbGxoZWxNMmVXOWxRMWt6YkN0dVNIaE5RM0F2SzFCRFRUVnFkbUoxVWxNclVtNHlkbVZMVDBkamRuWlhhemMxU0ZaUFZ6ZE5WMGRYYkV4aFUwb3ZhRmxhVmpKNFJGZFBabXQyUjFCU01GYzRSRWhYYTJadlMySjZjRGh5ZUc5MVZTOUtiRUp0V1ROWVR6TmtibEJOWWtWelUwSndkV1ZQVURGaVVqbDNRVFEwUFNJc0ltMWhZeUk2SWprMk9XRTVaamMxTVRjNVpHVXlNVGsxTkdZeFptWXdaVFJpWWpVNE0yRmhOemxoT1Rkak5XTmlZamc0TnpJMU9USXdNak0zTXpBNVpUTmxZekZqT0dZaUxDSjBZV2NpT2lJaWZRPT0=', 1746277258),
+('BRTUIcQW5pY9cMjMTuN7dJhK3Sjy84zVGGwDIacn', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJazFGYUROdVFuSlJUbnBXZURSMFFqRTJWa04xZVhjOVBTSXNJblpoYkhWbElqb2lSRk5RV0VFNFowVmljRU5OYkZOVEwxQnlLMGcwTTBGd2JEQlRWV2xST1ZWRWRETm9hV2c1ZERoRFoxSndSWHBqYmpST2VDczBSbXBTZG1kaU5qUlJUVWxNZW1KUU5EZHNlR3RNYWpWaGFuTnNTRGt6UVdocGNWaFVjREo2VFRCQ2JVNTZaM0JZZWpkVFZVWlpTMlpNU1RKUFJHTk9NekJzVlhnMk5YUkpaMmRTTm5FeFNubE9aVmg0VjBSamIxTndaRk53TVVSbFpIQnpSME5UWkRaNmMwY3pNalJaTkVzNVpIbHFWVU5tVVhOTWEyVlJVMWxvWTNVck9HdGxWalJxUVV4eFlqVlJSRWxPTldoVlNtODVSemxHT1RnM1QzWkhjVTh4Y0RacVFrY3hLemd5UlRSTFMyRmhLemN4ZEZwb2RVaFFOMnQxYkVreVJsTkZTMWh6ZHlzdmRrTXpVMmRKVG5aT1QxTkhSa052UTNGRFNqWlNOM2hpU1RZelRsRmpNMk4xVHk5eU5VY3JOMUpQU0d4UFVWZHpiVEJCU2tkeGFtVjNVemRMTURSRVp6ZERPV1p0TmxwTmJtMU9iVVpIWkcxcVYycE1LM2N6YlhGR2MxQjFPRzlPVlUxaFRITnNhRmRqTkhjek9Ib3hPR3hWY25KMVZWRlZWamRRVjNGQklpd2liV0ZqSWpvaVl6UmxPV1JsTnpjek5UQXhPV1V5TUdabE1XTmhZVEExWVdVMFkyWmhNVFF6WVRWbFptWTNZMkZtTnpBNFkyRm1PVGc0T0RjeVptRXlOemd4WkRBMlppSXNJblJoWnlJNklpSjk=', 1746277659),
+('muKhlkx7341vTucIEZ0RKTQyeYUnMOfhnk9Nl35F', NULL, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJblZDTDBsM1kwbFVVVFp3U2tSaWMwSXdXRGRsY2tFOVBTSXNJblpoYkhWbElqb2laVzkwUVZjck4wRm9iMW81TWtaNlZHdGliMFpFV1dSWWMxZE9kRzVhYkdSd2QwUjFiazlKTm1sVFNHNTRXa0ZGYkVkWFUyUkRTV0UzVUU5UmNTczFSMmRMTWxWWFdIWlFibXBXVDNBM01XeGphREY0ZEhaV2IweGpNV2haYTFGNGNrNW1jR3hoVmtnd2VVMWpObkFyYkVOcWFUTk1VMUUzVkVoUU5UbHdabkJtWWt0WFRuYzBRV1p3WVU1cVFVcGpTMjh3VW1sd1dHZzJZVVpYUTFncmNEQXhSMnBNU0M4dlQwOXBiVFp5VW5NM1FqUnhlRW8wWkhFd2VYTnRiV0pwWm1GMFRWUmlLMlkzUVcxeVNHTnhMeTlrV1V4aWVIQndXbXczVGtsclFUTk1VR05hYnk5SFozZHBjVUpuWW5KVFZEY3pXbU5sU2s1WWNFdENWVTFtY1VRM05WQlhOakF6V1hWTVFYZEVjREoxTTBoUFNYYzlQU0lzSW0xaFl5STZJalF6WldSalkyUXdNamt3WlROaE9ERmtaall6TUdKaVpUaGxabVJtTTJOaE16RmhZVFEyWkRobU4yTTNNekl6WWpCaE9HRmhOakk1TkRaaU5USmlOVGNpTENKMFlXY2lPaUlpZlE9PQ==', 1746168015),
 ('SaEmRXS7s1ghNVdBio9tkpMyCa2DW9SjxDjh3wtc', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/135.0.0.0 Safari/537.36 Edg/135.0.0.0', 'ZXlKcGRpSTZJbkJRZGxSbE5uTmtiR2t4ZDI5eVdHdDBkMk0yYldjOVBTSXNJblpoYkhWbElqb2lXVUZVU1dOUlkzVnZTamhwWlZKRlQxWlBaRGt3VFhOblFqVktNbWg1VTJFM1lYSkxkRlJJVGtGNGNYWXJjR0kwWm5CQ2RtVlJTMVlyV21wb2JURkNTMmhVVW05TWQyRlpaM2hrWVZoRlprNHdNV2RRV205cVVEQlhTMU5NZHpkQk9FSnZWbTVJT1dsd1VYZzVla0Z2ZEdkblJtOVRTMjQxUzFoNFEzSkNMMEZ0YjBVeWJDOXNXVkF5YVd4MlR6RkhXVzVqVGpKNlYyUkJjQzltVUZaR09ESXdNVEZWZFd4cVUzTmlaMmhtTmxkVWJXOU1NV3hzT1UwME4waExXVkZEY0VwaWFFYzNWRkZTU0d0cFpsTndXaklyV1dONGFtMWhNelZaUXk5cFkwZHViR0V3Y1dOd2EwNUJTM2RvWm1oc1Z6TjVXVkpMTVhWS2EzSTVlVzFNYkhwd1NuSXJLelJyWWpOeU5pOUZNVmhtWkhsQmVVUk5ZbTlUTHpKTVRVZG1iVEJyYzAxYWNEYzNUMFZhT1U5cEwwbE9kVlp6Ynk5aGRETmpRekZDVlhkVGRrTndhMkpsUTNBdmRrY3hTRTExSzI1akwxZzBZMUI0TDBobWQyRm1kVUpVUkZOSGVFTTBZV3RuUFNJc0ltMWhZeUk2SW1FNU5tVTVZekprTnpCbVlURm1aVE5oTVRVNU1tSTJNRFptTURsa1pHSmlNamxqTm1NMk5UQXlOR1ZtWmpVd016SmpZamxtTW1RME56SXpaVFJsTXpBaUxDSjBZV2NpT2lJaWZRPT0=', 1746113879);
 
 -- --------------------------------------------------------
@@ -527,7 +539,8 @@ ALTER TABLE `contracts`
   ADD UNIQUE KEY `contracts_contract_number_unique` (`contract_number`),
   ADD KEY `contracts_service_id_foreign` (`service_id`),
   ADD KEY `contracts_customer_id_foreign` (`customer_id`),
-  ADD KEY `idx_contracts_number` (`contract_number`);
+  ADD KEY `idx_contracts_number` (`contract_number`),
+  ADD KEY `idx_contracts_status` (`status`);
 
 --
 -- Chỉ mục cho bảng `contract_amendments`
@@ -602,7 +615,8 @@ ALTER TABLE `password_resets`
 --
 ALTER TABLE `payments`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `payments_contract_id_foreign` (`contract_id`);
+  ADD KEY `payments_contract_id_foreign` (`contract_id`),
+  ADD KEY `idx_payments_method` (`method`);
 
 --
 -- Chỉ mục cho bảng `permissions`
@@ -708,7 +722,7 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 
 --
 -- AUTO_INCREMENT cho bảng `notifications`
@@ -738,7 +752,7 @@ ALTER TABLE `services`
 -- AUTO_INCREMENT cho bảng `service_categories`
 --
 ALTER TABLE `service_categories`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT cho bảng `service_reviews`
@@ -811,7 +825,7 @@ ALTER TABLE `payments`
 --
 ALTER TABLE `services`
   ADD CONSTRAINT `services_category_id_foreign` FOREIGN KEY (`category_id`) REFERENCES `service_categories` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `services_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `employees` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `services_created_by_foreign` FOREIGN KEY (`created_by`) REFERENCES `employees` (`id`) ON DELETE SET NULL;
 
 --
 -- Các ràng buộc cho bảng `service_reviews`

@@ -40,7 +40,7 @@
         <div class="space-y-3">
             <div>
                 <div class="text-gray-500 text-sm">Loại dịch vụ</div>
-                <div class="text-gray-900">{{ $service->service_type }}</div>
+                <div class="text-gray-900">{{ $service->category->name ?? 'Không có danh mục' }}</div>
             </div>
             <div>
                 <div class="text-gray-500 text-sm">Người tạo</div>

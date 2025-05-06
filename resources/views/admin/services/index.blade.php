@@ -22,6 +22,9 @@
     <a href="{{ route('admin.services.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
         Thêm dịch vụ mới
     </a>
+    <a href="{{ route('admin.service-categories.index') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
+        Quản lý loại dịch vụ
+    </a>
 
     <div class="overflow-x-auto bg-white p-* shadow-xl rounded-xl border border-gray-300">
 
@@ -49,7 +52,7 @@
                         {{ $service->price ? number_format($service->price, 0, ',', '.') . ' VND' : 'N/A' }}
                     </td>
                     <td class="py-3 px-6 text-center">
-                        {{ $service->service_type ?? 'Không xác định' }}
+                        {{$service->category->name ?? 'Không có danh mục' }}
                     </td>
                     <td class="py-3 px-6 text-center">
                         {{ $service->employee->name ?? 'Admin' }}

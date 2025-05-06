@@ -17,7 +17,7 @@
                 <strong>Tên dịch vụ:</strong> {{ $service->service_name }}
             </h2>
             <p class="text-gray-700 text-md mb-4">
-                <strong>Loại dịch vụ:</strong> {{ $service->service_type }}
+                <strong>Loại dịch vụ:</strong> {{ $service->category->name ?? 'Không có danh mục' }}
             </p>
             <div class="text-gray-700 text-md space-y-4 mb-4">
                 <div>

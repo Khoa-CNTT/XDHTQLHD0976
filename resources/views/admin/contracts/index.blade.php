@@ -19,11 +19,21 @@
 <div class="container mx-auto mt-8">
     <h2 class="text-2xl font-semibold mb-6">Danh sách Hợp đồng</h2>
 
-    @can('create', App\Models\Contract::class)
-    <a href="{{ route('admin.contracts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded mb-4 inline-block">
-        Thêm hợp đồng mới
-    </a>
-    @endcan
+    <div class="flex space-x-4">
+        @can('create', App\Models\Contract::class)
+            <a href="{{ route('admin.contracts.create') }}" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Thêm hợp đồng mới
+            </a>
+        @endcan
+    
+        @foreach($contracts as $contract) 
+        @can('create', App\Models\ContractAmendment::class)
+            <a href="{{ route('admin.contracts.admendments.index', $contract->id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">
+                Phụ lục hợp đồng
+            </a>
+        @endcan
+    @endforeach
+    </div>
 
     <div class="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-300">
 

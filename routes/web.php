@@ -6,11 +6,13 @@ use App\Http\Controllers\Customer\ServiceController as CustomerServiceController
 use App\Http\Controllers\Customer\ContractController as CustomerContractController;
 use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController;
 use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
+use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
 
 
 
 
-
+use App\Http\Controllers\Admin\ContractAmendmentController as AdminContractAmendmentController;
+use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
@@ -109,6 +111,15 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
         Route::put('/contracts/{id}/complete', [AdminContractController::class, 'markAsComplete'])->name('contracts.complete');
+
+        Route::resource('service-categories', ServiceCategoryController::class)->except(['show']);
+        Route::post('services/categories', [AdminServiceController::class, 'createCategory'])->name('services.categories.create');
+        Route::delete('services/categories/{id}', [AdminServiceController::class, 'deleteCategory'])->name('services.categories.delete');
+
+
+        Route::get('/contracts/{contractId}/amendments', [AdminContractAmendmentController::class, 'index'])->name('contracts.admendments.index');
+        Route::get('/contracts/admendments', [AdminContractAmendmentController::class, 'create'])->name('contracts.admendments.create');
+        Route::post('', [AdminContractAmendmentController::class, 'store'])->name('contracts.admendments.store');
         
 
     });
@@ -124,6 +135,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('contracts/sign/{id}', [CustomerContractController::class, 'showSignForm'])->name('contracts.sign');
         Route::post('contracts/send-otp/{id}', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
         Route::post('contracts/sign/{id}', [CustomerContractController::class, 'sign'])->name('contracts.sign.submit');
+
+
+        Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
         
 
 
@@ -141,7 +155,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/vnpay/success', [VNPayPaymentController::class, 'paymentSuccess'])->name('vnpay.success');   
         
               
-    
+        Route::get('/', [CustomerContractAmendmentController::class, 'index'])->name('index');
           
       
         

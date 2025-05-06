@@ -34,12 +34,19 @@
             @enderror
         </div>
         <div class="mb-4">
-            <label class="block mb-1 font-medium">Loại dịch vụ</label>
-            <select name="service_type" class="w-full border border-gray-300 rounded px-4 py-2">
-                <option value="Phần mềm" {{ $service->service_type == 'Phần mềm' ? 'selected' : '' }}>Phần mềm</option>
-                <option value="Phần cứng" {{ $service->service_type == 'Phần cứng' ? 'selected' : '' }}>Phần cứng</option>
-                <option value="Nhà mạng" {{ $service->service_type == 'Nhà mạng' ? 'selected' : '' }}>Nhà mạng</option>
+            <label class="block mb-1 font-medium">Danh mục</label>
+            <select name="category_id" class="w-full border border-gray-300 rounded px-4 py-2" required>
+                <option value="">-- Chọn danh mục --</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}"
+                        {{ old('category_id', $service->category_id) == $category->id ? 'selected' : '' }}>
+                        {{ $category->name }}
+                    </option>
+                @endforeach
             </select>
+            @error('category_id')
+                <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
+            @enderror
         </div>
         <div class="mb-6">
             <label class="block mb-1 font-medium">Giá</label>

@@ -4,14 +4,11 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Contract;
-use App\Models\Customer;
-use App\Models\Service;
-use Illuminate\Http\Request;
+use App\Models\ContractAmendment;
+use App\Models\ContractDocument;
 use Illuminate\Support\Facades\Auth;
-use App\Mail\OtpMail;
-use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\Cache;
 
+use Illuminate\Http\Request;
 
 class ContractController extends Controller
 {
@@ -154,4 +151,7 @@ public function markAsComplete($id)
 
     return redirect()->route('admin.contracts.index')->with('warning', 'Hợp đồng đã ở trạng thái hoàn thành.');
 }
+
+
+
 }

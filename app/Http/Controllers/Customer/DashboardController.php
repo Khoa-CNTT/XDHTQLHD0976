@@ -15,17 +15,18 @@ class DashboardController extends Controller
     // }
 
     public function index()
-    {
-        $isLoggedIn = Auth::check();
-        $user = $isLoggedIn ? Auth::user() : null;
-    
-        // Lấy danh sách dịch vụ
-        $services = Service::select('id', 'image','service_name', 'description', 'service_type', 'price', 'created_by', 'created_at', 'is_hot')
-        ->orderByDesc('is_hot')           // Ưu tiên dịch vụ hot
-        ->orderByDesc('created_at')       // Sau đó đến mới nhất
-        ->paginate(9);                    // Phân trang
-        return view('customer.dashboard', compact('isLoggedIn', 'user', 'services'));
-    }
+{
+    $isLoggedIn = Auth::check();
+    $user = $isLoggedIn ? Auth::user() : null;
+
+  
+    $services = Service::select('id', 'image', 'service_name', 'description', 'price', 'created_by', 'created_at', 'is_hot','category_id') 
+        ->orderByDesc('is_hot')        
+        ->orderByDesc('created_at')      
+        ->paginate(9);                  
+
+    return view('customer.dashboard', compact('isLoggedIn', 'user', 'services'));
+}
     public function show($id)
     {
         $contract = Contract::with('service')->findOrFail($id);

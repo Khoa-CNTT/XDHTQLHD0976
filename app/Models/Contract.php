@@ -42,5 +42,14 @@ class Contract extends Model
     {
         return $this->hasMany(Signature::class, 'contract_id');
     }
+    public function amendments()
+{
+    return $this->hasMany(ContractAmendment::class);
+}
+
+public function documents()
+{
+    return $this->hasMany(ContractDocument::class);
+}
 
 }

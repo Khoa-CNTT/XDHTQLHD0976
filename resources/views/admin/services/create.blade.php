@@ -45,13 +45,15 @@
             @enderror
         </div>
         <div class="mb-4">
-            <label class="block mb-1 font-medium">Loại dịch vụ</label>
-            <select name="service_type" class="w-full border border-gray-300 rounded px-4 py-2">
-                <option value="Phần mềm">Phần mềm</option>
-                <option value="Phần cứng">Phần cứng</option>
-                <option value="Nhà mạng">Nhà mạng</option>
+            <label for="category_id" class="block text-sm font-medium text-gray-700">Danh mục</label>
+            <select name="category_id" id="category_id" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm" required>
+                <option value="">-- Chọn danh mục --</option>
+                @foreach ($categories as $category)
+                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                @endforeach
             </select>
         </div>
+    
         <div class="mb-6">
             <label class="block mb-1 font-medium">Giá</label>
             <input type="text" id="price" name="price" class="w-full border border-gray-300 rounded px-4 py-2" required oninput="formatPrice(this)">

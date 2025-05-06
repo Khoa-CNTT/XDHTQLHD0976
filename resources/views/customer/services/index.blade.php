@@ -112,13 +112,18 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
     </form>
     <nav>
         <ul class="flex space-x-6">
-            <li><a href="{{ route('customer.services.filter', 'Tất Cả Dịch Vụ') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
-            <li><a href="{{ route('customer.services.filter', 'Phần mềm') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Mềm</a></li>
-            <li><a href="{{ route('customer.services.filter', 'Phần cứng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Phần Cứng</a></li>
-            <li><a href="{{ route('customer.services.filter', 'Nhà mạng') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Nhà Mạng</a></li>
+            <li><a href="{{ route('customer.services.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
+            @foreach (\App\Models\ServiceCategory::has('services')->get() as $category)
+                <li>
+                    <a href="{{ route('customer.services.filterByCategory', $category->id) }}" 
+                       class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">
+                        {{ $category->name }}
+                    </a>
+                </li>
+            @endforeach
         </ul>
     </nav>
-    </nav>
+
 </div>
 </div>
 </div>
@@ -157,7 +162,7 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
             </div>  
             <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
             <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
-            <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->service_type }}</p>
+            <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->category->name ?? 'Không có danh mục' }}</p>
             <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
                 <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
             </p>
