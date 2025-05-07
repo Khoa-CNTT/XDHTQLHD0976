@@ -15,9 +15,11 @@ class Signature extends Model
     'customer_email',
     'signature_data',
     'identity_card',
-    'duration', // Thời hạn hợp đồng
+    'duration', 
         'status',
     'signed_at',
+    'signature_image', 
+    'otp_verified_at', 
 ];
 
     public function contract()

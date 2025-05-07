@@ -84,6 +84,16 @@
         </details>
         @endforeach
     </div>
+    {{-- Signature Pad --}}
+<div class="space-y-4">
+    <h3 class="text-xl font-semibold text-gray-800">Chữ Ký Tay</h3>
+    <canvas id="signature-pad" class="border border-gray-300 rounded-lg w-full h-48"></canvas>
+    <div class="flex space-x-4">
+        <button type="button" id="clear-signature" class="bg-red-500 text-white px-4 py-2 rounded">Xóa chữ ký</button>
+        <button type="button" id="save-signature" class="bg-blue-500 text-white px-4 py-2 rounded">Lưu chữ ký</button>
+    </div>
+    <input type="hidden" id="signature-data" name="signature_data">
+</div>
 
     {{-- Gửi OTP --}}
     <form action="{{ route('customer.contracts.sendOtp', $service->id) }}" method="POST" class="text-center">
@@ -132,4 +142,22 @@
     </form>
 
 </div>
+<script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
+<script>
+    const canvas = document.getElementById('signature-pad');
+    const signaturePad = new SignaturePad(canvas);
+
+    document.getElementById('clear-signature').addEventListener('click', () => {
+        signaturePad.clear();
+    });
+
+    document.getElementById('save-signature').addEventListener('click', () => {
+        if (signaturePad.isEmpty()) {
+            alert('Vui lòng ký trước khi lưu!');
+        } else {
+            const signatureData = signaturePad.toDataURL();
+            document.getElementById('signature-data').value = signatureData; 
+        }
+    });
+</script>
 @endsection

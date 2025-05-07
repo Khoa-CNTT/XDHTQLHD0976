@@ -7,6 +7,7 @@ use App\Http\Controllers\Customer\ContractController as CustomerContractControll
 use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController;
 use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
 use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
+use App\Http\Controllers\Customer\SignatureController;
 
 
 
@@ -156,6 +157,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         
               
         Route::get('/', [CustomerContractAmendmentController::class, 'index'])->name('index');
+
+        Route::post('contracts/{id}/send-otp', [SignatureController::class, 'sendOtp'])->name('contracts.sendOtp');
+        Route::post('contracts/{id}/sign', [SignatureController::class, 'sign'])->name('contracts.sign.submit');
           
       
         
