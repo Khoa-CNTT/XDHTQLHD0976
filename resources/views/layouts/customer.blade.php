@@ -74,6 +74,11 @@
                                     </a>
                                 </li>
                                 <li>
+                                <a href="{{ route('customer.payments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    Lịch sử thanh toán
+                                </a>
+                                </li>
+                                <li>
                                     <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         @csrf
                                         <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>
@@ -108,9 +113,9 @@
     </header>
         <!-- Sidebar và Nội Dung -->
         <div class="flex">
-            <main class="flex-1 bg-white p-6">
-                @yield('content')
-            </main>
+        <main class="container mx-auto px-4 py-6">
+            @yield('content') 
+        </main>
         </div>
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">

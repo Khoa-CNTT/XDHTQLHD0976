@@ -57,8 +57,8 @@
         <tbody>
             @foreach($monthlyRevenue as $revenue)
                 <tr>
-                    <td class="border px-4 py-2">{{ $revenue->month }}</td>
-                    <td class="border px-4 py-2">{{ number_format($revenue->revenue, 0, ',', '.') }} VND</td>
+                    <td class="border px-4 py-2">{{ $revenue['month_name'] }}</td>
+                    <td class="border px-4 py-2">{{ number_format($revenue['revenue'], 0, ',', '.') }} VND</td>
                 </tr>
             @endforeach
         </tbody>

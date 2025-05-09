@@ -50,6 +50,15 @@
     <div class="mt-6 text-right">
         <a href="{{ route('admin.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
     </div>
+
+    @if($contract->status === 'Yêu cầu huỷ')
+    <form action="{{ route('admin.contracts.confirmCancel', $contract->id) }}" method="POST" class="mt-4">
+        @csrf
+        <button type="submit" class="px-4 py-2 bg-red-700 text-white rounded hover:bg-red-800">
+            Xác nhận huỷ hợp đồng
+        </button>
+    </form>
+    @endif
 </div>
 
 @endsection

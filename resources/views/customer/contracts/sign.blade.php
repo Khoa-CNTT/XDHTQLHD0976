@@ -84,16 +84,16 @@
         </details>
         @endforeach
     </div>
+
     {{-- Signature Pad --}}
-<div class="space-y-4">
-    <h3 class="text-xl font-semibold text-gray-800">Chữ Ký Tay</h3>
-    <canvas id="signature-pad" class="border border-gray-300 rounded-lg w-full h-48"></canvas>
-    <div class="flex space-x-4">
-        <button type="button" id="clear-signature" class="bg-red-500 text-white px-4 py-2 rounded">Xóa chữ ký</button>
-        <button type="button" id="save-signature" class="bg-blue-500 text-white px-4 py-2 rounded">Lưu chữ ký</button>
+    <div class="space-y-4">
+        <h3 class="text-xl font-semibold text-gray-800">Chữ Ký Tay</h3>
+        <canvas id="signature-pad" width="900" height="350" class="border border-gray-300 rounded-lg w-full" style="height:350px;"></canvas>
+        <div class="flex space-x-4 mt-2">
+            <button type="button" id="clear-signature" class="bg-red-500 text-white px-4 py-2 rounded">Xóa chữ ký</button>
+            <button type="button" id="save-signature" class="bg-blue-500 text-white px-4 py-2 rounded hidden">Lưu chữ ký</button>
+        </div>
     </div>
-    <input type="hidden" id="signature-data" name="signature_data">
-</div>
 
     {{-- Gửi OTP --}}
     <form action="{{ route('customer.contracts.sendOtp', $service->id) }}" method="POST" class="text-center">
@@ -104,34 +104,62 @@
     </form>
 
     {{-- Form ký hợp đồng --}}
-    <form action="{{ route('customer.contracts.sign', $service->id) }}" method="POST" class="space-y-6">
+    <form action="{{ route('customer.contracts.sign.submit', $service->id) }}" method="POST" class="space-y-6 contract-sign-form">
         @csrf
+        <input type="hidden" id="signature-data" name="signature_data">
         <input type="hidden" name="duration" value="{{ $duration }}">
 
-        <div>
-            <label for="otp" class="block font-medium mb-1">Mã OTP</label>
-            <input type="text" id="otp" name="otp" required
-                   class="w-full border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200">
+        <div class="flex flex-col items-center">
+            <label for="otp" class="block font-medium mb-1 text-center">Nhập mã OTP để ký</label>
+            <input
+                type="text"
+                id="otp"
+                name="otp"
+                required
+                maxlength="6"
+                pattern="\d{6}"
+                autocomplete="one-time-code"
+                inputmode="numeric"
+                class="text-center tracking-widest text-2xl font-bold border-2 border-blue-400 rounded-lg px-4 py-2 focus:border-blue-600 focus:ring focus:ring-blue-200 transition w-40"
+                placeholder="______"
+            >
+        
         </div>
 
-        <div>
-            <label for="identity_card" class="block font-medium mb-1">Căn cước công dân</label>
-            <input type="text" id="identity_card" name="identity_card" required
-                   value="{{ Auth::user()->identity_card }}"
-                   class="w-full border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200">
+        <div class="flex flex-col items-center">
+            <label for="identity_card" class="block font-medium mb-1 text-center">Căn cước công dân</label>
+            <input
+                type="text"
+                id="identity_card"
+                name="identity_card"
+                required
+                maxlength="12"
+                pattern="\d{12}"
+                inputmode="numeric"
+                class="text-center tracking-widest text-lg border-2 border-blue-400 rounded-lg px-4 py-2 focus:border-blue-600 focus:ring focus:ring-blue-200 transition w-60"
+                placeholder="Nhập 12 số CCCD"
+                value="{{ Auth::user()->identity_card }}"
+            >
+            
         </div>
 
-        <div>
-            <label for="contract_date" class="block font-medium mb-1">Ngày ký hợp đồng</label>
-            <input type="date" id="contract_date" name="contract_date" required
-                   value="{{ now()->format('Y-m-d') }}"
-                   class="w-full border-gray-300 rounded-lg px-4 py-2 focus:border-blue-500 focus:ring focus:ring-blue-200">
+        <div class="flex flex-col items-center">
+            <label for="contract_date" class="block font-medium mb-1 text-center">Ngày ký hợp đồng</label>
+            <input
+                type="text"
+                id="contract_date"
+                name="contract_date"
+                class="text-center border-2 border-blue-400 rounded-lg px-4 py-2 w-60 bg-gray-100 cursor-not-allowed"
+                value="{{ now()->format('Y-m-d H:i:s') }}"
+                readonly
+                tabindex="-1"
+            >
+           
         </div>
 
-        <div class="flex items-center space-x-2">
-            <input type="checkbox" id="agreed_terms" name="agreed_terms" value="1" required
-                   class="h-5 w-5 text-blue-600">
-            <label for="agreed_terms" class="text-gray-700">Tôi đồng ý với các điều khoản</label>
+        <div class="flex items-center space-x-2 justify-center">
+            <input type="checkbox" id="agreed_terms" name="agreed_terms" value="1" required class="h-5 w-5 text-blue-600 accent-blue-600">
+            <label for="agreed_terms" class="text-gray-700 select-none">Tôi đồng ý với <a href="#terms" class="text-blue-600 underline hover:text-blue-800">các điều khoản</a></label>
         </div>
 
         <div class="text-center">
@@ -141,23 +169,68 @@
         </div>
     </form>
 
+
 </div>
 <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js"></script>
 <script>
+    const form = document.querySelector('.contract-sign-form');
     const canvas = document.getElementById('signature-pad');
     const signaturePad = new SignaturePad(canvas);
+    const saveBtn = document.getElementById('save-signature');
+    const clearBtn = document.getElementById('clear-signature');
+    const signatureInput = form.querySelector('#signature-data');
 
-    document.getElementById('clear-signature').addEventListener('click', () => {
-        signaturePad.clear();
+    // Khi vẽ, hiện nút Lưu chữ ký và gán giá trị vào input
+    canvas.addEventListener('pointerup', () => {
+        if (!signaturePad.isEmpty()) {
+            const signatureData = signaturePad.toDataURL();
+            signatureInput.value = signatureData;
+            localStorage.setItem('savedSignature', signatureData);
+            saveBtn.classList.remove('hidden');
+        }
     });
 
-    document.getElementById('save-signature').addEventListener('click', () => {
-        if (signaturePad.isEmpty()) {
-            alert('Vui lòng ký trước khi lưu!');
-        } else {
+    // Lưu chữ ký vào localStorage và input
+    saveBtn.addEventListener('click', () => {
+        if (!signaturePad.isEmpty()) {
             const signatureData = signaturePad.toDataURL();
-            document.getElementById('signature-data').value = signatureData; 
+            localStorage.setItem('savedSignature', signatureData);
+            signatureInput.value = signatureData;
+            alert('Đã lưu chữ ký!');
+        } else {
+            alert('Vui lòng ký trước khi lưu!');
+        }
+    });
+
+    // Xóa chữ ký
+    clearBtn.addEventListener('click', () => {
+        signaturePad.clear();
+        signatureInput.value = '';
+        localStorage.removeItem('savedSignature');
+        saveBtn.classList.add('hidden');
+    });
+
+    // Khi load lại trang, nếu có chữ ký thì vẽ lại
+    window.addEventListener('DOMContentLoaded', () => {
+        const savedSignature = localStorage.getItem('savedSignature');
+        if (savedSignature) {
+            signaturePad.fromDataURL(savedSignature);
+            signatureInput.value = savedSignature;
+            saveBtn.classList.remove('hidden');
+        }
+    });
+
+    // Khi submit form, lấy chữ ký từ localStorage
+    form.addEventListener('submit', function(e) {
+        const signatureData = localStorage.getItem('savedSignature');
+        if (!signatureData) {
+            e.preventDefault();
+            alert('Vui lòng ký và lưu chữ ký trước khi gửi!');
+        } else {
+            signatureInput.value = signatureData;
+            localStorage.removeItem('savedSignature');
         }
     });
 </script>
+
 @endsection

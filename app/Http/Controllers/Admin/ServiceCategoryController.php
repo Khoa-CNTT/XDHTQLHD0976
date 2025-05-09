@@ -11,7 +11,8 @@ class ServiceCategoryController extends Controller
     // Hiển thị danh sách loại dịch vụ
     public function index()
     {
-        $categories = ServiceCategory::all();
+        // Lấy tất cả category và kèm theo danh sách service của từng category
+        $categories = ServiceCategory::with('services')->get();
         return view('admin.services.categories.index', compact('categories'));
     }
 

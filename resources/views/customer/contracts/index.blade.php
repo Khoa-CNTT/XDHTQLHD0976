@@ -70,15 +70,16 @@
                                     📄 <span class="ml-1">Xem</span>
                                 </a>
                             
-                                @if ($contract->status !== 'Đã huỷ')
-                                    <form action="" method="POST" class="inline-flex">
+                                @if ($contract->status !== 'Đã huỷ' && $contract->status !== 'Yêu cầu huỷ')
+                                    <form action="{{ route('customer.contracts.requestCancel', $contract->id) }}" method="POST" class="inline-flex">
                                         @csrf
-                                        @method('PUT')
                                         <button type="submit"
                                                 class="flex items-center justify-center bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg w-24 h-10 text-sm">
-                                            ❌ <span class="ml-1">Hủy</span>
+                                            ❌ <span class="ml-1">Yêu cầu huỷ</span>
                                         </button>
                                     </form>
+                                @elseif($contract->status === 'Yêu cầu huỷ')
+                                    <span class="text-red-500 font-semibold ml-2">Đã gửi yêu cầu huỷ</span>
                                 @endif
                             </td>
                             

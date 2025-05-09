@@ -26,13 +26,13 @@
             </a>
         @endcan
     
-        @foreach($contracts as $contract) 
+        <!-- @foreach($contracts as $contract) 
         @can('create', App\Models\ContractAmendment::class)
             <a href="{{ route('admin.contracts.admendments.index', $contract->id) }}" class="bg-blue-500 text-white px-4 py-2 rounded">
                 Phụ lục hợp đồng
             </a>
         @endcan
-    @endforeach
+    @endforeach -->
     </div>
 
     <div class="overflow-x-auto bg-white shadow-xl rounded-xl border border-gray-300">
@@ -109,6 +109,14 @@
                                 Đánh dấu Hoàn thành
                             </button>
                         </form>
+                        @if($contract->status === 'Yêu cầu huỷ')
+                        <form action="{{ route('admin.contracts.confirmCancel', $contract->id) }}" method="POST" class="inline-block ml-2">
+                            @csrf
+                            <button type="submit" class="bg-red-700 hover:bg-red-800 text-white text-xs font-medium px-3 py-1 rounded-lg transition duration-200">
+                                Xác nhận huỷ
+                            </button>
+                        </form>
+                        @endif
                     </td>
                 </tr>
                 @endforeach

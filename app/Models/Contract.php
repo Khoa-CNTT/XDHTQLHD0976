@@ -35,12 +35,12 @@ class Contract extends Model
 
     public function payments()
     {
-        return $this->hasMany(Payment::class);
+        return $this->hasMany(\App\Models\Payment::class);
     }
 
     public function signatures()
     {
-        return $this->hasMany(Signature::class, 'contract_id');
+        return $this->hasMany(\App\Models\Signature::class);
     }
     public function amendments()
 {

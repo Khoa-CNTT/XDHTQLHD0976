@@ -112,6 +112,14 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
         Route::put('/contracts/{id}/complete', [AdminContractController::class, 'markAsComplete'])->name('contracts.complete');
+        Route::post('/admin/contracts/{id}/confirm-cancel', [AdminContractController::class, 'confirmCancel'])->name('contracts.confirmCancel');
+
+        
+        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{id}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
+        Route::put('/payments/{id}', [\App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
+        Route::get('/payments-report', [\App\Http\Controllers\Admin\PaymentController::class, 'createReport'])->name('payments.report');
+        Route::post('/payments-export', [\App\Http\Controllers\Admin\PaymentController::class, 'exportPdf'])->name('payments.export');
 
         Route::resource('service-categories', ServiceCategoryController::class)->except(['show']);
         Route::post('services/categories', [AdminServiceController::class, 'createCategory'])->name('services.categories.create');
@@ -133,9 +141,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
 
-        Route::get('contracts/sign/{id}', [CustomerContractController::class, 'showSignForm'])->name('contracts.sign');
-        Route::post('contracts/send-otp/{id}', [CustomerContractController::class, 'sendOtp'])->name('contracts.sendOtp');
-        Route::post('contracts/sign/{id}', [CustomerContractController::class, 'sign'])->name('contracts.sign.submit');
+     
 
 
         Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
@@ -147,28 +153,25 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
          
-        Route::get('contracts/{id}/payment/momo', [MoMoPaymentController::class, 'showPaymentForm'])->name('momo.form');
-        Route::post('contracts/{id}/payment/momo', [MoMoPaymentController::class, 'createPayment'])->name('momo.create');
-        Route::get('momo/success', [MoMoPaymentController::class, 'paymentReturn'])->name('momo.success');
-        Route::post('payment/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])->name('momo.ipn');
+     
 
         Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
-        Route::get('/vnpay/success', [VNPayPaymentController::class, 'paymentSuccess'])->name('vnpay.success');   
+        Route::get('/vnpay/return', [VNPayPaymentController::class, 'return'])->name('vnpay.success');
+        Route::post('/vnpay/ipn', [\App\Http\Controllers\Customer\VNPayController::class, 'ipn'])->name('vnpay.ipn');
         
               
         Route::get('/', [CustomerContractAmendmentController::class, 'index'])->name('index');
 
+
+
+        Route::get('contracts/sign/{id}', [SignatureController::class, 'showSignForm'])->name('contracts.sign');
         Route::post('contracts/{id}/send-otp', [SignatureController::class, 'sendOtp'])->name('contracts.sendOtp');
         Route::post('contracts/{id}/sign', [SignatureController::class, 'sign'])->name('contracts.sign.submit');
+        Route::post('/customer/contracts/{id}/request-cancel', [CustomerContractController::class, 'requestCancel'])->name('contracts.requestCancel');
           
-      
+        Route::get('payments', [App\Http\Controllers\Customer\PaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/{id}', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('payments.show');
+        Route::get('payments/{id}/download', [App\Http\Controllers\Customer\PaymentController::class, 'downloadReceipt'])->name('payments.download');
         
     }); 
 
-    // IPN và return URL không cần auth (để bên ngoài group customer)
-    Route::post('payment/momo/ipn', [MoMoPaymentController::class, 'paymentIpn'])
-    ->middleware('throttle:60,1')
-    ->name('momo.ipn');
-
-Route::get('/payment/momo/return', [MoMoPaymentController::class, 'paymentReturn'])
-->name('momo.return');

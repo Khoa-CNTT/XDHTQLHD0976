@@ -152,6 +152,17 @@ public function markAsComplete($id)
     return redirect()->route('admin.contracts.index')->with('warning', 'Hợp đồng đã ở trạng thái hoàn thành.');
 }
 
+public function confirmCancel($id)
+{
+    $contract = Contract::findOrFail($id);
+    if ($contract->status !== 'Yêu cầu huỷ') {
+        return redirect()->back()->with('error', 'Hợp đồng không ở trạng thái yêu cầu huỷ.');
+    }
+    $contract->status = 'Đã huỷ';
+    $contract->save();
+    return redirect()->back()->with('success', 'Hợp đồng đã được xác nhận huỷ.');
+}
+
 
 
 }
