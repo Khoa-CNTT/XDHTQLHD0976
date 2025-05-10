@@ -50,6 +50,60 @@
                     <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200 text-sm md:text-base">Dịch Vụ</a></li>
                 </ul>
                 @if(auth()->check())
+                    <div class="relative mt-4 md:mt-0 mr-4">
+                        <button id="notifications-menu-button" class="flex items-center focus:outline-none relative">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
+                            </svg>
+                            @if(auth()->user()->unreadNotifications()->count() > 0)
+                                <span class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center">
+                                    {{ auth()->user()->unreadNotifications()->count() }}
+                                </span>
+                            @endif
+                        </button>
+                        <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto">
+                            <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+                                <span class="font-medium text-gray-800">Thông báo</span>
+                                @if(auth()->user()->unreadNotifications()->count() > 0)
+                                    <a href="{{ route('customer.notifications.markAllAsRead') }}" class="text-xs text-blue-600 hover:text-blue-800">
+                                        Đánh dấu tất cả đã đọc
+                                    </a>
+                                @endif
+                            </div>
+                            <div>
+                                @forelse(auth()->user()->notifications()->latest()->take(5)->get() as $notification)
+                                    <a href="{{ route('customer.notifications.show', $notification->id) }}" class="block px-4 py-3 border-b hover:bg-gray-50 {{ $notification->is_read ? 'bg-white' : 'bg-blue-50' }}">
+                                        <div class="flex items-start">
+                                            <div class="flex-shrink-0 mr-3">
+                                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                    </svg>
+                                                </div>
+                                            </div>
+                                            <div class="flex-1">
+                                                <p class="text-sm font-medium text-gray-900">{{ $notification->title }}</p>
+                                                <p class="text-xs text-gray-500 line-clamp-2">{{ $notification->message }}</p>
+                                                <p class="text-xs text-gray-400 mt-1">{{ $notification->created_at->diffForHumans() }}</p>
+                                            </div>
+                                        </div>
+                                    </a>
+                                @empty
+                                    <div class="px-4 py-6 text-center text-gray-500">
+                                        <p>Không có thông báo nào</p>
+                                    </div>
+                                @endforelse
+                                
+                                @if(auth()->user()->notifications()->count() > 5)
+                                    <div class="px-4 py-2 text-center">
+                                        <a href="{{ route('customer.profile') }}" class="text-sm text-blue-600 hover:text-blue-800">
+                                            Xem tất cả thông báo
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
                     <div class="relative mt-4 md:mt-0">
                         <button id="user-menu-button" class="flex items-center focus:outline-none">
                             <img src="{{ asset('images/user.png') }}" alt="Ảnh đại diện" class="rounded-full w-8 h-8 md:w-10 md:h-10 mr-2">
@@ -150,16 +204,26 @@
     const userDropdown = document.getElementById('user-dropdown');
     const guestMenuButton = document.getElementById('guest-menu-button');
     const guestDropdown = document.getElementById('guest-dropdown');
+    const notificationsButton = document.getElementById('notifications-menu-button');
+    const notificationsDropdown = document.getElementById('notifications-dropdown');
 
     if (userMenuButton && userDropdown) {
         userMenuButton.addEventListener('click', () => {
             userDropdown.classList.toggle('hidden');
+            if (notificationsDropdown) notificationsDropdown.classList.add('hidden');
         });
     }
 
     if (guestMenuButton && guestDropdown) {
         guestMenuButton.addEventListener('click', () => {
             guestDropdown.classList.toggle('hidden');
+        });
+    }
+    
+    if (notificationsButton && notificationsDropdown) {
+        notificationsButton.addEventListener('click', () => {
+            notificationsDropdown.classList.toggle('hidden');
+            if (userDropdown) userDropdown.classList.add('hidden');
         });
     }
 
@@ -169,6 +233,9 @@
         }
         if (guestDropdown && !guestMenuButton.contains(event.target) && !guestDropdown.contains(event.target)) {
             guestDropdown.classList.add('hidden');
+        }
+        if (notificationsDropdown && !notificationsButton.contains(event.target) && !notificationsDropdown.contains(event.target)) {
+            notificationsDropdown.classList.add('hidden');
         }
     });
 </script>

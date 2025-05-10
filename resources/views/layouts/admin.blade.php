@@ -47,6 +47,7 @@
           <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
           <li><a href="{{ route('admin.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>
           <li><a href="{{ route('admin.payments.index') }}" class="hover:bg-gray-700">Quản lý thanh toán</a></li>
+          <li><a href="{{ route('admin.notifications.index') }}" class="hover:bg-gray-700">Quản lý thông báo</a></li>
           <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
         @elseif(auth()->user()->role == 'employee')
           <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
