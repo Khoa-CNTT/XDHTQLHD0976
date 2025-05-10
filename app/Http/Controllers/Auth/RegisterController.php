@@ -48,17 +48,41 @@ class RegisterController extends Controller
      * @return \Illuminate\Contracts\Validation\Validator
      */
     protected function validator(array $data)
-{
-    return Validator::make($data, [
-        'name' => ['required', 'string', 'max:255'],
-        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-        'password' => ['required', 'string', 'min:8', 'confirmed'],
-        'phone' => ['required', 'string', 'max:15'],
-        'address' => ['required', 'string', 'max:255'],
-        'company_name' => ['required', 'string', 'max:255'], // Thêm validation cho company_name
-        'tax_code' => ['required', 'string', 'max:50'], // Thêm validation cho tax_code
-    ]);
-}
+    {
+        return Validator::make($data, [
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
+            'phone' => ['required', 'string', 'max:15'],
+            'address' => ['required', 'string', 'max:255'],
+            'company_name' => ['required', 'string', 'max:255'],
+            'tax_code' => ['required', 'string', 'max:50'],
+        ], [
+            'name.required' => 'Vui lòng nhập tên của bạn',
+            'name.max' => 'Tên không được vượt quá 255 ký tự',
+            
+            'email.required' => 'Vui lòng nhập địa chỉ email',
+            'email.email' => 'Địa chỉ email không hợp lệ',
+            'email.max' => 'Email không được vượt quá 255 ký tự',
+            'email.unique' => 'Email này đã được sử dụng',
+            
+            'password.required' => 'Vui lòng nhập mật khẩu',
+            'password.min' => 'Mật khẩu phải có ít nhất 8 ký tự',
+            'password.confirmed' => 'Xác nhận mật khẩu không khớp',
+            
+            'phone.required' => 'Vui lòng nhập số điện thoại',
+            'phone.max' => 'Số điện thoại không được vượt quá 15 ký tự',
+            
+            'address.required' => 'Vui lòng nhập địa chỉ',
+            'address.max' => 'Địa chỉ không được vượt quá 255 ký tự',
+            
+            'company_name.required' => 'Vui lòng nhập tên công ty',
+            'company_name.max' => 'Tên công ty không được vượt quá 255 ký tự',
+            
+            'tax_code.required' => 'Vui lòng nhập mã số thuế',
+            'tax_code.max' => 'Mã số thuế không được vượt quá 50 ký tự',
+        ]);
+    }
     /**
      * Create a new user instance after a valid registration.
      *

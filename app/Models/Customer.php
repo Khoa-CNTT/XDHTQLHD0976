@@ -28,6 +28,12 @@ class Customer extends Model
 {
     return $this->hasMany(Contract::class, 'customer_id');
 }
+
+public function payments()
+{
+    return $this->hasManyThrough(Payment::class, Contract::class);
+}
+
 public function reviews()
 {
     return $this->hasMany(ServiceReview::class);

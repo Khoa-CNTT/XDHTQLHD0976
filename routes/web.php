@@ -141,8 +141,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
 
-     
-
+      
+        Route::post('/support/create', [App\Http\Controllers\CustomerProfileController::class, 'createSupportTicket'])->name('support.create');
 
         Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
         

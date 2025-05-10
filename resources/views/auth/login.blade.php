@@ -48,10 +48,7 @@
             value="{{ request()->cookie('remember_password') }}"
             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none pr-10"
           >
-          <span class="absolute top-1/2 right-3 transform -translate-y-1/2 cursor-pointer text-gray-500 hover:text-indigo-600"
-                onclick="togglePassword()">
-            <i id="eyeIcon" class="fas fa-eye"></i>
-          </span>
+         
         </div>
       </div>
 
@@ -97,17 +94,7 @@
     }
   </style>
 
-  <!-- JS hiện/ẩn mật khẩu -->
-  <script>
-    function togglePassword() {
-      const passwordInput = document.getElementById('password');
-      const eyeIcon = document.getElementById('eyeIcon');
-      const isPassword = passwordInput.type === 'password';
-      passwordInput.type = isPassword ? 'text' : 'password';
-      eyeIcon.classList.toggle('fa-eye');
-      eyeIcon.classList.toggle('fa-eye-slash');
-    }
-  </script>
+  
 
 </body>
 </html>
