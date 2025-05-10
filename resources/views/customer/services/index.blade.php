@@ -2,6 +2,7 @@
 
 @section('title', 'Danh sách dịch vụ')
 <style>
+
     /* CSS cho danh mục dịch vụ */
 .nav-category a {
     color: #4a5568; /* Màu xám mặc định */
@@ -97,43 +98,41 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
 </section>
 
 <!-- Danh mục và Tìm kiếm -->
-<div class="bg-white shadow-sm mt-5 border border-gray-200 rounded-2xl px-1 py-2">
-<div class="container mx-auto px-4 py-3 flex gap-x-10 items-center">
-    <form action="{{ route('customer.services.search') }}" method="GET" class="relative w-1/3 mr-6">
-        <input 
-            type="text" 
-            name="query" 
-            placeholder="Tìm kiếm dịch vụ..." 
-            value="{{ request('query') }}" 
-            class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-        <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
-            <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
-        </svg>
-    </form>
-    <nav>
-        <ul class="flex space-x-6">
-            <li><a href="{{ route('customer.services.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
-            @foreach (\App\Models\ServiceCategory::has('services')->get() as $category)
-                <li>
-                    <a href="{{ route('customer.services.filterByCategory', $category->id) }}" 
-                       class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">
-                        {{ $category->name }}
-                    </a>
-                </li>
-            @endforeach
-        </ul>
-    </nav>
-
-</div>
-</div>
-</div>
+<div class="bg-white shadow-sm mt-5 border border-gray-200 rounded-2xl px-1 py-0">
+        <div class="container mx-auto px-4 py-3 flex gap-x-10 items-center ">
+            <form action="{{ route('customer.services.search') }}" method="GET" class="relative w-1/3 mr-6 ">
+                <input 
+                    type="text" 
+                    name="query" 
+                    placeholder="Tìm kiếm dịch vụ..." 
+                    value="{{ request('query') }}" 
+                    class="w-full pl-10 pr-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <svg class="absolute left-3 top-3 w-5 h-5 text-gray-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8 4a4 4 0 100 8 4 4 0 000-8zM2 8a6 6 0 1110.89 3.476l4.817 4.817a1 1 0 01-1.414 1.414l-4.816-4.816A6 6 0 012 8z" clip-rule="evenodd"/>
+                </svg>
+            </form>
+            <nav>
+                <ul class="flex space-x-6">
+                    <li><a href="{{ route('customer.services.index') }}" class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">Tất Cả Dịch Vụ</a></li>
+                    @foreach (\App\Models\ServiceCategory::has('services')->get() as $category)
+                        <li>
+                            <a href="{{ route('customer.services.filterByCategory', $category->id) }}" 
+                               class="block px-4 py-2 text-gray-700 hover:bg-blue-100 rounded-lg transition-colors">
+                                {{ $category->name }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </nav>
+        </div>
+    </div>
 
 
 
 @php
     $colors = ['text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500', 'text-purple-500'];
 @endphp
-<div class="container mx-auto">
+
 {{-- Danh sách hợp đồng dịch vụ --}}
 <div class="grid md:grid-cols-3 gap-6 mt-6">
     @forelse($services as $service)

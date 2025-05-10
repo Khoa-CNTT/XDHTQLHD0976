@@ -41,9 +41,14 @@ class NotificationController extends Controller
      */
     public function markAllAsRead()
     {
-        // Update all unread notifications for the current user
-        Auth::user()->notifications()
+       
+        $notificationIds = Auth::user()->notifications()
             ->where('is_read', false)
+            ->pluck('id')
+            ->toArray();
+            
+
+        Notification::whereIn('id', $notificationIds)
             ->update(['is_read' => true]);
         
         return redirect()->back()
@@ -85,5 +90,65 @@ class NotificationController extends Controller
         
         return redirect()->back()
             ->with('status', 'Thông báo đã được gửi thành công.');
+    }
+    
+    /**
+     * API endpoint để kiểm tra thông báo mới
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function checkNewNotifications()
+    {
+        // Lưu thời điểm kiểm tra cuối cùng trong session
+        $lastChecked = session('last_notification_check', now()->subMinutes(30));
+        session(['last_notification_check' => now()]);
+        
+        // Đếm số lượng thông báo chưa đọc (loại bỏ trùng lặp)
+        $unreadCount = Auth::user()->notifications()
+            ->where('is_read', false)
+            ->get()
+            ->unique('id')
+            ->count();
+        
+        // Kiểm tra xem có thông báo mới kể từ lần kiểm tra trước không
+        $hasNewNotifications = Auth::user()->notifications()
+            ->where('created_at', '>', $lastChecked)
+            ->where('is_read', false)
+            ->exists();
+        
+        return response()->json([
+            'unreadCount' => $unreadCount,
+            'hasNewNotifications' => $hasNewNotifications,
+            'lastChecked' => $lastChecked->toDateTimeString()
+        ]);
+    }
+    
+    /**
+     * API endpoint để lấy danh sách thông báo mới nhất
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getLatestNotifications()
+    {
+        $notifications = Auth::user()->notifications()
+            ->latest()
+            ->take(10)
+            ->get()
+            ->unique('id')
+            ->take(5)
+            ->map(function($notification) {
+                return [
+                    'id' => $notification->id,
+                    'title' => $notification->title,
+                    'message' => $notification->message,
+                    'is_read' => $notification->is_read,
+                    'created_at' => $notification->created_at->toDateTimeString(),
+                    'time_ago' => $notification->created_at->diffForHumans()
+                ];
+            });
+        
+        return response()->json([
+            'notifications' => $notifications
+        ]);
     }
 } 

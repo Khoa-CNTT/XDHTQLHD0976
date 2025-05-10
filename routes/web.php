@@ -137,6 +137,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/notifications/mass-create', [\App\Http\Controllers\Admin\NotificationController::class, 'createMassNotification'])->name('notifications.mass-create');
         Route::post('/notifications/mass-send', [\App\Http\Controllers\Admin\NotificationController::class, 'storeMassNotification'])->name('notifications.mass-send');
         Route::delete('/notifications/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::delete('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
@@ -163,6 +164,10 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'show'])->name('notifications.show');
         Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+        
+       
+        Route::get('/api/notifications/check', [\App\Http\Controllers\NotificationController::class, 'checkNewNotifications']);
+        Route::get('/api/notifications/latest', [\App\Http\Controllers\NotificationController::class, 'getLatestNotifications']);
      
 
         Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
