@@ -21,7 +21,7 @@ class ContractController extends Controller
             $customer = Auth::user()->customer;
 
             $contracts = Contract::with(['service' => function($query) {
-                    // Eager load with a check to prevent errors with null relations
+                 
                     $query->withDefault([
                         'service_name' => 'Dịch vụ không tồn tại'
                     ]);
@@ -39,7 +39,7 @@ class ContractController extends Controller
     {
         try {
             $contract = Contract::with(['customer.user', 'service' => function($query) {
-                // Eager load with a check to prevent errors with null relations
+              
                 $query->withDefault([
                     'service_name' => 'Dịch vụ không tồn tại'
                 ]);

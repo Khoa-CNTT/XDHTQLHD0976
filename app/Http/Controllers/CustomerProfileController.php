@@ -6,6 +6,10 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
 use App\Models\SupportTicket;
+use App\Models\SupportResponse;
+use App\Models\Notification;
+use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerProfileController extends Controller
 {
@@ -28,13 +32,13 @@ class CustomerProfileController extends Controller
         $user = auth()->user();
 
         $rules = [
-            'phone' => ['required', 'string', 'regex:/^[0-9]{10}$/', 'unique:users,phone,' . $user->id],
+            'phone' => ['required', 'string', 'regex:/^0[0-9]{9}$/', 'unique:users,phone,' . $user->id],
             'address' => 'required|string|min:5|max:255',
         ];
 
         $messages = [
             'phone.required' => 'Vui lòng nhập số điện thoại',
-            'phone.regex' => 'Số điện thoại phải có đúng 10 chữ số',
+            'phone.regex' => 'Số điện thoại phải bắt đầu bằng số 0 và có đúng 10 chữ số',
             'phone.unique' => 'Số điện thoại đã được sử dụng',
             
             'address.required' => 'Vui lòng nhập địa chỉ',
@@ -59,6 +63,30 @@ class CustomerProfileController extends Controller
                 ->with('error', 'Cập nhật thông tin thất bại. Vui lòng kiểm tra lại các trường thông tin.');
         }
 
+        // Kiểm tra nếu số điện thoại giống với số hiện tại (không thay đổi)
+        if ($request->phone === $user->phone) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Vui lòng sử dụng số điện thoại khác với số điện thoại hiện tại.')
+                ->with('tab', 'info');
+        }
+
+        // Kiểm tra xem số điện thoại này đã từng được sử dụng trước đó bởi người dùng này không
+        $oldPhones = \App\Models\ActivityLog::where('user_id', $user->id)
+            ->where('action', 'Cập nhật thông tin cá nhân')
+            ->where('description', 'LIKE', '%đã thay đổi số điện thoại từ ' . $request->phone . ' thành%')
+            ->count();
+            
+        if ($oldPhones > 0) {
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Số điện thoại này đã được bạn sử dụng trước đó. Vui lòng sử dụng số điện thoại khác.')
+                ->with('tab', 'info');
+        }
+
+        // Lưu số điện thoại cũ để ghi log
+        $oldPhone = $user->phone;
+        
         // Cập nhật thông tin cơ bản
         $user->phone = $request->phone;
         $user->address = $request->address;
@@ -77,12 +105,12 @@ class CustomerProfileController extends Controller
 
         $user->save();
         
-        // Ghi log hoạt động - chỉ sử dụng các trường có trong bảng
+        // Ghi log hoạt động chi tiết hơn
         \App\Models\ActivityLog::create([
             'user_id' => $user->id,
             'action' => 'Cập nhật thông tin cá nhân',
-            'description' => 'Bạn đã cập nhật thông tin cá nhân'
-            // Không cần trường updated_at, nó không tồn tại trong bảng
+            'description' => 'Bạn đã cập nhật thông tin cá nhân' . 
+                ($oldPhone != $request->phone ? ', đã thay đổi số điện thoại từ ' . $oldPhone . ' thành ' . $request->phone : '')
         ]);
 
         return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật thành công.')->with('tab', 'info');
@@ -175,5 +203,76 @@ class CustomerProfileController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Yêu cầu hỗ trợ đã được gửi thành công.');
+    }
+
+    /**
+     * Hiển thị chi tiết yêu cầu hỗ trợ
+     */
+    public function viewSupportTicket($id)
+    {
+        $user = Auth::user();
+        $ticket = SupportTicket::with(['responses' => function($query) {
+            $query->orderBy('created_at', 'asc');
+        }])->where('user_id', $user->id)->findOrFail($id);
+        
+        return view('customer.support.show', compact('ticket'));
+    }
+
+    /**
+     * Gửi phản hồi cho yêu cầu hỗ trợ
+     */
+    public function respondToSupportTicket(Request $request, $id)
+    {
+        $user = Auth::user();
+        $ticket = SupportTicket::where('user_id', $user->id)->findOrFail($id);
+        
+        $validator = Validator::make($request->all(), [
+            'response' => 'required|string',
+        ], [
+            'response.required' => 'Vui lòng nhập nội dung phản hồi',
+        ]);
+        
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Vui lòng nhập đầy đủ thông tin');
+        }
+        
+        $response = new SupportResponse([
+            'support_ticket_id' => $ticket->id,
+            'user_id' => $user->id,
+            'content' => $request->response,
+        ]);
+        
+        $response->save();
+        
+        // Tạo thông báo cho admin và nhân viên
+        $admins = User::whereIn('role', ['admin', 'employee'])->get();
+        foreach ($admins as $admin) {
+            $notification = new Notification([
+                'user_id' => $admin->id,
+                'title' => 'Phản hồi mới từ khách hàng',
+                'message' => 'Khách hàng "' . $user->name . '" đã phản hồi yêu cầu hỗ trợ #' . $ticket->id,
+                'is_read' => false
+            ]);
+            
+            $notification->save();
+        }
+        
+        return redirect()->back()->with('success', 'Đã gửi phản hồi thành công');
+    }
+
+    /**
+     * Hiển thị tất cả yêu cầu hỗ trợ của khách hàng
+     */
+    public function listSupportTickets()
+    {
+        $user = Auth::user();
+        $tickets = SupportTicket::where('user_id', $user->id)
+                    ->orderBy('created_at', 'desc')
+                    ->paginate(10);
+        
+        return view('customer.support.index', compact('tickets'));
     }
 }

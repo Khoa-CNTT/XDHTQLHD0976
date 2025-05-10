@@ -29,9 +29,8 @@ class NotificationController extends Controller
             $notification->save();
         }
         
-        // Redirect to profile with a flash message
-        return redirect()->route('customer.profile')
-            ->with('status', 'Thông báo đã được đánh dấu là đã đọc.');
+        // Hiển thị trang chi tiết thông báo
+        return view('customer.notifications.show', compact('notification'));
     }
     
     /**

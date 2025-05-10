@@ -17,4 +17,22 @@ class SupportTicket extends Model
     {
         return $this->belongsTo(User::class);
     }
+    
+    /**
+     * Lấy danh sách phản hồi cho yêu cầu hỗ trợ này
+     */
+    public function responses()
+    {
+        return $this->hasMany(SupportResponse::class, 'support_ticket_id');
+    }
+    
+    /**
+     * Kiểm tra xem yêu cầu hỗ trợ này đã được phản hồi bởi nhân viên hay chưa
+     */
+    public function hasStaffResponse()
+    {
+        return $this->responses()->whereHas('user', function($query) {
+            $query->whereIn('role', ['admin', 'employee']);
+        })->exists();
+    }
 }

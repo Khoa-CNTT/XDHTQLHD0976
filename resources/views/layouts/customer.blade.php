@@ -111,6 +111,11 @@
                                     <p>Đang tải thông báo...</p>
                                 </div>
                             </div>
+                            <div class="px-4 py-2 border-t border-gray-200">
+                                <a href="{{ route('customer.notifications.index') }}" class="block text-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    Xem tất cả thông báo
+                                </a>
+                            </div>
                         </div>
                     </div>
                     <div class="relative mt-4 md:mt-0">
@@ -120,34 +125,33 @@
                                 <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd"/>
                             </svg>
                         </button>
-                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-lg z-10">
-                            <div class="px-4 py-3 border-b">
-                                <span class="block text-sm text-gray-900">{{ auth()->user()->name }}</span>
-                                <span class="block text-sm text-gray-500 truncate">{{ auth()->user()->email }}</span>
-                            </div>
-                            <ul class="py-1">
-                                <li>
-                                    <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Trang Cá Nhân
-                                    </a>
-                                </li>
-                                <li>
-                                    <a href="{{ route('customer.contracts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        Hợp Đồng Của Tôi
-                                    </a>
-                                </li>
-                                <li>
-                                <a href="{{ route('customer.payments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                    Lịch sử thanh toán
+                        <div id="user-dropdown" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10">
+                            <div class="py-1">
+                                <a href="{{ route('customer.profile') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-user mr-2"></i> Thông tin cá nhân
                                 </a>
-                                </li>
-                                <li>
-                                    <form action="{{ route('logout') }}" method="POST" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-                                        @csrf
-                                        <button type="submit" class="w-full text-left text-red-600">Đăng Xuất</button>
-                                    </form>
-                                </li>
-                            </ul>
+                                
+                                <a href="{{ route('customer.contracts.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-file-contract mr-2"></i> Hợp đồng của tôi
+                                </a>
+                                
+                                <a href="{{ route('customer.payments.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-credit-card mr-2"></i> Lịch sử thanh toán
+                                </a>
+
+                                <a href="{{ route('customer.support.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                    <i class="fas fa-headset mr-2"></i> Yêu cầu hỗ trợ
+                                </a>
+                                
+                                <hr class="my-1 border-gray-200">
+                                
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                        <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
+                                    </button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 @else

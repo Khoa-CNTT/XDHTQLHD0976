@@ -138,6 +138,12 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/notifications/mass-send', [\App\Http\Controllers\Admin\NotificationController::class, 'storeMassNotification'])->name('notifications.mass-send');
         Route::delete('/notifications/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
         Route::delete('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
+
+     
+        Route::get('/support', [\App\Http\Controllers\Admin\SupportTicketController::class, 'index'])->name('support.index');
+        Route::get('/support/{id}', [\App\Http\Controllers\Admin\SupportTicketController::class, 'show'])->name('support.show');
+        Route::put('/support/{id}', [\App\Http\Controllers\Admin\SupportTicketController::class, 'update'])->name('support.update');
+        Route::post('/support/{id}/respond', [\App\Http\Controllers\Admin\SupportTicketController::class, 'respond'])->name('support.respond');
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
@@ -150,6 +156,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
       
         Route::post('/support/create', [App\Http\Controllers\CustomerProfileController::class, 'createSupportTicket'])->name('support.create');
+        Route::get('/support', [App\Http\Controllers\CustomerProfileController::class, 'listSupportTickets'])->name('support.index');
+        Route::get('/support/{id}', [App\Http\Controllers\CustomerProfileController::class, 'viewSupportTicket'])->name('support.show');
+        Route::post('/support/{id}/respond', [App\Http\Controllers\CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
 
         Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
         
