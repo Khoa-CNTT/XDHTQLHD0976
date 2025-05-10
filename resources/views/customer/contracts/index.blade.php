@@ -31,14 +31,14 @@
     @endif
     
 @section('content')
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-4xl font-bold mb-8 text-center mt-2 text-black">
+<div class="max-w-4xl mx-auto min-h-screen pb-20">
+    <h1 class="text-4xl font-bold mb-8 text-center mt-8 text-black">
         Hợp Đồng Của Tôi
     </h1>
 
     <!-- Danh Sách Hợp Đồng -->
-    <div class="bg-white rounded-lg shadow-md p-6">
-        <h2 class="text-xl font-semibold mb-4">Danh Sách Hợp Đồng</h2>
+    <div class="bg-white rounded-lg shadow-md p-8 border border-gray-100 mb-16">
+        <h2 class="text-xl font-semibold mb-6">Danh Sách Hợp Đồng</h2>
         <div class="overflow-x-auto">
             <table class="min-w-full border border-gray-200 rounded-lg">
                 <thead>
@@ -52,7 +52,13 @@
                 <tbody>
                     @forelse ($contracts as $contract)
                         <tr class="border-b">
-                            <td class="p-3">{{ $contract->service->service_name }}</td>
+                            <td class="p-3">
+                                @if($contract->service)
+                                    {{ $contract->service->service_name }}
+                                @else
+                                    <span class="text-red-500">Dịch vụ không tồn tại</span>
+                                @endif
+                            </td>
                             <td class="p-3">{{ $contract->start_date }}</td>
                             <td class="p-3">
                                 <span class="px-3 py-1 rounded-full text-sm inline-block
@@ -86,11 +92,46 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="p-3 text-center text-gray-500">Không có hợp đồng nào.</td>
+                            <td colspan="6" class="p-8 text-center text-gray-500">
+                                <div class="flex flex-col items-center py-8">
+                                    <svg class="w-16 h-16 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path>
+                                    </svg>
+                                    <p class="text-lg font-medium">Không có hợp đồng nào.</p>
+                                    <p class="text-gray-400 mt-2">Khi bạn đăng ký dịch vụ, hợp đồng sẽ xuất hiện ở đây.</p>
+                                </div>
+                            </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
+        </div>
+    </div>
+    
+    <!-- Thêm phần giới thiệu hoặc thông tin hữu ích -->
+    <div class="bg-blue-50 rounded-lg p-6 border border-blue-100 mb-20">
+        <h3 class="text-lg font-semibold mb-2 text-blue-800">Thông tin về hợp đồng</h3>
+        <p class="text-gray-600 mb-4">Hợp đồng của bạn được quản lý tại đây. Bạn có thể xem chi tiết hoặc gửi yêu cầu hủy khi cần thiết.</p>
+        <div class="flex space-x-1">
+            <div class="flex items-center space-x-1">
+                <span class="inline-block w-3 h-3 rounded-full bg-yellow-100 border border-yellow-600"></span>
+                <span class="text-sm text-gray-600">Chờ xử lý</span>
+            </div>
+            <div class="mx-2 text-gray-300">|</div>
+            <div class="flex items-center space-x-1">
+                <span class="inline-block w-3 h-3 rounded-full bg-green-100 border border-green-600"></span>
+                <span class="text-sm text-gray-600">Hoạt động</span>
+            </div>
+            <div class="mx-2 text-gray-300">|</div>
+            <div class="flex items-center space-x-1">
+                <span class="inline-block w-3 h-3 rounded-full bg-blue-100 border border-blue-600"></span>
+                <span class="text-sm text-gray-600">Hoàn thành</span>
+            </div>
+            <div class="mx-2 text-gray-300">|</div>
+            <div class="flex items-center space-x-1">
+                <span class="inline-block w-3 h-3 rounded-full bg-red-100 border border-red-600"></span>
+                <span class="text-sm text-gray-600">Đã huỷ</span>
+            </div>
         </div>
     </div>
 </div>

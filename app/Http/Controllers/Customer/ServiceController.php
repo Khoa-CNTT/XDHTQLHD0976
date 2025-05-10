@@ -44,8 +44,17 @@ public function filter($type)
 
 public function show($id)
 {
-    $service = Service::with('reviews.customer')->findOrFail($id);
-    return view('customer.services.show', compact('service'));
+    try {
+        
+        $service = Service::with('reviews.customer')->findOrFail($id);
+        return view('customer.services.show', compact('service'));
+    } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+        return redirect()->route('customer.services.index')
+            ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
+    } catch (\Exception $e) {
+        return redirect()->route('customer.services.index')
+            ->with('error', 'Đã xảy ra lỗi khi truy cập dịch vụ.');
+    }
 }
 public function filterByCategory($categoryId)
 {
@@ -86,21 +95,41 @@ public function index()
 public function search(Request $request)
 {
     $query = $request->input('query');
-
-    $services = Service::query()
-        ->when($query, function ($q) use ($query) {
-            $q->where('service_name', 'LIKE', "%{$query}%")
-              ->orWhere('description', 'LIKE', "%{$query}%")
-              ->orWhere('price', '=', $query)
-              ->orWhereHas('category', function($q) use ($query) {
-                  $q->where('name', 'LIKE', "%{$query}%");
-              });
-        })
-        ->orderByDesc('is_hot')
+    
+    // Initialize services collection
+    $services = Service::query();
+    
+    // Only perform search if query has at least 2 characters
+    if ($query && strlen(trim($query)) >= 2) {
+        $services = $services->where(function($q) use ($query) {
+            // Search in service name with higher priority (using exact match or starts with)
+            $q->where('service_name', 'LIKE', "%{$query}%");
+            
+            // Search in description (lower priority)
+            $q->orWhere('description', 'LIKE', "%{$query}%");
+            
+            // Try to match price if query is numeric
+            if (is_numeric($query)) {
+                $q->orWhere('price', '=', $query);
+            }
+            
+            // Search in category names
+            $q->orWhereHas('category', function($q) use ($query) {
+                $q->where('name', 'LIKE', "%{$query}%");
+            });
+        });
+    } elseif ($query && strlen(trim($query)) < 2) {
+        // If query is too short, add flash message
+        return redirect()->route('customer.services.index')
+            ->with('search_error', 'Vui lòng nhập ít nhất 2 ký tự để tìm kiếm.');
+    }
+    
+    // Apply standard sorting
+    $services = $services->orderByDesc('is_hot')
         ->orderByDesc('created_at')
         ->paginate(9);
 
-    $type = $query ? "Kết quả tìm kiếm cho: '{$query}'" : 'Tất Cả Dịch Vụ';
+    $type = $query && strlen(trim($query)) >= 2 ? "Kết quả tìm kiếm cho: '{$query}'" : 'Tất Cả Dịch Vụ';
 
     return view('customer.services.index', compact('services', 'query', 'type'));
 }

@@ -20,6 +20,48 @@
 <div class="container mx-auto mt-8">
     <h2 class="text-2xl font-semibold mb-6">Danh sách Khách hàng</h2>
 
+    <!-- Bộ lọc tìm kiếm -->
+    <div class="bg-white p-4 shadow-md rounded-lg border border-gray-300 mb-6">
+        <form action="{{ route('admin.customers.index') }}" method="GET" class="flex flex-col md:flex-row gap-4">
+            <div class="flex-1">
+                <input type="text" name="search" placeholder="Tìm theo tên, email hoặc số điện thoại" 
+                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                       value="{{ request('search') }}">
+            </div>
+            
+            <div class="md:w-1/4">
+                <select name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Đang hoạt động</option>
+                    <option value="banned" {{ request('status') == 'banned' ? 'selected' : '' }}>Đã bị khóa</option>
+                </select>
+            </div>
+            
+            <div class="flex space-x-2">
+                <button type="submit" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-search mr-2"></i> Tìm kiếm
+                </button>
+                
+                <a href="{{ route('admin.customers.index') }}" class="bg-gray-500 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                    <i class="fas fa-sync-alt mr-2"></i> Đặt lại
+                </a>
+            </div>
+        </form>
+    </div>
+
+    <!-- Hiển thị kết quả tìm kiếm -->
+    @if(request('search') || request('status'))
+    <div class="mb-4 text-sm text-gray-600">
+        Kết quả tìm kiếm {{ $customers->total() }} khách hàng
+        @if(request('search'))
+            với từ khóa: <span class="font-semibold">{{ request('search') }}</span>
+        @endif
+        @if(request('status'))
+            có trạng thái: <span class="font-semibold">{{ request('status') == 'active' ? 'Đang hoạt động' : 'Đã bị khóa' }}</span>
+        @endif
+    </div>
+    @endif
+
     <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-300">
         <table class="min-w-full leading-normal">
             <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
@@ -34,7 +76,7 @@
             <tbody class="text-sm font-light">
                 @foreach($customers as $index => $customer)
                 <tr class="border-b border-gray-200 hover:bg-gray-50">
-                    <td class="px-4 py-3">{{ $index + 1 }}</td>
+                    <td class="px-4 py-3">{{ ($customers->currentPage() - 1) * $customers->perPage() + $index + 1 }}</td>
                     <td class="px-4 py-3">{{ $customer->name }}</td>
                     <td class="px-4 py-3">{{ $customer->email }}</td>
                     <td class="px-4 py-3 text-center">
@@ -75,6 +117,11 @@
                 @endforeach
             </tbody>
         </table>
+    </div>
+
+    <!-- Phân trang -->
+    <div class="mt-4">
+        {{ $customers->appends(request()->query())->links() }}
     </div>
 </div>
 @endsection

@@ -17,20 +17,39 @@ class ContractController extends Controller
 {
     public function index()
     {
-        $customer = Auth::user()->customer;
+        try {
+            $customer = Auth::user()->customer;
 
-        $contracts = Contract::with('service')
-                             ->where('customer_id', $customer->id)
-                             ->get();
+            $contracts = Contract::with(['service' => function($query) {
+                    // Eager load with a check to prevent errors with null relations
+                    $query->withDefault([
+                        'service_name' => 'Dịch vụ không tồn tại'
+                    ]);
+                }])
+                ->where('customer_id', $customer->id)
+                ->get();
 
-        return view('customer.contracts.index', compact('contracts'));
+            return view('customer.contracts.index', compact('contracts'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Đã xảy ra lỗi khi tải danh sách hợp đồng: ' . $e->getMessage());
+        }
     }
 
     public function show($id)
     {
-        $contract = Contract::with('customer.user', 'service', 'signatures', 'payments')->findOrFail($id);
+        try {
+            $contract = Contract::with(['customer.user', 'service' => function($query) {
+                // Eager load with a check to prevent errors with null relations
+                $query->withDefault([
+                    'service_name' => 'Dịch vụ không tồn tại'
+                ]);
+            }, 'signatures', 'payments'])
+            ->findOrFail($id);
 
-        return view('customer.contracts.show', compact('contract'));
+            return view('customer.contracts.show', compact('contract'));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Đã xảy ra lỗi khi tải thông tin hợp đồng: ' . $e->getMessage());
+        }
     }
 
     public function requestCancel($id)

@@ -34,6 +34,28 @@
     });
 </script>
 @endif
+
+@if (session('error'))
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        Swal.fire({
+            toast: true,
+            position: 'top-end',
+            icon: 'error',
+            title: '{{ session('error') }}',
+            showConfirmButton: false,
+            timer: 5000,
+            timerProgressBar: true,
+            background: '#ffffff',
+            color: '#111827',
+            iconColor: '#ef4444',  
+            customClass: {
+                popup: 'rounded-md shadow-md px-4 py-2 text-sm'  
+            }
+        });
+    });
+</script>
+@endif
 <body class="bg-gray-50 flex flex-col min-h-screen">
     <header class="bg-blue-600 text-white py-4 shadow-md">
         <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
@@ -49,7 +71,12 @@
                 <ul class="flex flex-wrap space-x-4">
                     <li><a href="{{ route('customer.dashboard') }}" class="hover:text-blue-200 text-sm md:text-base">Trang Chủ</a></li>
                     <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200 text-sm md:text-base">Dịch Vụ</a></li>
+                    <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Về Chúng Tôi</a></li>
+                    <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Liên Hệ</a></li>
                 </ul>
+                
+             
+                
                 @if(auth()->check())
                     <div class="relative mt-4 md:mt-0 mr-4">
                         <button id="notifications-menu-button" class="flex items-center focus:outline-none relative">
@@ -206,6 +233,19 @@
         notificationsButton.addEventListener('click', () => {
             notificationsDropdown.classList.toggle('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
+            if (searchDropdown) searchDropdown.classList.add('hidden');
+        });
+    }
+
+    // Search dropdown functionality
+    const searchButton = document.getElementById('search-button');
+    const searchDropdown = document.getElementById('search-dropdown');
+    
+    if (searchButton && searchDropdown) {
+        searchButton.addEventListener('click', () => {
+            searchDropdown.classList.toggle('hidden');
+            if (userDropdown) userDropdown.classList.add('hidden');
+            if (notificationsDropdown) notificationsDropdown.classList.add('hidden');
         });
     }
 
@@ -218,6 +258,9 @@
         }
         if (notificationsDropdown && !notificationsButton.contains(event.target) && !notificationsDropdown.contains(event.target)) {
             notificationsDropdown.classList.add('hidden');
+        }
+        if (searchDropdown && !searchButton.contains(event.target) && !searchDropdown.contains(event.target)) {
+            searchDropdown.classList.add('hidden');
         }
     });
 </script>

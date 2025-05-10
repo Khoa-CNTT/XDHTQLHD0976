@@ -23,19 +23,26 @@ class SignatureController extends Controller
     }
     public function showSignForm(Request $request, $serviceId)
     {
-        $service = Service::findOrFail($serviceId);
-    
-       
-        $duration = $request->input('duration');
-        $validDurations = ['6_thang', '1_nam', '3_nam'];
-        $durationLabel = $this->getDurationLabel($duration);
-        if (!in_array($duration, $validDurations)) {
-            return redirect()->route('customer.services.show', $serviceId)
-                             ->withErrors(['duration' => 'Vui lòng chọn thời hạn hợp đồng hợp lệ.']);
+        try {
+            $service = Service::findOrFail($serviceId);
+            
+            $duration = $request->input('duration');
+            $validDurations = ['6_thang', '1_nam', '3_nam'];
+            $durationLabel = $this->getDurationLabel($duration);
+            if (!in_array($duration, $validDurations)) {
+                return redirect()->route('customer.services.show', $serviceId)
+                                 ->withErrors(['duration' => 'Vui lòng chọn thời hạn hợp đồng hợp lệ.']);
+            }
+        
+            $tempSignature = session('temp_signature');
+            return view('customer.contracts.sign', compact('service', 'duration', 'tempSignature'));
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('customer.services.index')
+                            ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
+        } catch (\Exception $e) {
+            return redirect()->route('customer.services.index')
+                            ->with('error', 'Đã xảy ra lỗi khi truy cập form ký hợp đồng.');
         }
-    
-        $tempSignature = session('temp_signature');
-        return view('customer.contracts.sign', compact('service', 'duration', 'tempSignature'));
     }
     public function sendOtp(Request $request, $serviceId)
     {
@@ -58,77 +65,85 @@ class SignatureController extends Controller
 
     public function sign(Request $request, $serviceId)
     {
-        $request->validate([
-            'otp' => 'required|numeric',
-            'signature_data' => 'required', // Base64 chữ ký
-            'duration' => 'required|string',
-            'contract_date' => 'required|date',
-            'identity_card' => 'required|string',
-            'agreed_terms' => 'required|boolean',
-        ]);
-
-        $cachedOtp = Cache::get('otp_' . Auth::user()->email);
-        if (!$cachedOtp || $cachedOtp != $request->otp) {
-            return redirect()->back()->withErrors(['otp' => 'Mã OTP không hợp lệ hoặc đã hết hạn.']);
-        }
-
-        $service = Service::findOrFail($serviceId);
-        $customer = Auth::user()->customer;
-
-        $startDate = $request->contract_date;
-        switch ($request->duration) {
-            case '6_thang':
-                $endDate = Carbon::parse($startDate)->addMonths(6);
-                break;
-            case '1_nam':
-                $endDate = Carbon::parse($startDate)->addYear();
-                break;
-            case '3_nam':
-                $endDate = Carbon::parse($startDate)->addYears(3);
-                break;
-            default:
-                $endDate = Carbon::parse($startDate)->addYear();
-        }
-
-        // Tạo hoặc lấy hợp đồng
-        $contract = Contract::where('service_id', $serviceId)
-                            ->where('customer_id', $customer->id)
-                            ->first();
-        if (!$contract) {
-            $contract = Contract::create([
-                'service_id' => $serviceId,
-                'customer_id' => $customer->id,
-                'contract_number' => 'HD-' . time(),
-                'start_date' => $startDate,
-                'end_date' => $endDate,
-                'status' => 'Chờ xử lý',
-                'total_price' => $service->price,
+        try {
+            $request->validate([
+                'otp' => 'required|numeric',
+                'signature_data' => 'required', // Base64 chữ ký
+                'duration' => 'required|string',
+                'contract_date' => 'required|date',
+                'identity_card' => 'required|string',
+                'agreed_terms' => 'required|boolean',
             ]);
+
+            $cachedOtp = Cache::get('otp_' . Auth::user()->email);
+            if (!$cachedOtp || $cachedOtp != $request->otp) {
+                return redirect()->back()->withErrors(['otp' => 'Mã OTP không hợp lệ hoặc đã hết hạn.']);
+            }
+
+            $service = Service::findOrFail($serviceId);
+            $customer = Auth::user()->customer;
+
+            $startDate = $request->contract_date;
+            switch ($request->duration) {
+                case '6_thang':
+                    $endDate = Carbon::parse($startDate)->addMonths(6);
+                    break;
+                case '1_nam':
+                    $endDate = Carbon::parse($startDate)->addYear();
+                    break;
+                case '3_nam':
+                    $endDate = Carbon::parse($startDate)->addYears(3);
+                    break;
+                default:
+                    $endDate = Carbon::parse($startDate)->addYear();
+            }
+
+            // Tạo hoặc lấy hợp đồng
+            $contract = Contract::where('service_id', $serviceId)
+                                ->where('customer_id', $customer->id)
+                                ->first();
+            if (!$contract) {
+                $contract = Contract::create([
+                    'service_id' => $serviceId,
+                    'customer_id' => $customer->id,
+                    'contract_number' => 'HD-' . time(),
+                    'start_date' => $startDate,
+                    'end_date' => $endDate,
+                    'status' => 'Chờ xử lý',
+                    'total_price' => $service->price,
+                ]);
+            }
+
+            // Kiểm tra nếu đã có chữ ký cho hợp đồng này thì không cho ký lại
+            $hasSignature = Signature::where('contract_id', $contract->id)->exists();
+            if ($hasSignature) {
+                return redirect()->back()->withErrors(['signature' => 'Hợp đồng này đã được ký!']);
+            }
+
+            // Lưu chữ ký vào DB
+            Signature::create([
+                'contract_id' => $contract->id,
+                'customer_name' => Auth::user()->name,
+                'customer_email' => Auth::user()->email,
+                'signature_data' => $request->otp, // Lưu mã OTP
+                'signature_image' => $request->signature_data, // Lưu base64 ảnh chữ ký
+                'identity_card' => $request->identity_card,
+                'duration' => $this->getDurationLabel($request->duration),
+                'status' => 'Đang xử lý',
+                'signed_at' => now(),
+                'otp_verified_at' => now(),
+            ]);
+
+            Cache::forget('otp_' . Auth::user()->email);
+
+            return redirect()->route('customer.contracts.index')->with('success', 'Hợp đồng đã được ký thành công!');
+        } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
+            return redirect()->route('customer.services.index')
+                            ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
+        } catch (\Exception $e) {
+            return redirect()->route('customer.services.index')
+                            ->with('error', 'Đã xảy ra lỗi khi ký hợp đồng: ' . $e->getMessage());
         }
-
-        // Kiểm tra nếu đã có chữ ký cho hợp đồng này thì không cho ký lại
-        $hasSignature = Signature::where('contract_id', $contract->id)->exists();
-        if ($hasSignature) {
-            return redirect()->back()->withErrors(['signature' => 'Hợp đồng này đã được ký!']);
-        }
-
-        // Lưu chữ ký vào DB
-        Signature::create([
-            'contract_id' => $contract->id,
-            'customer_name' => Auth::user()->name,
-            'customer_email' => Auth::user()->email,
-            'signature_data' => $request->otp, // Lưu mã OTP
-            'signature_image' => $request->signature_data, // Lưu base64 ảnh chữ ký
-            'identity_card' => $request->identity_card,
-            'duration' => $this->getDurationLabel($request->duration),
-            'status' => 'Đang xử lý',
-            'signed_at' => now(),
-            'otp_verified_at' => now(),
-        ]);
-
-        Cache::forget('otp_' . Auth::user()->email);
-
-        return redirect()->route('customer.contracts.index')->with('success', 'Hợp đồng đã được ký thành công!');
     }
 
     

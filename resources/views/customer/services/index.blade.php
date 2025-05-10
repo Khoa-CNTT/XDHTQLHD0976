@@ -42,6 +42,20 @@
 </style>
 @section('content')
 <div class="container mx-auto">
+@if (session('error'))
+    <div class="bg-red-50 border-l-4 border-red-400 p-4 mb-6 rounded-lg">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-red-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-red-700">{{ session('error') }}</p>
+            </div>
+        </div>
+    </div>
+@endif
 <section 
 x-data="{
          images: [
@@ -127,7 +141,20 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
         </div>
     </div>
 
-
+@if (session('search_error'))
+    <div class="bg-yellow-50 border-l-4 border-yellow-400 p-4 mt-6 rounded-lg">
+        <div class="flex">
+            <div class="flex-shrink-0">
+                <svg class="h-5 w-5 text-yellow-400" fill="currentColor" viewBox="0 0 20 20">
+                    <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+                </svg>
+            </div>
+            <div class="ml-3">
+                <p class="text-sm text-yellow-700">{{ session('search_error') }}</p>
+            </div>
+        </div>
+    </div>
+@endif
 
 @php
     $colors = ['text-red-500', 'text-blue-500', 'text-green-500', 'text-yellow-500', 'text-purple-500'];
@@ -174,7 +201,33 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
         </div>
     </div>
     @empty
-    <p class="text-gray-600">Chúng tôi rất tiếc ,không có dịch vụ nào bạn đang tìm kiếm cả!!!</p>
+    <div class="col-span-3 py-16 px-4">
+        <div class="bg-white rounded-lg shadow-md p-8 text-center">
+            <svg class="mx-auto h-16 w-16 text-blue-400 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <h3 class="text-xl font-semibold text-gray-800 mb-2">Không tìm thấy dịch vụ</h3>
+            <p class="text-gray-600 mb-6">Chúng tôi rất tiếc, không có dịch vụ nào phù hợp với tìm kiếm của bạn.</p>
+            
+            @if(request('query'))
+                <div class="mb-6">
+                    <p class="text-sm text-gray-500 mb-2">Gợi ý:</p>
+                    <ul class="text-sm text-gray-600 list-disc list-inside">
+                        <li>Kiểm tra lại chính tả</li>
+                        <li>Thử sử dụng các từ khóa khác</li>
+                        <li>Sử dụng các thuật ngữ chung hơn</li>
+                    </ul>
+                </div>
+            @endif
+            
+            <a href="{{ route('customer.services.index') }}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                <svg class="w-4 h-4 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Xem tất cả dịch vụ
+            </a>
+        </div>
+    </div>
     @endforelse
 </div>
 

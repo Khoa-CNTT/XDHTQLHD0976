@@ -112,7 +112,7 @@
                     <div class="bg-white rounded-lg shadow">
                         @if($notifications->count() > 0)
                             <ul class="divide-y divide-gray-200">
-                                @foreach($notifications as $noti)
+                                @foreach($notifications->take(5) as $noti)
                                     <li class="p-4 {{ $noti->is_read ? 'bg-gray-50' : 'bg-blue-50' }}">
                                         <div class="font-medium text-gray-800">{{ $noti->title }}</div>
                                         <div class="text-gray-600 text-sm">{{ $noti->message }}</div>
@@ -120,6 +120,41 @@
                                     </li>
                                 @endforeach
                             </ul>
+                            
+                            @if($notifications->count() > 5)
+                                <div class="p-4 text-center">
+                                    <button type="button" id="show-more-notifications" class="text-purple-600 text-sm hover:text-purple-800 font-medium">
+                                        Xem thêm thông báo
+                                    </button>
+                                </div>
+                                
+                                <!-- Modal thông báo -->
+                                <div id="notifications-modal" class="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center hidden">
+                                    <div class="bg-white rounded-lg shadow-lg max-w-2xl w-full max-h-[80vh] overflow-auto">
+                                        <div class="p-4 border-b border-gray-200 flex justify-between items-center">
+                                            <h3 class="text-lg font-semibold text-gray-800">Thông báo cá nhân</h3>
+                                            <button id="close-notifications-modal" class="text-gray-400 hover:text-gray-600">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <div class="p-4">
+                                            <ul class="divide-y divide-gray-200">
+                                                @foreach($notifications as $noti)
+                                                    <li class="py-3 {{ $noti->is_read ? 'bg-gray-50' : 'bg-blue-50' }}">
+                                                        <div class="p-2">
+                                                            <div class="font-medium text-gray-800">{{ $noti->title }}</div>
+                                                            <div class="text-gray-600 text-sm">{{ $noti->message }}</div>
+                                                            <div class="text-xs text-gray-400 mt-1">{{ $noti->created_at instanceof \Carbon\Carbon ? $noti->created_at->format('d/m/Y H:i') : $noti->created_at }}</div>
+                                                        </div>
+                                                    </li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            @endif
                         @else
                             <p class="p-4 text-gray-500 text-center">Không có thông báo nào</p>
                         @endif
@@ -379,6 +414,35 @@ document.addEventListener('DOMContentLoaded', function() {
         activitiesModal.addEventListener('click', function(event) {
             if (event.target === activitiesModal) {
                 activitiesModal.classList.add('hidden');
+                document.body.style.overflow = 'auto';
+            }
+        });
+    }
+    
+    // Xử lý modal thông báo
+    const showMoreNotificationsBtn = document.getElementById('show-more-notifications');
+    const notificationsModal = document.getElementById('notifications-modal');
+    const closeNotificationsModalBtn = document.getElementById('close-notifications-modal');
+    
+    if (showMoreNotificationsBtn) {
+        showMoreNotificationsBtn.addEventListener('click', function() {
+            notificationsModal.classList.remove('hidden');
+            document.body.style.overflow = 'hidden';
+        });
+    }
+    
+    if (closeNotificationsModalBtn) {
+        closeNotificationsModalBtn.addEventListener('click', function() {
+            notificationsModal.classList.add('hidden');
+            document.body.style.overflow = 'auto';
+        });
+    }
+    
+    // Đóng modal khi click ra ngoài
+    if (notificationsModal) {
+        notificationsModal.addEventListener('click', function(event) {
+            if (event.target === notificationsModal) {
+                notificationsModal.classList.add('hidden');
                 document.body.style.overflow = 'auto';
             }
         });

@@ -6,26 +6,58 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\ContractAmendment;
 use App\Models\ContractDocument;
+use App\Models\Service;
+use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
-
 use Illuminate\Http\Request;
 
 class ContractController extends Controller
 {
-  
-
-
-
-
-
-
-    public function index()
+    public function index(Request $request)
     {
-        // Lấy danh sách tất cả hợp đồng
-        $contracts = Contract::with('service', 'customer')->paginate(10);
+        // Khởi tạo query để lấy danh sách hợp đồng với các quan hệ
+        $query = Contract::with('service', 'customer');
     
+        // Tìm kiếm theo mã hợp đồng
+        if ($request->has('contract_number') && !empty($request->contract_number)) {
+            $query->where('contract_number', 'like', '%' . $request->contract_number . '%');
+        }
+        
+        // Lọc theo trạng thái
+        if ($request->has('status') && !empty($request->status)) {
+            $query->where('status', $request->status);
+        }
+        
+        // Lọc theo service
+        if ($request->has('service_id') && !empty($request->service_id)) {
+            $query->where('service_id', $request->service_id);
+        }
+        
+        // Lọc theo ngày bắt đầu
+        if ($request->has('date_from') && !empty($request->date_from)) {
+            $query->whereDate('start_date', '>=', $request->date_from);
+        }
+        
+        // Lọc theo ngày kết thúc
+        if ($request->has('date_to') && !empty($request->date_to)) {
+            $query->whereDate('end_date', '<=', $request->date_to);
+        }
+        
+        // Tìm kiếm theo tên khách hàng
+        if ($request->has('customer_name') && !empty($request->customer_name)) {
+            $query->whereHas('customer', function($q) use ($request) {
+                $q->where('name', 'like', '%' . $request->customer_name . '%');
+            });
+        }
+        
+        // Phân trang kết quả
+        $contracts = $query->paginate(10);
+        
+        // Lấy danh sách dịch vụ cho dropdown filter
+        $services = Service::all();
+        
         // Trả về view hiển thị danh sách hợp đồng
-        return view('admin.contracts.index', compact('contracts'));
+        return view('admin.contracts.index', compact('contracts', 'services'));
     }
 
     public function create()
@@ -105,24 +137,24 @@ class ContractController extends Controller
 
 
 
-    public function sign(Request $request, $id)
-{
-    $validated = $request->validate([
-        'customer_name' => 'required|string|max:255',
-        'customer_email' => 'required|email|max:255',
-        'signature_data' => 'required',
-    ]);
+//     public function sign(Request $request, $id)
+// {
+//     $validated = $request->validate([
+//         'customer_name' => 'required|string|max:255',
+//         'customer_email' => 'required|email|max:255',
+//         'signature_data' => 'required',
+//     ]);
 
     
-    \App\Models\Signature::create([
-        'contract_id' => $id,
-        'customer_name' => $validated['customer_name'],
-        'customer_email' => $validated['customer_email'],
-        'signature_data' => $validated['signature_data'],
-    ]);
+//     \App\Models\Signature::create([
+//         'contract_id' => $id,
+//         'customer_name' => $validated['customer_name'],
+//         'customer_email' => $validated['customer_email'],
+//         'signature_data' => $validated['signature_data'],
+//     ]);
 
-    return redirect()->route('customer.dashboard')->with('success', 'Hợp đồng đã được ký thành công!');
-}
+//     return redirect()->route('customer.dashboard')->with('success', 'Hợp đồng đã được ký thành công!');
+// }
 public function updateStatus(Request $request, $id)
 {
     $contract = Contract::findOrFail($id);

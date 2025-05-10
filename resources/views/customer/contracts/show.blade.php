@@ -3,7 +3,8 @@
 @section('title', 'Chi Tiết Hợp Đồng')
 
 @section('content')
-<div class="max-w-5xl mx-auto mt-10 bg-white p-8 rounded-2xl shadow-lg border border-gray-200">
+<div class="max-w-5xl mx-auto mt-10 mb-20 min-h-screen pb-24">
+<div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-10">
 @if (session('success'))
     <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">
         {{ session('success') }}
@@ -21,7 +22,13 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
         <div>
             <label class="block text-sm font-medium text-gray-900">Tên Dịch Vụ</label>
-            <p class="mt-1 text-gray-600">{{ $contract->service->service_name }}</p>
+            <p class="mt-1 text-gray-600">
+                @if($contract->service)
+                    {{ $contract->service->service_name }}
+                @else
+                    <span class="text-red-500">Dịch vụ không tồn tại</span>
+                @endif
+            </p>
         </div>
         
         <div>
@@ -155,28 +162,54 @@
         </button>
     </div>
 </form>
-@endif
-
-{{-- <!--     
-    <form action="{{ route('customer.momo.create', $contract->id) }}" method="POST">
-        @if (session('error'))
-    <div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">
-        {{ session('error') }}
+@else
+    <div class="flex justify-between mt-8">
+        <a href="{{ route('customer.contracts.index') }}" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
+            ← Quay lại danh sách
+        </a>
     </div>
 @endif
-        @csrf
-        <div class="flex justify-between mt-6">
-            <a href="{{ route('customer.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
-                Quay lại
-            </a>
-        <div class="flex justify-between mt-6">
-            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-                Thanh Toán Qua MOMO
-            </button>
+</div>
+
+<!-- Thêm phần hướng dẫn thanh toán để tăng chiều cao -->
+<div class="bg-blue-50 border border-blue-100 rounded-xl p-6 mb-20">
+    <h3 class="text-xl font-bold text-blue-800 mb-4">Thông tin hướng dẫn</h3>
+    
+    <div class="grid md:grid-cols-3 gap-6">
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-3">1</div>
+                <h4 class="font-medium">Xem thông tin hợp đồng</h4>
+            </div>
+            <p class="text-sm text-gray-600">Kiểm tra kỹ các thông tin về dịch vụ, thời hạn và giá trị hợp đồng của bạn.</p>
         </div>
-    </form>
-    @endif
-     -->
-     --}}
+        
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-3">2</div>
+                <h4 class="font-medium">Thanh toán hợp đồng</h4>
+            </div>
+            <p class="text-sm text-gray-600">Nếu hợp đồng ở trạng thái "Chờ xử lý", bạn có thể thanh toán qua VNPay một cách an toàn.</p>
+        </div>
+        
+        <div class="bg-white p-4 rounded-lg shadow-sm">
+            <div class="flex items-center mb-3">
+                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center text-blue-700 mr-3">3</div>
+                <h4 class="font-medium">Theo dõi trạng thái</h4>
+            </div>
+            <p class="text-sm text-gray-600">Sau khi thanh toán, hợp đồng sẽ được xử lý và chuyển sang trạng thái "Hoạt động".</p>
+        </div>
+    </div>
+    
+    <div class="mt-6 text-gray-600 text-sm">
+        <p class="font-medium mb-2">Ghi chú về trạng thái hợp đồng:</p>
+        <ul class="list-disc list-inside space-y-1 ml-2">
+            <li><span class="font-medium text-yellow-600">Chờ xử lý:</span> Hợp đồng đã được tạo nhưng chưa thanh toán hoặc đang chờ xác nhận.</li>
+            <li><span class="font-medium text-green-600">Hoạt động:</span> Hợp đồng đã được thanh toán và đang có hiệu lực.</li>
+            <li><span class="font-medium text-blue-600">Hoàn thành:</span> Hợp đồng đã kết thúc thời hạn và được hoàn thành đầy đủ.</li>
+            <li><span class="font-medium text-red-600">Đã huỷ:</span> Hợp đồng đã bị hủy bỏ theo yêu cầu hoặc do vi phạm điều khoản.</li>
+        </ul>
+    </div>
+</div>
 </div>
 @endsection
