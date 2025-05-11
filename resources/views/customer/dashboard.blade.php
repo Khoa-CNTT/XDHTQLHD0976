@@ -94,10 +94,216 @@
         </div>
     </div>
 
-    {{-- Danh sách hợp đồng dịch vụ --}}
-    <div class="grid md:grid-cols-3 gap-6 mt-6">
-        @forelse($services as $service)
-        <div class="flex flex-col justify-between bg-white-800 p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 glass-effect">
+    <!-- Khu vực mới: Tin tức, cập nhật và đề xuất cá nhân hóa -->
+    <div class="grid md:grid-cols-2 gap-6 mt-6">
+        <!-- Tin tức và cập nhật -->
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden" data-aos="fade-up">
+            <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 py-4">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
+                    </svg>
+                    Tin tức & Cập nhật mới nhất
+                </h2>
+            </div>
+            
+            <div class="p-6">
+                <!-- Dịch vụ mới -->
+                <div class="mb-6 border-b border-gray-100 pb-4">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-green-100 text-green-800 text-xs font-semibold px-2.5 py-1 rounded mr-2">MỚI</span>
+                        <h3 class="text-lg font-semibold text-gray-800">Dịch vụ quản lý tài liệu trên cloud</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">Lưu trữ, quản lý và đồng bộ hóa tài liệu của bạn với dịch vụ cloud mới nhất từ chúng tôi. An toàn, bảo mật và hiệu quả.</p>
+                    <div class="flex items-center text-sm text-blue-600">
+                        <span>Khám phá ngay</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Cập nhật hệ thống -->
+                <div class="mb-6 border-b border-gray-100 pb-4">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-1 rounded mr-2">CẬP NHẬT</span>
+                        <h3 class="text-lg font-semibold text-gray-800">Bảo trì hệ thống định kỳ</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">Hệ thống sẽ được bảo trì vào ngày 15/05/2025 từ 23:00 đến 01:00 sáng hôm sau. Xin lỗi vì sự bất tiện này.</p>
+                    <div class="flex items-center text-sm text-blue-600">
+                        <span>Xem chi tiết</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+                
+                <!-- Blog và nội dung hữu ích -->
+                <div class="mb-1">
+                    <div class="flex items-center mb-2">
+                        <span class="bg-purple-100 text-purple-800 text-xs font-semibold px-2.5 py-1 rounded mr-2">BÀI VIẾT</span>
+                        <h3 class="text-lg font-semibold text-gray-800">5 cách bảo vệ dữ liệu doanh nghiệp</h3>
+                    </div>
+                    <p class="text-gray-600 text-sm mb-3">Tìm hiểu các phương pháp hiệu quả để bảo vệ dữ liệu quan trọng của doanh nghiệp bạn khỏi các mối đe dọa mạng.</p>
+                    <div class="flex items-center text-sm text-blue-600">
+                        <span>Đọc ngay</span>
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-3 text-center">
+                <a href="#" class="text-blue-600 font-medium hover:text-blue-800 transition flex items-center justify-center">
+                    <span>Xem tất cả thông báo</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+        
+        <!-- Đề xuất cá nhân hóa -->
+        <div class="bg-white shadow-lg rounded-xl overflow-hidden" data-aos="fade-up" data-aos-delay="200">
+            <div class="bg-gradient-to-r from-purple-600 to-indigo-700 px-6 py-4">
+                <h2 class="text-xl font-bold text-white flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+                    </svg>
+                    Đề xuất dành cho bạn
+                </h2>
+            </div>
+            
+            <div class="p-6">
+                <!-- Dịch vụ phổ biến -->
+                <div class="mb-6 border-b border-gray-100 pb-4">
+                    <div class="flex items-center mb-3">
+                        <div class="bg-red-100 p-2 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-lg font-semibold text-gray-800">Dịch vụ phổ biến</h3>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer group">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-blue-100 rounded-md flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="font-medium text-gray-800">Website Doanh Nghiệp Pro</h4>
+                                    <p class="text-sm text-gray-500">Dịch vụ thiết kế website phổ biến nhất của chúng tôi</p>
+                                </div>
+                            </div>
+                            <span class="text-blue-600 opacity-0 group-hover:opacity-100 transition">Xem</span>
+                        </div>
+                        
+                        <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer group">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-green-100 rounded-md flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="font-medium text-gray-800">Email Marketing Plus</h4>
+                                    <p class="text-sm text-gray-500">Tiếp cận khách hàng hiệu quả với email marketing</p>
+                                </div>
+                            </div>
+                            <span class="text-blue-600 opacity-0 group-hover:opacity-100 transition">Xem</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Đề xuất riêng -->
+                <div class="mb-6 border-b border-gray-100 pb-4">
+                    <div class="flex items-center mb-3">
+                        <div class="bg-indigo-100 p-2 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.921-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-lg font-semibold text-gray-800">Phù hợp với bạn</h3>
+                    </div>
+                    <div class="flex flex-col space-y-2">
+                        <div class="flex items-center justify-between bg-gray-50 p-3 rounded-lg hover:bg-blue-50 transition cursor-pointer group">
+                            <div class="flex items-center">
+                                <div class="w-10 h-10 bg-yellow-100 rounded-md flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z" />
+                                    </svg>
+                                </div>
+                                <div class="ml-3">
+                                    <h4 class="font-medium text-gray-800">Ứng dụng di động</h4>
+                                    <p class="text-sm text-gray-500">Bổ sung ứng dụng di động cho website hiện tại</p>
+                                </div>
+                            </div>
+                            <span class="text-blue-600 opacity-0 group-hover:opacity-100 transition">Xem</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Combo tiết kiệm -->
+                <div class="mb-1">
+                    <div class="flex items-center mb-3">
+                        <div class="bg-green-100 p-2 rounded-md">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="ml-3 text-lg font-semibold text-gray-800">Combo tiết kiệm</h3>
+                    </div>
+                    <div class="bg-gradient-to-r from-green-50 to-blue-50 p-4 rounded-lg border border-green-100 relative overflow-hidden">
+                        <div class="absolute top-0 right-0">
+                            <div class="bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-bl-lg shadow-md transform rotate-12 translate-x-2 -translate-y-1">
+                                TIẾT KIỆM 25%
+                            </div>
+                        </div>
+                        <h4 class="text-lg font-bold text-gray-800 mb-2">Gói Doanh Nghiệp Toàn Diện</h4>
+                        <p class="text-sm text-gray-600 mb-3">Kết hợp website, hosting và email doanh nghiệp với giá ưu đãi đặc biệt.</p>
+                        <div class="flex items-center justify-between">
+                            <div class="text-xl font-bold text-green-600">
+                                4.500.000đ
+                                <span class="text-sm text-gray-500 line-through ml-2">6.000.000đ</span>
+                            </div>
+                            <button class="px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white text-sm font-medium rounded-lg shadow-md hover:shadow-lg transform hover:-translate-y-0.5 transition">
+                                Xem chi tiết
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-gray-50 px-6 py-3 text-center">
+                <a href="{{ route('customer.services.index') }}" class="text-blue-600 font-medium hover:text-blue-800 transition flex items-center justify-center">
+                    <span>Xem tất cả đề xuất</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Section Dịch Vụ Nổi Bật với container riêng -->
+    <section class="py-16 bg-white my-12 rounded-xl shadow-md">
+        <div class="container mx-auto px-6">
+            <div class="text-center mb-8" data-aos="fade-up">
+                <h2 class="text-3xl md:text-4xl font-bold text-gray-800 mb-3">Dịch Vụ Nổi Bật</h2>
+                <div class="w-24 h-1.5 bg-blue-600 mx-auto mb-6 rounded-full"></div>
+                <p class="text-gray-600 max-w-3xl mx-auto">
+                    Khám phá các dịch vụ chất lượng cao từ chúng tôi, được thiết kế đặc biệt để đáp ứng mọi nhu cầu của doanh nghiệp bạn.
+                </p>
+            </div>
+
+            {{-- Danh sách hợp đồng dịch vụ --}}
+            <div class="grid md:grid-cols-3 gap-6">
+                @forelse($services as $service)
+                <div class="flex flex-col justify-between bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 relative">
             
             <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
             @if($service->created_at && $service->created_at->gt(now()->subDays(3)) && !$service->is_hot)
@@ -120,7 +326,7 @@
                     <img class="w-full h-full object-cover" src="{{ $service->image ? asset('storage/' . $service->image) : asset('images/default.jpg') }}" 
                     alt="{{ $service->service_name }}" >
                 </div>  
-                <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
+                        <h3 class="text-xl font-semibold text-gray-800 mb-2 mt-4">{{ $service->service_name }}</h3>
                 <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
                 <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->category->name ?? 'Không có danh mục' }}</p>
                 <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
@@ -135,29 +341,20 @@
             </div>
         </div>
         @empty
-        <p class="text-gray-600">Chúng tôi rất tiếc ,không có dịch vụ nào bạn đang tìm kiếm cả!!!</p>
+                <div class="col-span-3 text-center py-12">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 text-gray-400 mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    <p class="text-gray-600 text-lg">Chúng tôi rất tiếc, không có dịch vụ nào bạn đang tìm kiếm!</p>
+                    <a href="{{ route('customer.services.index') }}" class="mt-4 inline-block px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition">
+                        Xem tất cả dịch vụ
+                    </a>
+                </div>
         @endforelse
     </div>
     
     
-    <!-- Hiển thị phân trang -->
-    <div class="mt-6">
-        <div class="flex justify-center space-x-4">
-            @if ($services->onFirstPage())
-                <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-l-lg">Trang đầu</span>
-            @else
-                <a href="{{ $services->previousPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-l-lg hover:bg-blue-700">Trang đầu</a>
-            @endif
-
-            <span class="px-4 py-2 text-gray-500">Trang {{ $services->currentPage() }} / {{ $services->lastPage() }}</span>
-
-            @if ($services->hasMorePages())
-                <a href="{{ $services->nextPageUrl() }}" class="px-4 py-2 bg-blue-600 text-white rounded-r-lg hover:bg-blue-700">Trang sau</a>
-            @else
-                <span class="px-4 py-2 text-gray-500 bg-gray-200 rounded-r-lg">Trang sau</span>
-            @endif
-        </div>
-    </div>
+    </section>
 
    <!-- Hero Section: Thiết kế hiện đại với hiệu ứng lượn sóng -->
    <section class="relative overflow-hidden bg-gradient-to-br from-blue-700 via-blue-600 to-indigo-800 text-white py-28">
@@ -198,7 +395,7 @@
             </div>
         </div>
     </div>
-    
+
     <!-- Stats Counter -->
     <div class="container mx-auto px-6 relative z-10 mt-16">
         <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">

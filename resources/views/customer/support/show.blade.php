@@ -4,72 +4,242 @@
 
 @push('styles')
 <style>
-    /* Chat bubble animations */
-    @keyframes fadeIn {
-        from { opacity: 0; transform: translateY(10px); }
-        to { opacity: 1; transform: translateY(0); }
-    }
-    .chat-bubble {
-        animation: fadeIn 0.3s ease-out;
-    }
-    .chat-container {
-        height: 500px;
-        background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-    }
-    .typing-indicator {
+    /* STYLE HOÀN TOÀN MỚI CHO KHUNG CHAT GIỐNG FACEBOOK */
+    .chat-wrapper {
         display: flex;
-        justify-content: flex-start;
-        margin: 10px;
-        display: none;
+        flex-direction: column;
+        height: 100%;
+        background-color: white;
+        border-radius: 0.5rem;
     }
-    .typing-indicator span {
-        height: 8px;
-        width: 8px;
-        background-color: #9E9EA1;
+    
+    .chat-header {
+        background-color: #3b82f6;
+        color: white;
+        padding: 16px;
+        border-top-left-radius: 0.5rem;
+        border-top-right-radius: 0.5rem;
+    }
+    
+    .chat-container {
+        height: 450px;
+        overflow-y: auto;
+        padding: 16px;
+        background-color: #f8fafc;
+        flex: 1;
+        border-right: 1px solid #e5e7eb;
+        border-left: 1px solid #e5e7eb;
+    }
+    
+    .chat-footer {
+        border: 1px solid #e5e7eb;
+        border-top: none;
+        padding: 12px;
+        background-color: white;
+        display: flex;
+        align-items: center;
+        border-bottom-left-radius: 0.5rem;
+        border-bottom-right-radius: 0.5rem;
+    }
+    
+    .message {
+        display: flex;
+        margin-bottom: 16px;
+        align-items: flex-start;
+    }
+    
+    .message.staff {
+        justify-content: flex-end;
+    }
+    
+    .message-avatar {
+        width: 36px;
+        height: 36px;
         border-radius: 50%;
-        display: inline-block;
-        margin: 0 1px;
-        opacity: 0.4;
+        margin-right: 8px;
     }
-    .typing-indicator span:nth-child(1) {
-        animation: pulse 1s infinite ease-in-out;
+    
+    .message.staff .message-avatar {
+        margin-right: 0;
+        margin-left: 8px;
     }
-    .typing-indicator span:nth-child(2) {
-        animation: pulse 1s infinite ease-in-out .2s;
+    
+    .message-bubble {
+        max-width: 75%;
+        border-radius: 18px;
+        padding: 8px 12px;
+        position: relative;
+        box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
     }
-    .typing-indicator span:nth-child(3) {
-        animation: pulse 1s infinite ease-in-out .4s;
+    
+    .customer-bubble {
+        background-color: white;
+        border: 1px solid #e5e7eb;
+        border-top-left-radius: 4px;
     }
-    @keyframes pulse {
-        0% { transform: scale(1); opacity: 0.4; }
-        50% { transform: scale(1.3); opacity: 1; }
-        100% { transform: scale(1); opacity: 0.4; }
+    
+    .staff-bubble {
+        background-color: #e9f0ff;
+        border-top-right-radius: 4px;
     }
+    
+    .message-content {
+        font-size: 0.95rem;
+        line-height: 1.4;
+        word-break: break-word;
+    }
+    
     .message-time {
         font-size: 0.7rem;
         color: #6b7280;
-        margin-top: 3px;
         text-align: right;
+        margin-top: 4px;
     }
-    /* Emoji picker styles */
+    
+    .message-meta {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 4px;
+    }
+    
+    .message-sender {
+        font-weight: 500;
+        font-size: 0.85rem;
+        color: #374151;
+    }
+    
+    .message-timestamp {
+        font-size: 0.75rem;
+        color: #6b7280;
+    }
+    
+    .staff-badge {
+        display: inline-block;
+        background-color: #dbeafe;
+        color: #1e40af;
+        font-size: 0.7rem;
+        padding: 2px 6px;
+        border-radius: 10px;
+        margin-left: 4px;
+    }
+    
+    .chat-input {
+        flex: 1;
+        border: 1px solid #d1d5db;
+        border-radius: 24px;
+        padding: 8px 12px;
+        padding-right: 40px;
+        resize: none;
+        max-height: 100px;
+        min-height: 40px;
+    }
+    
+    .chat-input:focus {
+        outline: none;
+        border-color: #3b82f6;
+    }
+    
     .emoji-button {
+        position: absolute;
+        right: 90px;
         background: none;
         border: none;
-        cursor: pointer;
-        font-size: 1.2rem;
-        padding: 0.5rem;
         color: #6b7280;
-        transition: color 0.2s;
+        font-size: 1.25rem;
+        cursor: pointer;
     }
+    
     .emoji-button:hover {
         color: #4b5563;
     }
-    .emoji-picker {
-        position: absolute;
-        bottom: 70px;
-        right: 20px;
-        z-index: 100;
+    
+    .send-button {
+        background-color: #3b82f6;
+        color: white;
+        border: none;
+        border-radius: 24px;
+        padding: 8px 16px;
+        margin-left: 8px;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+    }
+    
+    .send-button:hover {
+        background-color: #2563eb;
+    }
+    
+    .typing-indicator {
         display: none;
+        margin: 0 0 16px 44px;
+    }
+    
+    .typing-bubble {
+        background-color: #e5e7eb;
+        padding: 8px 16px;
+        border-radius: 18px;
+        display: inline-block;
+    }
+    
+    .typing-bubble span {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        background-color: #9ca3af;
+        border-radius: 50%;
+        margin: 0 1px;
+        animation: typing-bubble 1s infinite ease-in-out;
+    }
+    
+    .typing-bubble span:nth-child(1) {
+        animation-delay: 0s;
+    }
+    
+    .typing-bubble span:nth-child(2) {
+        animation-delay: 0.2s;
+    }
+    
+    .typing-bubble span:nth-child(3) {
+        animation-delay: 0.4s;
+    }
+    
+    @keyframes typing-bubble {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-4px); }
+    }
+    
+    /* Custom scrollbar */
+    .chat-container::-webkit-scrollbar {
+        width: 6px;
+    }
+    
+    .chat-container::-webkit-scrollbar-track {
+        background: transparent;
+    }
+    
+    .chat-container::-webkit-scrollbar-thumb {
+        background-color: #d1d5db;
+        border-radius: 10px;
+    }
+    
+    /* For Firefox */
+    .chat-container {
+        scrollbar-width: thin;
+        scrollbar-color: #d1d5db transparent;
+    }
+    
+    /* For mobile devices */
+    @media (max-width: 640px) {
+        .message-bubble {
+            max-width: 85%;
+        }
+        
+        .chat-container {
+            height: 400px;
+        }
     }
 </style>
 @endpush
@@ -89,7 +259,7 @@
 @endif
 
 @section('content')
-<div class="container mx-auto mt-6">
+<div class="container mx-auto mt-6 px-4 md:px-0 mb-10">
     <div class="mb-4">
         <a href="{{ route('customer.support.index') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
             <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -99,10 +269,11 @@
         </a>
     </div>
 
-    <div class="bg-white rounded-lg shadow-md overflow-hidden">
-        <!-- Header của chat box -->
-        <div class="bg-blue-600 text-white p-4 flex justify-between items-center">
-            <div>
+    <div class="max-w-3xl mx-auto shadow-md rounded-lg overflow-hidden">
+        <!-- Khung chat kiểu Facebook -->
+        <div class="chat-wrapper">
+            <!-- Header -->
+            <div class="chat-header">
                 <h2 class="text-xl font-semibold">{{ $ticket->title }}</h2>
                 <div class="text-sm opacity-90 flex items-center">
                     <span>Yêu cầu #{{ $ticket->id }}</span>
@@ -128,138 +299,124 @@
                     </span>
                 </div>
             </div>
-            <div class="text-sm flex items-center space-x-2">
-                <span>{{ $ticket->created_at->format('d/m/Y H:i') }}</span>
-                <!-- Trạng thái online -->
-                <div class="flex items-center">
-                    <span class="relative flex h-3 w-3">
-                        <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                        <span class="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
-                    </span>
-                    <span class="text-xs ml-1">Đang hoạt động</span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Khung chat -->
-        <div id="chat-container" class="chat-container overflow-y-auto p-4 bg-gray-50">
-            <!-- Message ban đầu từ khách hàng -->
-            <div class="flex mb-4 chat-bubble" data-response-id="initial">
-                <div class="flex-shrink-0 mr-3">
-                    <img src="{{ $ticket->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                </div>
-                <div class="bg-white p-3 rounded-lg shadow-sm max-w-3xl">
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="font-medium text-gray-900">{{ $ticket->user->name }}</span>
-                        <span class="text-xs text-gray-500">{{ $ticket->created_at->format('d/m/Y H:i') }}</span>
-                    </div>
-                    <div class="text-gray-700 whitespace-pre-wrap">
-                        {!! nl2br(e($ticket->content)) !!}
-                    </div>
-                </div>
-            </div>
             
-            <!-- Responses -->
-            <div id="responses-container">
-                @foreach($ticket->responses as $response)
-                <div class="flex mb-4 @if($response->isStaff()) justify-end @endif chat-bubble" data-response-id="{{ $response->id }}">
-                    @if(!$response->isStaff())
-                    <div class="flex-shrink-0 mr-3">
-                        <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
+            <!-- Khung chat chính -->
+            <div id="chat-container" class="chat-container">
+                <!-- Message ban đầu từ khách hàng -->
+                <div class="message" data-response-id="initial">
+                    <img src="{{ $ticket->user->getAvatarUrl() }}" alt="Avatar" class="message-avatar">
+                    <div class="message-bubble customer-bubble">
+                        <div class="message-meta">
+                            <span class="message-sender">{{ $ticket->user->name }}</span>
+                            <span class="message-timestamp">{{ $ticket->created_at->format('d/m/Y H:i') }}</span>
+                        </div>
+                        <div class="message-content">
+                            {!! nl2br(e($ticket->content)) !!}
+                        </div>
                     </div>
-                    @endif
-                    
-                    <div class="@if($response->isStaff()) bg-blue-100 @else bg-white @endif p-3 rounded-lg shadow-sm max-w-3xl">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="font-medium text-gray-900">
-                                {{ $response->user->name }}
-                                @if($response->isStaff())
-                                <span class="ml-2 px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded-full">Nhân viên</span>
-                                @endif
-                            </span>
-                            <span class="text-xs text-gray-500">{{ $response->created_at->format('d/m/Y H:i') }}</span>
-                        </div>
-                        <div class="text-gray-700 whitespace-pre-wrap">
-                            {!! nl2br(e($response->content)) !!}
-                        </div>
-                        <div class="message-time">
+                </div>
+                
+                <!-- Responses -->
+                <div id="responses-container">
+                    @foreach($ticket->responses as $response)
+                    <div class="message {{ $response->isStaff() ? 'staff' : '' }}" data-response-id="{{ $response->id }}">
+                        @if(!$response->isStaff())
+                        <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="message-avatar">
+                        @endif
+                        
+                        <div class="message-bubble {{ $response->isStaff() ? 'staff-bubble' : 'customer-bubble' }}">
+                            <div class="message-meta">
+                                <span class="message-sender">
+                                    {{ $response->user->name }}
+                                    @if($response->isStaff())
+                                    <span class="staff-badge">Nhân viên</span>
+                                    @endif
+                                </span>
+                                <span class="message-timestamp">{{ $response->created_at->format('d/m/Y H:i') }}</span>
+                            </div>
+                            <div class="message-content">
+                                {!! nl2br(e($response->content)) !!}
+                            </div>
                             @if($response->created_at->diffInMinutes(now()) < 60)
+                            <div class="message-time">
                                 {{ $response->created_at->diffForHumans() }}
+                            </div>
                             @endif
                         </div>
+                        
+                        @if($response->isStaff())
+                        <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="message-avatar">
+                        @endif
                     </div>
-                    
-                    @if($response->isStaff())
-                    <div class="flex-shrink-0 ml-3">
-                        <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                    </div>
-                    @endif
+                    @endforeach
                 </div>
-                @endforeach
+                
+                <!-- Typing indicator -->
+                <div class="typing-indicator" id="typing-indicator">
+                    <div class="typing-bubble">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </div>
             </div>
             
-            <!-- Typing indicator -->
-            <div class="typing-indicator" id="typing-indicator">
-                <div class="flex items-center bg-gray-200 rounded-full py-1 px-3">
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                </div>
-            </div>
-        </div>
-        
-        <!-- Form phản hồi kiểu chatbox -->
-        @if($ticket->status != 'Đã giải quyết' && $ticket->status != 'Đã huỷ')
-        <div class="border-t p-4 bg-white relative">
-            <form id="response-form" action="{{ route('customer.support.respond', $ticket->id) }}" method="POST">
-                @csrf
-                <div class="flex items-end">
-                    <div class="flex-grow relative">
-                        <textarea id="response" name="response" rows="2" 
-                            class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none @error('response') border-red-500 @enderror" 
-                            placeholder="Nhập tin nhắn của bạn..."></textarea>
-                        @error('response')
-                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                        <div class="absolute right-2 bottom-2">
-                            <button type="button" id="emoji-button" class="emoji-button">
-                                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </button>
-                        </div>
-                    </div>
-                    <button type="submit" class="ml-3 px-6 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition duration-200 flex items-center">
+            <!-- Input form -->
+            @if($ticket->status != 'Đã giải quyết' && $ticket->status != 'Đã huỷ')
+            <div class="chat-footer">
+                <form id="response-form" action="{{ route('customer.support.respond', $ticket->id) }}" method="POST" class="w-full flex items-center relative">
+                    @csrf
+                    <textarea id="response" name="response" class="chat-input" 
+                            placeholder="Nhập tin nhắn của bạn..." rows="1"
+                            @error('response') class="border-red-500" @enderror></textarea>
+                    <button type="button" id="emoji-button" class="emoji-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </button>
+                    <button type="submit" class="send-button">
                         <span>Gửi</span>
                         <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path>
                         </svg>
                     </button>
+                </form>
+                
+                <!-- Emoji picker container -->
+                <div id="emoji-picker" class="hidden bg-white rounded-lg shadow-lg p-2 absolute bottom-16 right-16 z-10 border border-gray-200">
+                    <!-- Will be filled by JavaScript -->
                 </div>
-            </form>
-            <!-- Emoji picker container -->
-            <div id="emoji-picker" class="emoji-picker">
-                <!-- Will be filled by JavaScript -->
             </div>
+            @else
+            <div class="p-4 bg-yellow-50 border-t border-yellow-200 text-center">
+                <p class="flex items-center justify-center text-yellow-700">
+                    <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Yêu cầu hỗ trợ này đã {{ $ticket->status == 'Đã giải quyết' ? 'được giải quyết' : 'bị huỷ bỏ' }}, bạn không thể gửi thêm tin nhắn.
+                </p>
+            </div>
+            @endif
         </div>
-        @else
-        <div class="p-4 bg-yellow-50 border-t border-yellow-200 text-center">
-            <p class="flex items-center justify-center text-yellow-700">
-                <svg class="w-5 h-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                Yêu cầu hỗ trợ này đã {{ $ticket->status == 'Đã giải quyết' ? 'được giải quyết' : 'bị huỷ bỏ' }}, bạn không thể gửi thêm tin nhắn.
-            </p>
-        </div>
-        @endif
     </div>
 </div>
 
 @push('scripts')
 <script>
-    // Scroll to bottom of chat container initially
     document.addEventListener('DOMContentLoaded', function() {
         scrollToBottom();
+        
+        // Tự động mở rộng textarea khi nhập nhiều dòng
+        const textarea = document.getElementById('response');
+        if (textarea) {
+            textarea.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
+                if (this.scrollHeight > 100) {
+                    this.style.height = '100px';
+                }
+            });
+        }
         
         // Simple emoji picker
         const emojiButton = document.getElementById('emoji-button');
@@ -275,7 +432,7 @@
             
             // Create emoji picker
             if (emojiPicker) {
-                let emojiHTML = '<div class="bg-white rounded-lg shadow-lg p-2 grid grid-cols-5 gap-1">';
+                let emojiHTML = '<div class="grid grid-cols-5 gap-1">';
                 commonEmojis.forEach(emoji => {
                     emojiHTML += `<button type="button" class="emoji p-2 hover:bg-gray-100 rounded">${emoji}</button>`;
                 });
@@ -283,26 +440,31 @@
                 emojiPicker.innerHTML = emojiHTML;
                 
                 // Toggle emoji picker
-                emojiButton.addEventListener('click', function() {
-                    emojiPicker.style.display = emojiPicker.style.display === 'block' ? 'none' : 'block';
+                emojiButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    emojiPicker.classList.toggle('hidden');
                 });
                 
                 // Insert emoji on click
                 emojiPicker.querySelectorAll('.emoji').forEach(emoji => {
-                    emoji.addEventListener('click', function() {
+                    emoji.addEventListener('click', function(e) {
+                        e.preventDefault();
                         const cursorPos = textArea.selectionStart;
                         const text = textArea.value;
                         const newText = text.slice(0, cursorPos) + this.textContent + text.slice(cursorPos);
                         textArea.value = newText;
                         textArea.focus();
-                        emojiPicker.style.display = 'none';
+                        // Trigger input event to resize textarea
+                        const event = new Event('input', { bubbles: true });
+                        textArea.dispatchEvent(event);
+                        emojiPicker.classList.add('hidden');
                     });
                 });
                 
                 // Close emoji picker when clicking outside
                 document.addEventListener('click', function(e) {
                     if (!emojiButton.contains(e.target) && !emojiPicker.contains(e.target)) {
-                        emojiPicker.style.display = 'none';
+                        emojiPicker.classList.add('hidden');
                     }
                 });
             }
@@ -320,7 +482,7 @@
                 const formData = new FormData(form);
                 
                 // Show typing indicator before sending
-                document.getElementById('typing-indicator').style.display = 'flex';
+                document.getElementById('typing-indicator').style.display = 'block';
                 document.getElementById('response').disabled = true;
                 
                 fetch(form.action, {
@@ -337,6 +499,7 @@
                         // Clear the textarea
                         document.getElementById('response').value = '';
                         document.getElementById('response').disabled = false;
+                        document.getElementById('response').style.height = 'auto';
                         
                         // Hide typing indicator
                         document.getElementById('typing-indicator').style.display = 'none';
@@ -386,7 +549,6 @@
         setInterval(checkForNewResponses, 10000);
         
         // Add event listener for textarea to show "typing" status
-        const textarea = document.getElementById('response');
         if (textarea) {
             let typingTimer;
             const doneTypingInterval = 1000;
@@ -422,7 +584,7 @@
     
     function showTypingIndicator() {
         const typingIndicator = document.getElementById('typing-indicator');
-        typingIndicator.style.display = 'flex';
+        typingIndicator.style.display = 'block';
         
         // Hide after random time between 2-5 seconds
         setTimeout(() => {
@@ -440,30 +602,28 @@
         
         // Create new response element
         const responseDiv = document.createElement('div');
-        responseDiv.className = `flex mb-4 ${response.is_staff ? 'justify-end' : ''} chat-bubble`;
+        responseDiv.className = `message ${response.is_staff ? 'staff' : ''}`;
         responseDiv.dataset.responseId = response.id;
         
         let template = '';
         
         if (!response.is_staff) {
             template += `
-                <div class="flex-shrink-0 mr-3">
-                    <img src="${response.user_avatar}" alt="Avatar" class="w-10 h-10 rounded-full">
-                </div>
+                <img src="${response.user_avatar}" alt="Avatar" class="message-avatar">
             `;
         }
         
         template += `
-            <div class="${response.is_staff ? 'bg-blue-100' : 'bg-white'} p-3 rounded-lg shadow-sm max-w-3xl">
-                <div class="flex justify-between items-center mb-1">
-                    <span class="font-medium text-gray-900">
+            <div class="message-bubble ${response.is_staff ? 'staff-bubble' : 'customer-bubble'}">
+                <div class="message-meta">
+                    <span class="message-sender">
                         ${response.user_name}
-                        ${response.is_staff ? '<span class="ml-2 px-2 py-0.5 bg-blue-200 text-blue-800 text-xs rounded-full">Nhân viên</span>' : ''}
+                        ${response.is_staff ? '<span class="staff-badge">Nhân viên</span>' : ''}
                     </span>
-                    <span class="text-xs text-gray-500">${response.created_at}</span>
+                    <span class="message-timestamp">${response.created_at}</span>
                 </div>
-                <div class="text-gray-700 whitespace-pre-wrap">
-                    ${response.content}
+                <div class="message-content">
+                    ${response.content.replace(/\n/g, '<br>')}
                 </div>
                 <div class="message-time">Vừa xong</div>
             </div>
@@ -471,9 +631,7 @@
         
         if (response.is_staff) {
             template += `
-                <div class="flex-shrink-0 ml-3">
-                    <img src="${response.user_avatar}" alt="Avatar" class="w-10 h-10 rounded-full">
-                </div>
+                <img src="${response.user_avatar}" alt="Avatar" class="message-avatar">
             `;
         }
         
