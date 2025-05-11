@@ -34,10 +34,8 @@
                         </div>
                     </div>
                     
-                    <form id="avatar-form" action="{{ route('customer.profile.update') }}" method="POST" enctype="multipart/form-data" class="hidden">
+                    <form id="avatar-form" action="{{ route('customer.profile.update-avatar') }}" method="POST" enctype="multipart/form-data" class="hidden">
                         @csrf
-                        <input type="hidden" name="phone" value="{{ $user->phone }}">
-                        <input type="hidden" name="address" value="{{ $user->address }}">
                         <input type="file" name="avatar" id="avatar-upload" class="hidden" onchange="document.getElementById('avatar-form').submit()">
                     </form>
                     

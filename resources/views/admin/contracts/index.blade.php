@@ -21,11 +21,11 @@
 
     <div class="flex flex-col md:flex-row md:justify-between mb-6 gap-4">
         <div>
-            @can('create', App\Models\Contract::class)
+            @if(auth()->user()->role == 'admin')
                 <a href="{{ route('admin.contracts.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
                     <i class="fas fa-plus mr-2"></i> Thêm hợp đồng mới
                 </a>
-            @endcan
+            @endif
         </div>
     </div>
 
@@ -152,6 +152,7 @@
                                    class="bg-yellow-500 hover:bg-yellow-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
                                     Sửa
                                 </a>
+                                @if(auth()->user()->role == 'admin')
                                 <form action="{{ route('admin.contracts.destroy', $contract->id) }}"
                                     method="POST" onsubmit="confirmDelete(event)">
                                   @csrf
@@ -160,7 +161,8 @@
                                           class="bg-red-500 hover:bg-red-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition duration-200">
                                       Xóa
                                   </button>
-                              </form>
+                                </form>
+                                @endif
                             </div>
                         </td>
                         <td class="py-3 px-6 text-center">
@@ -200,17 +202,8 @@
                     @endforeach
                 @else
                     <tr>
-                        <td colspan="6" class="text-center py-10">
-                            <div class="mb-4">
-                                <svg class="mx-auto h-12 w-12 text-gray-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                                </svg>
-                            </div>
-                            <p class="text-gray-700 font-medium text-lg">Không tìm thấy hợp đồng nào</p>
-                            <p class="text-gray-500 mt-2">Thử thay đổi bộ lọc tìm kiếm hoặc đặt lại để xem tất cả hợp đồng</p>
-                            <a href="{{ route('admin.contracts.index') }}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
-                                Xem tất cả hợp đồng
-                            </a>
+                        <td colspan="6" class="py-4 px-6 text-center">
+                            <div class="text-gray-500">Không tìm thấy hợp đồng nào</div>
                         </td>
                     </tr>
                 @endif
@@ -226,22 +219,23 @@
 
 @push('scripts')
 <script>
-    function confirmDelete(event) {
-        event.preventDefault();
-        Swal.fire({
-            title: 'Bạn có chắc chắn?',
-            text: "Hành động này không thể hoàn tác!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Xóa',
-            cancelButtonText: 'Hủy'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                event.target.submit();
-            }
-        });
-    }
+function confirmDelete(event) {
+    event.preventDefault();
+    
+    Swal.fire({
+        title: 'Bạn có chắc chắn?',
+        text: "Hợp đồng này sẽ bị xóa và không thể khôi phục!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#3085d6',
+        confirmButtonText: 'Xóa',
+        cancelButtonText: 'Hủy'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            event.target.submit();
+        }
+    });
+}
 </script>
 @endpush

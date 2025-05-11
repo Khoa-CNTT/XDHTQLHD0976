@@ -8,26 +8,35 @@ use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController
 use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
 use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
 use App\Http\Controllers\Customer\SignatureController;
-
-
-
+use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
+use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\Admin\ContractAmendmentController as AdminContractAmendmentController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
 use App\Http\Controllers\Admin\ContractController as AdminContractController;
 use App\Http\Controllers\Admin\ServiceController as AdminServiceController;
+use App\Http\Controllers\Admin\CustomerController;
+use App\Http\Controllers\Admin\EmployeeController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
+use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
+use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
+
+use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
+use App\Http\Controllers\Employee\ContractController as EmployeeContractController;
+use App\Http\Controllers\Employee\ServiceController as EmployeeServiceController;
+use App\Http\Controllers\Employee\PaymentController as EmployeePaymentController;
+use App\Http\Controllers\Employee\SupportTicketController as EmployeeSupportTicketController;
+use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
-use App\Http\Controllers\Admin\ReportController;
-
-
-
-
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 
@@ -37,22 +46,21 @@ Route::get('services', [CustomerServiceController::class, 'index'])->name('custo
 
 
       // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
-      Route::get('/services/filter/{type}', [\App\Http\Controllers\Customer\ServiceController::class, 'filter'])->name('customer.services.filter');
-      Route::get('/customer/services/search', [\App\Http\Controllers\Customer\ServiceController::class, 'search'])->name('customer.services.search');
+      Route::get('/services/filter/{type}', [CustomerServiceController::class, 'filter'])->name('customer.services.filter');
+      Route::get('/customer/services/search', [CustomerServiceController::class, 'search'])->name('customer.services.search');
 
 
 
 Route::get('/', function () {
     if (Auth::check()) {
-        // Kiểm tra vai trò của người dùng
-        if (Auth::user()->role === 'admin') {
-            return redirect()->route('admin.dashboard'); // Chuyển hướng đến dashboard admin
+        if (Auth::user()->role === 'admin' || Auth::user()->role === 'employee') {
+            return redirect()->route('admin.dashboard'); 
         } elseif (Auth::user()->role === 'customer') {
-            return redirect()->route('customer.dashboard'); // Chuyển hướng đến dashboard khách hàng
+            return redirect()->route('customer.dashboard'); 
         }
     }
 
-    // Nếu chưa đăng nhập, chuyển hướng đến trang khách hàng
+  
     return redirect()->route('customer.dashboard');
 });
 // Routes cho khách chưa đăng nhập
@@ -99,51 +107,73 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::resource('contracts', AdminContractController::class);
         Route::resource('services', AdminServiceController::class);
 
-        Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class);
-        Route::resource('employees', \App\Http\Controllers\Admin\EmployeeController::class);
+        Route::resource('customers', CustomerController::class);
+        Route::resource('employees', EmployeeController::class);
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
 
-
-        Route::resource('customers', \App\Http\Controllers\Admin\CustomerController::class)->except(['create', 'edit', 'store', 'update']);
-        Route::post('customers/{id}/ban', [\App\Http\Controllers\Admin\CustomerController::class, 'ban'])->name('customers.ban');
-        Route::post('customers/{id}/unban', [\App\Http\Controllers\Admin\CustomerController::class, 'unban'])->name('customers.unban');
-
-
+        Route::post('customers/{id}/ban', [CustomerController::class, 'ban'])->name('customers.ban');
+        Route::post('customers/{id}/unban', [CustomerController::class, 'unban'])->name('customers.unban');
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
         Route::put('/contracts/{id}/complete', [AdminContractController::class, 'markAsComplete'])->name('contracts.complete');
         Route::post('/admin/contracts/{id}/confirm-cancel', [AdminContractController::class, 'confirmCancel'])->name('contracts.confirmCancel');
-
         
-        Route::get('/payments', [\App\Http\Controllers\Admin\PaymentController::class, 'index'])->name('payments.index');
-        Route::get('/payments/{id}', [\App\Http\Controllers\Admin\PaymentController::class, 'show'])->name('payments.show');
-        Route::put('/payments/{id}', [\App\Http\Controllers\Admin\PaymentController::class, 'update'])->name('payments.update');
-        Route::get('/payments-report', [\App\Http\Controllers\Admin\PaymentController::class, 'createReport'])->name('payments.report');
-        Route::post('/payments-export', [\App\Http\Controllers\Admin\PaymentController::class, 'exportPdf'])->name('payments.export');
+        Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
+        Route::get('/payments/{id}', [AdminPaymentController::class, 'show'])->name('payments.show');
+        Route::put('/payments/{id}', [AdminPaymentController::class, 'update'])->name('payments.update');
+        Route::get('/payments-report', [AdminPaymentController::class, 'createReport'])->name('payments.report');
+        Route::post('/payments-export', [AdminPaymentController::class, 'exportPdf'])->name('payments.export');
 
         Route::resource('service-categories', ServiceCategoryController::class)->except(['show']);
         Route::post('services/categories', [AdminServiceController::class, 'createCategory'])->name('services.categories.create');
         Route::delete('services/categories/{id}', [AdminServiceController::class, 'deleteCategory'])->name('services.categories.delete');
 
-
         Route::get('/contracts/{contractId}/amendments', [AdminContractAmendmentController::class, 'index'])->name('contracts.admendments.index');
         Route::get('/contracts/admendments', [AdminContractAmendmentController::class, 'create'])->name('contracts.admendments.create');
         Route::post('', [AdminContractAmendmentController::class, 'store'])->name('contracts.admendments.store');
         
-       
-        Route::get('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'index'])->name('notifications.index');
-        Route::get('/notifications/create', [\App\Http\Controllers\Admin\NotificationController::class, 'create'])->name('notifications.create');
-        Route::post('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'store'])->name('notifications.store');
-        Route::get('/notifications/mass-create', [\App\Http\Controllers\Admin\NotificationController::class, 'createMassNotification'])->name('notifications.mass-create');
-        Route::post('/notifications/mass-send', [\App\Http\Controllers\Admin\NotificationController::class, 'storeMassNotification'])->name('notifications.mass-send');
-        Route::delete('/notifications/{id}', [\App\Http\Controllers\Admin\NotificationController::class, 'destroy'])->name('notifications.destroy');
-        Route::delete('/notifications', [\App\Http\Controllers\Admin\NotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
-
+        Route::get('/notifications', [AdminNotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/create', [AdminNotificationController::class, 'create'])->name('notifications.create');
+        Route::post('/notifications', [AdminNotificationController::class, 'store'])->name('notifications.store');
+        Route::get('/notifications/mass-create', [AdminNotificationController::class, 'createMassNotification'])->name('notifications.mass-create');
+        Route::post('/notifications/mass-send', [AdminNotificationController::class, 'storeMassNotification'])->name('notifications.mass-send');
+        Route::delete('/notifications/{id}', [AdminNotificationController::class, 'destroy'])->name('notifications.destroy');
+        Route::delete('/notifications', [AdminNotificationController::class, 'destroyAll'])->name('notifications.destroyAll');
      
-        Route::get('/support', [\App\Http\Controllers\Admin\SupportTicketController::class, 'index'])->name('support.index');
-        Route::get('/support/{id}', [\App\Http\Controllers\Admin\SupportTicketController::class, 'show'])->name('support.show');
-        Route::put('/support/{id}', [\App\Http\Controllers\Admin\SupportTicketController::class, 'update'])->name('support.update');
-        Route::post('/support/{id}/respond', [\App\Http\Controllers\Admin\SupportTicketController::class, 'respond'])->name('support.respond');
+        Route::get('/support', [AdminSupportTicketController::class, 'index'])->name('support.index');
+        Route::get('/support/{id}', [AdminSupportTicketController::class, 'show'])->name('support.show');
+        Route::put('/support/{id}', [AdminSupportTicketController::class, 'update'])->name('support.update');
+        Route::post('/support/{id}/respond', [AdminSupportTicketController::class, 'respond'])->name('support.respond');
+        
+
+
+        
+        // Routes cho nhân viên 
+        Route::get('/profile', [EmployeeProfileController::class, 'show'])->name('profile.show');
+        Route::post('/profile', [EmployeeProfileController::class, 'update'])->name('profile.update');
+        Route::post('/profile/change-password', [EmployeeProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::post('/profile/update-avatar', [EmployeeProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
+        
+       
+        Route::group([], function() {
+            Route::get('/employee/dashboard', [EmployeeDashboardController::class, 'index'])->name('employee.dashboard');
+            Route::get('/employee/contracts', [EmployeeContractController::class, 'index'])->name('employee.contracts.index');
+            Route::get('/employee/contracts/{id}', [EmployeeContractController::class, 'show'])->name('employee.contracts.show');
+            Route::put('/employee/contracts/{id}/update-status', [EmployeeContractController::class, 'updateStatus'])->name('employee.contracts.updateStatus');
+            Route::put('/employee/contracts/{id}/complete', [EmployeeContractController::class, 'markAsComplete'])->name('employee.contracts.complete');
+            Route::post('/employee/contracts/{id}/confirm-cancel', [EmployeeContractController::class, 'confirmCancel'])->name('employee.contracts.confirmCancel');
+            
+            Route::get('/employee/services', [EmployeeServiceController::class, 'index'])->name('employee.services.index');
+            Route::get('/employee/services/{id}', [EmployeeServiceController::class, 'show'])->name('employee.services.show');
+            
+            Route::get('/employee/payments', [EmployeePaymentController::class, 'index'])->name('employee.payments.index');
+            Route::get('/employee/payments/{id}', [EmployeePaymentController::class, 'show'])->name('employee.payments.show');
+            Route::put('/employee/payments/{id}', [EmployeePaymentController::class, 'update'])->name('employee.payments.update');
+            
+            Route::get('/employee/support', [EmployeeSupportTicketController::class, 'index'])->name('employee.support.index');
+            Route::get('/employee/support/{id}', [EmployeeSupportTicketController::class, 'show'])->name('employee.support.show');
+            Route::post('/employee/support/{id}/respond', [EmployeeSupportTicketController::class, 'respond'])->name('employee.support.respond');
+        });
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
@@ -153,49 +183,40 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/dashboard', [CustomerDashboardController::class, 'index'])->name('dashboard');
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
-
       
-        Route::post('/support/create', [App\Http\Controllers\CustomerProfileController::class, 'createSupportTicket'])->name('support.create');
-        Route::get('/support', [App\Http\Controllers\CustomerProfileController::class, 'listSupportTickets'])->name('support.index');
-        Route::get('/support/{id}', [App\Http\Controllers\CustomerProfileController::class, 'viewSupportTicket'])->name('support.show');
-        Route::post('/support/{id}/respond', [App\Http\Controllers\CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
+        Route::post('/support/create', [CustomerProfileController::class, 'createSupportTicket'])->name('support.create');
+        Route::get('/support', [CustomerProfileController::class, 'listSupportTickets'])->name('support.index');
+        Route::get('/support/{id}', [CustomerProfileController::class, 'viewSupportTicket'])->name('support.show');
+        Route::post('/support/{id}/respond', [CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
 
         Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
         
-
-
-
-        Route::get('/profile', [App\Http\Controllers\CustomerProfileController::class, 'profile'])->name('profile');
-        Route::post('/profile', [App\Http\Controllers\CustomerProfileController::class, 'updateProfile'])->name('profile.update');
-        Route::post('/profile/change-password', [App\Http\Controllers\CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('profile');
+        Route::post('/profile', [CustomerProfileController::class, 'updateProfile'])->name('profile.update');
+        Route::post('/profile/change-password', [CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
+        Route::post('/profile/update-avatar', [CustomerProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
          
         // Notification routes for customer
-        Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
-        Route::get('/notifications/{id}', [\App\Http\Controllers\NotificationController::class, 'show'])->name('notifications.show');
-        Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
+        Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+        Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
+        Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
         
-       
-        Route::get('/api/notifications/check', [\App\Http\Controllers\NotificationController::class, 'checkNewNotifications']);
-        Route::get('/api/notifications/latest', [\App\Http\Controllers\NotificationController::class, 'getLatestNotifications']);
+        Route::get('/api/notifications/check', [NotificationController::class, 'checkNewNotifications']);
+        Route::get('/api/notifications/latest', [NotificationController::class, 'getLatestNotifications']);
      
-
         Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
         Route::get('/vnpay/return', [VNPayPaymentController::class, 'return'])->name('vnpay.success');
-        Route::post('/vnpay/ipn', [\App\Http\Controllers\Customer\VNPayController::class, 'ipn'])->name('vnpay.ipn');
+        Route::post('/vnpay/ipn', [VNPayPaymentController::class, 'ipn'])->name('vnpay.ipn');
         
-              
         Route::get('/', [CustomerContractAmendmentController::class, 'index'])->name('index');
-
-
 
         Route::get('contracts/sign/{id}', [SignatureController::class, 'showSignForm'])->name('contracts.sign');
         Route::post('contracts/{id}/send-otp', [SignatureController::class, 'sendOtp'])->name('contracts.sendOtp');
         Route::post('contracts/{id}/sign', [SignatureController::class, 'sign'])->name('contracts.sign.submit');
         Route::post('/customer/contracts/{id}/request-cancel', [CustomerContractController::class, 'requestCancel'])->name('contracts.requestCancel');
           
-        Route::get('payments', [App\Http\Controllers\Customer\PaymentController::class, 'index'])->name('payments.index');
-        Route::get('payments/{id}', [App\Http\Controllers\Customer\PaymentController::class, 'show'])->name('payments.show');
-        Route::get('payments/{id}/download', [App\Http\Controllers\Customer\PaymentController::class, 'downloadReceipt'])->name('payments.download');
-        
+        Route::get('payments', [CustomerPaymentController::class, 'index'])->name('payments.index');
+        Route::get('payments/{id}', [CustomerPaymentController::class, 'show'])->name('payments.show');
+        Route::get('payments/{id}/download', [CustomerPaymentController::class, 'downloadReceipt'])->name('payments.download');
     }); 
 

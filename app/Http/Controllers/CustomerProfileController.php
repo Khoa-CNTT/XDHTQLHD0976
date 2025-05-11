@@ -46,14 +46,6 @@ class CustomerProfileController extends Controller
             'address.max' => 'Địa chỉ không được vượt quá 255 ký tự',
         ];
 
-        // Kiểm tra xem có file avatar được gửi lên không
-        if ($request->hasFile('avatar')) {
-            $rules['avatar'] = 'image|mimes:jpeg,png,jpg,gif|max:2048';
-            $messages['avatar.image'] = 'File phải là hình ảnh';
-            $messages['avatar.mimes'] = 'Định dạng hình ảnh phải là: jpeg, png, jpg, gif';
-            $messages['avatar.max'] = 'Kích thước hình ảnh không được vượt quá 2MB';
-        }
-
         $validator = Validator::make($request->all(), $rules, $messages);
 
         if ($validator->fails()) {
@@ -63,35 +55,86 @@ class CustomerProfileController extends Controller
                 ->with('error', 'Cập nhật thông tin thất bại. Vui lòng kiểm tra lại các trường thông tin.');
         }
 
-        // Kiểm tra nếu số điện thoại giống với số hiện tại (không thay đổi)
-        if ($request->phone === $user->phone) {
+        // Kiểm tra nếu không có thay đổi nào được thực hiện
+        if ($request->phone === $user->phone && $request->address === $user->address) {
             return redirect()->back()
-                ->withInput()
-                ->with('error', 'Vui lòng sử dụng số điện thoại khác với số điện thoại hiện tại.')
-                ->with('tab', 'info');
-        }
-
-        // Kiểm tra xem số điện thoại này đã từng được sử dụng trước đó bởi người dùng này không
-        $oldPhones = \App\Models\ActivityLog::where('user_id', $user->id)
-            ->where('action', 'Cập nhật thông tin cá nhân')
-            ->where('description', 'LIKE', '%đã thay đổi số điện thoại từ ' . $request->phone . ' thành%')
-            ->count();
-            
-        if ($oldPhones > 0) {
-            return redirect()->back()
-                ->withInput()
-                ->with('error', 'Số điện thoại này đã được bạn sử dụng trước đó. Vui lòng sử dụng số điện thoại khác.')
+                ->with('info', 'Không có thông tin nào được thay đổi.')
                 ->with('tab', 'info');
         }
 
         // Lưu số điện thoại cũ để ghi log
         $oldPhone = $user->phone;
+        $oldAddress = $user->address;
+        $hasChanges = false;
+        $changeDescription = 'Bạn đã cập nhật thông tin cá nhân';
         
-        // Cập nhật thông tin cơ bản
-        $user->phone = $request->phone;
-        $user->address = $request->address;
+        // Cập nhật số điện thoại nếu có thay đổi
+        if ($request->phone !== $user->phone) {
+            // Kiểm tra xem số điện thoại này đã từng được sử dụng trước đó bởi người dùng này không
+            $oldPhones = \App\Models\ActivityLog::where('user_id', $user->id)
+                ->where('action', 'Cập nhật thông tin cá nhân')
+                ->where('description', 'LIKE', '%đã thay đổi số điện thoại từ ' . $request->phone . ' thành%')
+                ->count();
+                
+            if ($oldPhones > 0) {
+                return redirect()->back()
+                    ->withInput()
+                    ->with('error', 'Số điện thoại này đã được bạn sử dụng trước đó. Vui lòng sử dụng số điện thoại khác.')
+                    ->with('tab', 'info');
+            }
+            
+            $user->phone = $request->phone;
+            $hasChanges = true;
+            $changeDescription .= ', đã thay đổi số điện thoại từ ' . $oldPhone . ' thành ' . $request->phone;
+        }
+        
+        // Cập nhật địa chỉ nếu có thay đổi
+        if ($request->address !== $user->address) {
+            $user->address = $request->address;
+            $hasChanges = true;
+            $changeDescription .= ', đã thay đổi địa chỉ';
+        }
+        
+        $user->save();
+        
+        // Ghi log hoạt động chi tiết hơn
+        \App\Models\ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'Cập nhật thông tin cá nhân',
+            'description' => $changeDescription
+        ]);
+        
+        return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật thành công.')->with('tab', 'info');
+    }
 
-        // Xử lý upload avatar nếu có
+    /**
+     * Cập nhật avatar người dùng
+     */
+    public function updateAvatar(Request $request)
+    {
+        $user = auth()->user();
+
+        $rules = [
+            'avatar' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048'
+        ];
+
+        $messages = [
+            'avatar.required' => 'Vui lòng chọn hình ảnh',
+            'avatar.image' => 'File phải là hình ảnh',
+            'avatar.mimes' => 'Định dạng hình ảnh phải là: jpeg, png, jpg, gif',
+            'avatar.max' => 'Kích thước hình ảnh không được vượt quá 2MB'
+        ];
+
+        $validator = Validator::make($request->all(), $rules, $messages);
+
+        if ($validator->fails()) {
+            return redirect()->back()
+                ->withErrors($validator)
+                ->withInput()
+                ->with('error', 'Cập nhật ảnh đại diện thất bại. Vui lòng kiểm tra lại file ảnh.');
+        }
+
+        // Xử lý upload avatar
         if ($request->hasFile('avatar')) {
             // Xóa avatar cũ nếu có
             if ($user->avatar) {
@@ -101,19 +144,19 @@ class CustomerProfileController extends Controller
             // Lưu avatar mới
             $avatarPath = $request->file('avatar')->store('avatars', 'public');
             $user->avatar = $avatarPath;
+            $user->save();
+            
+            // Ghi log hoạt động
+            \App\Models\ActivityLog::create([
+                'user_id' => $user->id,
+                'action' => 'Cập nhật ảnh đại diện',
+                'description' => 'Bạn đã cập nhật ảnh đại diện'
+            ]);
+
+            return redirect()->back()->with('success', 'Ảnh đại diện đã được cập nhật thành công.')->with('tab', 'info');
         }
 
-        $user->save();
-        
-        // Ghi log hoạt động chi tiết hơn
-        \App\Models\ActivityLog::create([
-            'user_id' => $user->id,
-            'action' => 'Cập nhật thông tin cá nhân',
-            'description' => 'Bạn đã cập nhật thông tin cá nhân' . 
-                ($oldPhone != $request->phone ? ', đã thay đổi số điện thoại từ ' . $oldPhone . ' thành ' . $request->phone : '')
-        ]);
-
-        return redirect()->back()->with('success', 'Thông tin cá nhân đã được cập nhật thành công.')->with('tab', 'info');
+        return redirect()->back()->with('error', 'Không tìm thấy file ảnh để cập nhật.');
     }
 
     public function changePassword(Request $request)
