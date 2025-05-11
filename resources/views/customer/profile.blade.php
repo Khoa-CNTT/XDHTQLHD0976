@@ -249,6 +249,12 @@
                             </div>
                         @else
                             <p class="p-4 text-gray-500 text-center">Chưa có hoạt động nào</p>
+                            
+                            <!-- Khai báo biến totalPages ngay cả khi không có hoạt động -->
+                            @php
+                                $totalPages = 0;
+                                $currentActivitiesPage = 1;
+                            @endphp
                         @endif
                     </div>
                 </div>
@@ -524,7 +530,7 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Xử lý phân trang cho lịch sử hoạt động
     let currentActivitiesPage = 1;
-    const totalActivitiesPages = parseInt("{{ $totalPages }}");
+    const totalActivitiesPages = {{ $totalPages ?? 0 }}; // Đảm bảo có giá trị mặc định nếu không có biến
     
     // Các nút phân trang
     const pageButtons = document.querySelectorAll('.activities-page-btn');

@@ -144,6 +144,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/support/{id}', [AdminSupportTicketController::class, 'show'])->name('support.show');
         Route::put('/support/{id}', [AdminSupportTicketController::class, 'update'])->name('support.update');
         Route::post('/support/{id}/respond', [AdminSupportTicketController::class, 'respond'])->name('support.respond');
+        Route::get('/support/{id}/check-typing', [AdminSupportTicketController::class, 'checkTypingStatus'])->name('support.check-typing');
+        Route::get('/support/{id}/check-responses', [AdminSupportTicketController::class, 'checkNewResponses'])->name('support.check-responses');
         
 
 
@@ -188,6 +190,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/support', [CustomerProfileController::class, 'listSupportTickets'])->name('support.index');
         Route::get('/support/{id}', [CustomerProfileController::class, 'viewSupportTicket'])->name('support.show');
         Route::post('/support/{id}/respond', [CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
+        Route::post('/support/{id}/typing', [CustomerProfileController::class, 'updateTypingStatus'])->name('support.typing');
+        Route::get('/support/{id}/check-responses', [CustomerProfileController::class, 'checkNewResponses'])->name('support.check-responses');
 
         Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
         

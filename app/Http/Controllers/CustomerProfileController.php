@@ -276,6 +276,13 @@ class CustomerProfileController extends Controller
         ]);
         
         if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng nhập nội dung phản hồi'
+                ]);
+            }
+            
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
@@ -303,6 +310,22 @@ class CustomerProfileController extends Controller
             $notification->save();
         }
         
+        // Xử lý phản hồi AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã gửi phản hồi thành công',
+                'response' => [
+                    'id' => $response->id,
+                    'content' => nl2br(e($response->content)),
+                    'user_name' => $user->name,
+                    'user_avatar' => $user->getAvatarUrl(),
+                    'created_at' => $response->created_at->format('d/m/Y H:i'),
+                    'is_staff' => false
+                ]
+            ]);
+        }
+        
         return redirect()->back()->with('success', 'Đã gửi phản hồi thành công');
     }
 
@@ -317,5 +340,67 @@ class CustomerProfileController extends Controller
                     ->paginate(10);
         
         return view('customer.support.index', compact('tickets'));
+    }
+    
+    /**
+     * Cập nhật trạng thái đang gõ của người dùng
+     */
+    public function updateTypingStatus(Request $request, $id)
+    {
+        // Validate request
+        $request->validate([
+            'typing' => 'required|boolean'
+        ]);
+        
+        $user = Auth::user();
+        $ticket = SupportTicket::where('user_id', $user->id)->findOrFail($id);
+        
+        // Thêm logic thực tế ở đây để lưu trạng thái gõ vào cache/database
+        // Ví dụ sử dụng cache:
+        if ($request->typing) {
+            \Cache::put("user_{$user->id}_typing_ticket_{$id}", true, now()->addMinutes(1));
+        } else {
+            \Cache::forget("user_{$user->id}_typing_ticket_{$id}");
+        }
+        
+        // Broadcast một sự kiện để admin/nhân viên có thể thấy trạng thái gõ
+        // Đây là nơi bạn có thể thêm code để gửi thông báo real-time qua WebSockets hoặc Pusher
+        
+        return response()->json(['success' => true]);
+    }
+    
+    /**
+     * Kiểm tra và lấy các phản hồi mới
+     */
+    public function checkNewResponses(Request $request, $id)
+    {
+        $user = Auth::user();
+        $ticket = SupportTicket::where('user_id', $user->id)->findOrFail($id);
+        
+        $lastId = $request->input('last_id', 0);
+        
+        // Lấy các phản hồi mới hơn ID cuối cùng đã hiển thị
+        $responses = $ticket->responses()
+            ->where('id', '>', $lastId)
+            ->where('user_id', '!=', $user->id) // Chỉ lấy phản hồi từ admin/nhân viên
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        // Chuẩn bị dữ liệu phản hồi
+        $formattedResponses = $responses->map(function ($response) {
+            return [
+                'id' => $response->id,
+                'content' => nl2br(e($response->content)),
+                'user_name' => $response->user->name,
+                'user_avatar' => $response->user->getAvatarUrl(),
+                'created_at' => $response->created_at->format('d/m/Y H:i'),
+                'is_staff' => $response->isStaff()
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'responses' => $formattedResponses
+        ]);
     }
 }

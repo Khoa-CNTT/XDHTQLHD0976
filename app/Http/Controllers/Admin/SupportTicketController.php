@@ -81,6 +81,13 @@ class SupportTicketController extends Controller
         ]);
         
         if ($validator->fails()) {
+            if ($request->ajax()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Vui lòng nhập nội dung phản hồi'
+                ]);
+            }
+            
             return redirect()->back()
                 ->withErrors($validator)
                 ->withInput()
@@ -113,6 +120,71 @@ class SupportTicketController extends Controller
         
         $notification->save();
         
+        // Xử lý phản hồi AJAX
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Đã gửi phản hồi thành công',
+                'response' => [
+                    'id' => $response->id,
+                    'content' => nl2br(e($response->content)),
+                    'user_name' => Auth::user()->name,
+                    'user_avatar' => Auth::user()->getAvatarUrl(),
+                    'created_at' => $response->created_at->format('d/m/Y H:i'),
+                    'is_staff' => true
+                ]
+            ]);
+        }
+        
         return redirect()->back()->with('success', 'Đã gửi phản hồi thành công');
+    }
+    
+    /**
+     * Kiểm tra trạng thái đang gõ của khách hàng
+     */
+    public function checkTypingStatus($id)
+    {
+        $ticket = SupportTicket::findOrFail($id);
+        
+        // Kiểm tra xem khách hàng có đang gõ không
+        $isTyping = \Cache::has("user_{$ticket->user_id}_typing_ticket_{$id}");
+        
+        return response()->json([
+            'typing' => $isTyping
+        ]);
+    }
+    
+    /**
+     * Kiểm tra và lấy các phản hồi mới từ khách hàng
+     */
+    public function checkNewResponses(Request $request, $id)
+    {
+        $ticket = SupportTicket::findOrFail($id);
+        
+        $lastId = $request->input('last_id', 0);
+        
+        // Lấy các phản hồi mới hơn ID cuối cùng đã hiển thị
+        $responses = $ticket->responses()
+            ->where('id', '>', $lastId)
+            ->where('user_id', $ticket->user_id) // Chỉ lấy phản hồi từ khách hàng
+            ->orderBy('created_at', 'asc')
+            ->get();
+            
+        // Chuẩn bị dữ liệu phản hồi
+        $formattedResponses = $responses->map(function ($response) {
+            return [
+                'id' => $response->id,
+                'content' => nl2br(e($response->content)),
+                'user_name' => $response->user->name,
+                'user_avatar' => $response->user->getAvatarUrl(),
+                'created_at' => $response->created_at->format('d/m/Y H:i'),
+                'is_staff' => false
+            ];
+        });
+        
+        return response()->json([
+            'success' => true,
+            'responses' => $formattedResponses
+        ]);
     }
 } 
