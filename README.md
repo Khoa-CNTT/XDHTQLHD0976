@@ -174,5 +174,5 @@ Dự án được phân phối dưới giấy phép MIT. Xem [LICENSE](LICENSE) 
 ## Liên Hệ
 
 Nếu bạn có câu hỏi hoặc đề xuất, vui lòng liên hệ qua:
-- Email: example@domain.com
-- GitHub Issues: [ConTmanagement23444/ConTraCT/issues](https://github.com/ConTmanagement23444/ConTraCT/issues) 
+- Email: okamibada@gmail.com
+- GitHub Issues: https://github.com/ngapham23
