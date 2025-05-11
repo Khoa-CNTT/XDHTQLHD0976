@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 10, 2025 lúc 12:58 PM
+-- Thời gian đã tạo: Th5 11, 2025 lúc 12:25 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -40,7 +40,17 @@ CREATE TABLE `activity_logs` (
 --
 
 INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `description`, `created_at`) VALUES
-(1, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 09:25:00');
+(1, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 09:25:00'),
+(2, 14, 'Gửi yêu cầu hỗ trợ', 'Bạn đã gửi một yêu cầu hỗ trợ mới: ád', '2025-05-10 13:22:21'),
+(3, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 13:42:00'),
+(4, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 13:42:13'),
+(5, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 13:42:25'),
+(6, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 13:46:26'),
+(7, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 13:46:32'),
+(8, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân', '2025-05-10 14:06:30'),
+(9, 14, 'Cập nhật ảnh đại diện', 'Bạn đã cập nhật ảnh đại diện', '2025-05-11 10:07:49'),
+(10, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân, đã thay đổi số điện thoại từ 0987653214 thành 0986543271', '2025-05-11 10:08:20'),
+(11, 14, 'Cập nhật thông tin cá nhân', 'Bạn đã cập nhật thông tin cá nhân, đã thay đổi địa chỉ', '2025-05-11 10:13:07');
 
 -- --------------------------------------------------------
 
@@ -167,7 +177,8 @@ CREATE TABLE `employees` (
 INSERT INTO `employees` (`id`, `user_id`, `position`, `department`, `salary`, `hired_date`, `created_at`, `updated_at`) VALUES
 (1, 1, 'Nhân Viên', 'Kinh Doanh', 200000.00, '2025-04-16', '2025-04-24 16:23:43', '2025-04-25 16:23:43'),
 (2, 13, 'Nhân viên kỹ thuật', 'Kỹ thuật', 200000.00, '2025-04-11', '2025-04-11 04:25:40', '2025-04-11 04:25:40'),
-(3, 2, 'cc', 'cc', 100000.00, '2025-04-11', '2025-04-18 16:35:26', '2025-04-19 16:35:26');
+(3, 2, 'cc', 'cc', 100000.00, '2025-04-11', '2025-04-18 16:35:26', '2025-04-19 16:35:26'),
+(4, 16, 'Quản Lý Page', 'DTU', 500.00, '2025-05-11', '2025-05-11 09:39:17', '2025-05-11 09:39:17');
 
 -- --------------------------------------------------------
 
@@ -254,7 +265,8 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (15, '2025_05_01_055336_add_momo_fields_to_payments_table', 11),
 (16, '2025_05_01_132452_add_momo_fields_to_payments_table', 12),
 (17, '2025_05_03_131510_remove_service_type_from_services_table', 13),
-(18, '2025_05_08_011240_add_end_date_to_contracts_table', 14);
+(18, '2025_05_08_011240_add_end_date_to_contracts_table', 14),
+(19, '2024_05_20_create_support_responses_table', 15);
 
 -- --------------------------------------------------------
 
@@ -279,8 +291,12 @@ CREATE TABLE `notifications` (
 INSERT INTO `notifications` (`id`, `user_id`, `title`, `message`, `is_read`, `created_at`, `updated_at`) VALUES
 (15, 14, 'ccc', 'ccc', 1, '2025-05-10 09:46:16', '2025-05-10 09:55:13'),
 (16, 13, 'dm mày nhé', 'ngu ác', 0, '2025-05-10 09:56:06', '2025-05-10 09:56:06'),
-(17, 14, 'dm mày nhé', 'ngu ác', 0, '2025-05-10 09:56:06', '2025-05-10 09:56:06'),
-(18, 15, 'dm mày nhé', 'ngu ác', 0, '2025-05-10 09:56:06', '2025-05-10 09:56:06');
+(17, 14, 'dm mày nhé', 'ngu ác', 1, '2025-05-10 09:56:06', '2025-05-10 13:47:31'),
+(18, 15, 'dm mày nhé', 'ngu ác', 0, '2025-05-10 09:56:06', '2025-05-10 09:56:06'),
+(19, 14, 'Phản hồi yêu cầu hỗ trợ', 'Yêu cầu hỗ trợ \"ád\" đã được phản hồi.', 1, '2025-05-10 13:41:07', '2025-05-10 13:41:17'),
+(20, 1, 'Phản hồi mới từ khách hàng', 'Khách hàng \"Ngà Chó Điên\" đã phản hồi yêu cầu hỗ trợ #1', 0, '2025-05-11 10:24:02', '2025-05-11 10:24:02'),
+(21, 2, 'Phản hồi mới từ khách hàng', 'Khách hàng \"Ngà Chó Điên\" đã phản hồi yêu cầu hỗ trợ #1', 0, '2025-05-11 10:24:02', '2025-05-11 10:24:02'),
+(22, 16, 'Phản hồi mới từ khách hàng', 'Khách hàng \"Ngà Chó Điên\" đã phản hồi yêu cầu hỗ trợ #1', 0, '2025-05-11 10:24:02', '2025-05-11 10:24:02');
 
 -- --------------------------------------------------------
 
@@ -457,8 +473,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('axzEMmQkulTvKCiegMhqyYwIjyhXTzmvjqJQlFur', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJbGgyVTBWYVprbE1lR2hCTWtocE4zTmxXbXQyTTJjOVBTSXNJblpoYkhWbElqb2lXVVowYXpGeWVISldhM2hQY1hNeWRHbHpiVTlCV0VKWFZHbExaak5hUWpocWNGTk9RMmxEUnl0WVFsRXJkRVpWZVZaRlZIZFRlamhrVjFjeU9XTk9Wa05TUTFJdlQydHllRUpVY1RWRlFtbEVZa2ROTTFORU1VUkhWRzB4Y2xSbmRWbHVTbEpPV0ROeWEweDFXbXREVkdFM2Exa3diVlZOTUU5RFNtOTRWVXcyYzI1alowMXNRbmhIVUc1U1ZHaFJhM2QwUm10UmJEZ3ZOVWwwYUcwd1NuRkdUSG92Ym5sQ1ltdG1UeTh5VFVkVldFSldkWGN4YVVZMmIySkViM0ppUzNKbkt6aFdTVkIzU1RGd1FrUm1iSEJWT0ZsVWVVOVdTSGRwTUhaT04xbHJabWxuWm5sS0wybEZiakkzVWt0dlVVcHJaRXhYWlRsVVJVUTNkSE0zUmprMldIVXdSekpJUVd0alRqQlpkbkpzUzNaMmEwNWFhM05aYTBaSFVuZ3dZVlptTlZKNU9XbFVXakI2ZURZMlRGWXhiRmRqYkZvM2NWZFVZM0pLWm1sWGFuSldZMHBrY2pjdmRHTkRRamRIV0VSbFQzYzBLMHBqVW1Sb2NsTlFPRzkxV0VZMk5tTnRkMlpqT0ZJNWF6WmhjV0kzVG13Mk5FTjNWeTlXYWtsS05uWjVha0Z3YVhFclIxbFZjMGROTURsbGVsRmhNWGQzUXpJNFVqVlRWRmR0ZFd0YWJtdzVWMmxYVmxSSGRVdE1kMUZqYUhkUGJUQk1hVkZyVkdOYWEwSTNiM0k1VnpGeksyY3dkR1ZPVGtsVVdrODJWRTlLVWxFMFNFaE1URE5rV0RodlduUmphR3N6VjBwT1VsTktkRkZOZEUxb1NFVndWMjQwVG10Q1lUUkxNamxMYkdGNlJ5OHpMM1Y1ZVdOVmJFRlFaelpqWkhsU2FIbHpTRXBHTVZOU1JuWnBjMUJvVHpsYWNqWjNRbk1yVnpjd2EyZ3ZkR0pSUjJSRFltc3hVM1ZKV0d0TWExcEdka1ZKUXk4MGNua3ZhM05zTjNWWE4zYzJhbmxFZVd0cVFrMXpORXhaVUdjNE5EMGlMQ0p0WVdNaU9pSTBNMlUwTm1ZM1ptWm1OalUxWmpnNE5UTmlZMlE0TVRBM1ptUXdOVEE1WVdOa1l6bGhNR0V6WVRKalpUY3lZVGs0WXpZM01XWTRaRGMwWkRZeVkyVTVJaXdpZEdGbklqb2lJbjA9', 1746874676),
-('gkDc9RbDEEvSYz2tY4aFkTv905gJ53PL0zXmsN3q', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJa1ZYYTFOb2JHUnlaazlCU1VWSGQyMDBWUzlsZEhjOVBTSXNJblpoYkhWbElqb2lVVTk0ZWpWNGMyWXpNVmhVZVdSaGJXdEthMFZCZFRjMWREWjZhbmRMWXpKNGVETjFlVVJtWVdOUFJ6Rk1WVzFxUVRWUlVVOVllREE0WlU0Mk5scHRVRzFQT1hKaU9IWnpNMUpqV0M5aFJVWkpOSEIwZVVNM1RUWjNVbEZSVFROQlJucFZTMG8zTDI5cFYzRmFlRWhEWkVSaEwwTjZlbUZrTDNOYVl5OU1hRGhxUlZsRlVIQlZUekpLZG01T1V5dHNVaTlhUTFSemJIQlZSVzAzWlVwbWVHdzNUMnBrZUhkNGRDdG9RM2szTWtKVlJIaDRlVFZ4VTFWak9HWmxiVE53TlROV2JtSlpUVXRvWW0xS1IyOUtNWEZWTXpKdGNsZEhhbVF4YVd3M1FrOXRhMDF5TURVd2QxRmFjRVozTTJSVFMwVTBXVk4xUldzeU5tZFBRMmRpUzNob1VFUnZibk52VUdGRGJqQTNlalV5WWt0NGJFTlhlR1pLUkhSS1YzRklLelExTmtneldtWkNWbWQyVEcxWVRYVk1VVUpxV1U4dmFVVm5VbVpETmxwaVpGWlVTMmxYWWxJMVpITlNXbkF5Um5OS2NrSkdSR0U0U0UxcmFpdElZVWRGWnpGNVNXRmhaVTFWUFNJc0ltMWhZeUk2SW1RNVl6YzNNalk0WW1Zd05tUTRNbVEwTVRBMll6RXpOakV5T0RWbFpXSTNaakV6T0RSbVpEVTVOemt4TWprM05tVTFZek5tT0RRMlptWTBZalJtWTJZaUxDSjBZV2NpT2lJaWZRPT0=', 1746874463);
+('a9ieFZectq28KZPCNn7oPgQzUrD26fzXgsTfYwjB', 16, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJakZGY0dGQ1NXYzNMMUJPTjJKTmVGRkpPRTFZYUVFOVBTSXNJblpoYkhWbElqb2lPWFpKY21SS01qRmlUVWRqV200emNXRXdNbTAzUkU5MVZIWXZhbk54TWxWUlZHSjJMelpoZVRKQlRXTnBiUzkyU25kcWFtazNWM2xhTm1kRmR6UlBSRTlIV1d0SlkyeHlNR0Z5U25CU2RHTlBSbTV0ZW1OWVJVVnhUMklyT1VSblowSlhkemRPVFRKT1ZIQjZXa281Tkcxc1ZXTm1jMDQ1T0ZOWVpXRk1aWFJSYWxaSVlXaDVNV0ozVUVOTGFGbzJORVZNU1VsTldpc3haRnB6TVd0VVRWbElaRTVsYURkVlkzRnhTa0Y1SzBob2QycDZXVU5tVmtseVEwZGphMklyZFVsRlVHdHdibVZGVGpKVVFXbEVTbHAzU2xaeGJFVkdha3B5YW10alRFRnRNVWt6UjI1S2NHbGpVbWxTYkdSbU1IUk9NRXByZFd0Q1V6TlhaekpyTVU1Q1FXbzNjSFExWlhWbGVXeE9TVWRhUTJjelZ6ZzBabUpWUjBWMVlrcGFiMWR2V0ZjMGNXaExlblJtVURCb1EzZDJLMHg0UlRoaE0yeGtNVE0zUkVWR09Tc3JTazEwWkcxQmRYTjVVeTk0YkZCbFQzZERSbGRpVm1SNFEwaHVNRmxPVWxoM1ptRldSbmQzUFNJc0ltMWhZeUk2SWpCak1EaGlZVFUwWkdJM01XSmlNVFppTWpkbFpXVmtaVGc1WkdZeE5qSTRNemMyTmprMk9EbGpaVE0zTWpGalltWTVNbUUwTnpjME5UZGhNakUxWmpNaUxDSjBZV2NpT2lJaWZRPT0=', 1746959047),
+('j3XqerztRczR6gdFGhxR7Ok19YoEXOaJ7VACsx4v', 14, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJbUV6VjBOUU9FeE9hMDFGU0hSaFdtMVVXbkJXWkhjOVBTSXNJblpoYkhWbElqb2lUMlJ2TVhVelltbzBlbFkwS3paYVdFMVFZVzU0V2t0V1VGVmlkazltZGxSdWRXRlVObFV4T1VWeFp6ZGhORGt2UmtWVEwwcENWV3MwZWxsNldVbFJWVVpzVDFScVoyTXJkalozTm5sTVlWVnNaRzFaV21KSk16QjJaMmxoYTJwSWVYcEdkMGQ1WVRCSFVpdFhhV1V4WTFWUFpUSlBRMU5CUVdnemJITm1RamhWTnpSSk1IRTRkblZEZEZGQldqTnhUVVl3ZWxsWVYwUk1TRE4yWVV0R0szcGhWVGRzV25neVprMVJPR3hRT1VSdGRIRkVielZRVVd0aVkzTTJVbGhwTWpOU1FrMDVWbTVoWldwWlVtRkVWWGxyYW5KRFpFSnpkVlJuYzIwd2RYVkZRVFI0ZUVwcGJVWk1PRk5qVEVSaVdISk1hVFpuUXk5TVRUTXdlakY1ZWxWNFduRnFkVEpqWVRJeWNYQnZaMnhGV1hNd1JreENUWEJ1YVZZNE9EaFhiVnBIVkd0MWNqTlZNMmRpZFhKMmEzSkphM0ZMZVVFd2FHcHRjV05xU2xwNlFVZDFlbWxRTkZWaVFWSk9TbEJuUTFWUlZGcHlVMmR3YUVSck0zUlpOMUpuZFVWbEwwc3JUMnBYZWtvNVdYSlhWMWN6V1VGblZXVm5NelV2WW5OdFZFRXJhbXBTU1dWRkwzTkNWbVJrU25aVWQzaEJkamhuUm5CSlNXSXlVelp0WTJ4V1dUZFlObHBZTTJjM1kxZzRZbVEyYUdkYVVVbDBaRVJ0WVVaR04yOWpTR1ZrYURaV0wyZFRWRlJCTDNkR05WSk5OREJoUlZjME5ETTBPWFZ1T0ZSWWIxaE1WVVZyVkhCcmNrSktUa3B6Y21SWlIxRXpOVVZwUzFJM1RVVnhRMWQyUTBRMFFYSmxhRVJLVjNKaWRrTTBjRlpaVDJoT1duSk5lall6V1VaRmRYaDRNR2QwVG1nMVpUbHRkMGhST0Rsc09VODJZU3MzY0haVFNVUlJWa2xPVFRnMlJHVnBabWg1WWtkSWJWTkdWazg0VmpOUk9FZ3JlbXhNTUdSVllqSjJaMWhaWmtncmN6MGlMQ0p0WVdNaU9pSmhNbUZoT1Roa05EZGxOek01TjJReU1EZGpOems0T1RFNU5XSmhNVE5rTWpRelptVTRZVFF3TW1Oak9USTFOekUzTm1ZNU16STNPR0k1WVRBNU1UVTVJaXdpZEdGbklqb2lJbjA9', 1746959132);
 
 -- --------------------------------------------------------
 
@@ -492,6 +508,29 @@ INSERT INTO `signatures` (`id`, `contract_id`, `customer_name`, `customer_email`
 -- --------------------------------------------------------
 
 --
+-- Cấu trúc bảng cho bảng `support_responses`
+--
+
+CREATE TABLE `support_responses` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `support_ticket_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `support_responses`
+--
+
+INSERT INTO `support_responses` (`id`, `support_ticket_id`, `user_id`, `content`, `created_at`, `updated_at`) VALUES
+(1, 1, 2, 'hahahaha', '2025-05-10 13:41:07', '2025-05-10 13:41:07'),
+(2, 1, 14, 'ccc', '2025-05-11 10:24:02', '2025-05-11 10:24:02');
+
+-- --------------------------------------------------------
+
+--
 -- Cấu trúc bảng cho bảng `support_tickets`
 --
 
@@ -504,6 +543,13 @@ CREATE TABLE `support_tickets` (
   `created_at` timestamp NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `support_tickets`
+--
+
+INSERT INTO `support_tickets` (`id`, `user_id`, `title`, `content`, `status`, `created_at`, `updated_at`) VALUES
+(1, 14, 'ád', 'ád', 'Đang xử lý', '2025-05-10 13:22:21', '2025-05-10 13:41:07');
 
 -- --------------------------------------------------------
 
@@ -535,8 +581,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `identity_card`, `password`, `role`,
 (1, 'User', 'user@gmail.com', NULL, '$2y$12$RMop/HL4MYed8hA1U4yC/OsPad1S.7f1JRtrk/wsONxoJfWxUQByi', 'employee', 'active', '0123456789', 'Đà Nẵng', NULL, '2025-04-02 00:23:52', '2025-04-02 00:23:52', NULL),
 (2, 'Admin', 'admin@gmail.com', NULL, '$2y$12$87zbSUJenTUoyqsdLU029uj5pV1YlSEtMFKv.0bGFAWphKaXpLEfi', 'admin', 'active', '0123456789', 'Hà Nội', NULL, '2025-04-02 00:22:39', '2025-04-02 00:22:39', NULL),
 (13, 'NGUYEN HUU TRUONG', 'nguyenhuutruong05092003@gmail.com', NULL, '$2y$12$sjhQiATK1MhM2N8/cmvCSO8ObCJp5/jCMyrqdBORTR64xJ8owwshq', 'customer', 'active', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', NULL, '2025-04-10 21:12:22', '2025-04-27 01:32:16', NULL),
-(14, 'Ngà Chó Điên', 'okamibada@gmail.com', NULL, '$2y$12$A58VsUyw9f1UiQH0OcLvlunfFLkGgwuQSBQXINnRJcDmMe9qwCxsm', 'customer', 'active', '0987653214', '23-Le Thanh Dong-Hai Thanh-Dong Hoi-Quang Binh', NULL, '2025-04-13 01:07:45', '2025-05-10 09:25:00', NULL),
-(15, 'NGUYEN HUU TRUONG', 'nguyentruong05092003@gmail.com', NULL, '$2y$12$/Q0sbN.Vtskt/iqkW9Cdo.Hp4sAWO9lpMHyyzsCkkmIC11lvtgO6a', 'customer', 'active', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', NULL, '2025-04-27 01:28:18', '2025-04-27 01:28:18', NULL);
+(14, 'Ngà Chó Điên', 'okamibada@gmail.com', NULL, '$2y$12$A58VsUyw9f1UiQH0OcLvlunfFLkGgwuQSBQXINnRJcDmMe9qwCxsm', 'customer', 'active', '0986543271', 'dong hoi', 'avatars/wV5oDHTswA2pj4lUuFXVyu9K5SJljzml481O0BE1.png', '2025-04-13 01:07:45', '2025-05-11 10:13:07', NULL),
+(15, 'NGUYEN HUU TRUONG', 'nguyentruong05092003@gmail.com', NULL, '$2y$12$/Q0sbN.Vtskt/iqkW9Cdo.Hp4sAWO9lpMHyyzsCkkmIC11lvtgO6a', 'customer', 'active', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', NULL, '2025-04-27 01:28:18', '2025-04-27 01:28:18', NULL),
+(16, 'Pham Quang Ngà', 'okami@gmail.com', NULL, '$2y$12$aCBCzBDJb4eSgCX.8AG1UutLIG33nGoyHoP7NVtXHkduVz09Cib76', 'employee', 'active', '0987653214', 'hahaha-hahaha-hahah', 'avatars/KuESARkRoejgCurFrbnYrADKYWeIKVvoB4Jz5qXx.png', '2025-05-11 09:39:17', '2025-05-11 10:16:00', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -694,6 +741,14 @@ ALTER TABLE `signatures`
   ADD KEY `signatures_contract_id_foreign` (`contract_id`);
 
 --
+-- Chỉ mục cho bảng `support_responses`
+--
+ALTER TABLE `support_responses`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `support_responses_support_ticket_id_foreign` (`support_ticket_id`),
+  ADD KEY `support_responses_user_id_foreign` (`user_id`);
+
+--
 -- Chỉ mục cho bảng `support_tickets`
 --
 ALTER TABLE `support_tickets`
@@ -717,7 +772,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
 
 --
 -- AUTO_INCREMENT cho bảng `contracts`
@@ -747,7 +802,7 @@ ALTER TABLE `customers`
 -- AUTO_INCREMENT cho bảng `employees`
 --
 ALTER TABLE `employees`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 
 --
 -- AUTO_INCREMENT cho bảng `failed_jobs`
@@ -765,13 +820,13 @@ ALTER TABLE `jobs`
 -- AUTO_INCREMENT cho bảng `migrations`
 --
 ALTER TABLE `migrations`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- AUTO_INCREMENT cho bảng `notifications`
 --
 ALTER TABLE `notifications`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT cho bảng `payments`
@@ -810,16 +865,22 @@ ALTER TABLE `signatures`
   MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=36;
 
 --
+-- AUTO_INCREMENT cho bảng `support_responses`
+--
+ALTER TABLE `support_responses`
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+
+--
 -- AUTO_INCREMENT cho bảng `support_tickets`
 --
 ALTER TABLE `support_tickets`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=16;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- Các ràng buộc cho các bảng đã đổ
@@ -836,6 +897,13 @@ ALTER TABLE `activity_logs`
 --
 ALTER TABLE `contract_amendments`
   ADD CONSTRAINT `contract_amendments_ibfk_1` FOREIGN KEY (`contract_id`) REFERENCES `contracts` (`id`) ON DELETE CASCADE;
+
+--
+-- Các ràng buộc cho bảng `support_responses`
+--
+ALTER TABLE `support_responses`
+  ADD CONSTRAINT `support_responses_support_ticket_id_foreign` FOREIGN KEY (`support_ticket_id`) REFERENCES `support_tickets` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `support_responses_user_id_foreign` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
