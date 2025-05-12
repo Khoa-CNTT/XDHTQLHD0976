@@ -70,7 +70,7 @@ class NotificationController extends Controller
         
         $notifications = $query->latest()->paginate(15);
         
-        // Get all customers for filter dropdown
+        // Get all customers for filter dropdown - make sure they all exist
         $users = User::where('role', 'customer')
             ->where('status', 'active')
             ->orderBy('name')

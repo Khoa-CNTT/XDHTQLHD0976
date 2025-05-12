@@ -102,11 +102,11 @@
                     <td class="px-4 py-3">
                         <div class="flex items-center">
                             <div class="mr-2">
-                                <img class="w-8 h-8 rounded-full" src="{{ $ticket->user->getAvatarUrl() }}" alt="Avatar">
+                                <img class="w-8 h-8 rounded-full" src="{{ $ticket->user ? $ticket->user->getAvatarUrl() : 'https://ui-avatars.com/api/?name=Unknown&color=7F9CF5&background=EBF4FF' }}" alt="Avatar">
                             </div>
                             <div>
-                                <div class="font-medium">{{ $ticket->user->name }}</div>
-                                <div class="text-xs text-gray-500">{{ $ticket->user->email }}</div>
+                                <div class="font-medium">{{ $ticket->user->name ?? 'Người dùng không tồn tại' }}</div>
+                                <div class="text-xs text-gray-500">{{ $ticket->user->email ?? 'Email không xác định' }}</div>
                             </div>
                         </div>
                     </td>

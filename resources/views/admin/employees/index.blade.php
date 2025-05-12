@@ -99,12 +99,12 @@
                     <td class="py-3 px-6 text-left">
                         <div class="flex items-center">
                             <div class="mr-2">
-                                <img class="w-8 h-8 rounded-full" src="{{ $employee->user->getAvatarUrl() }}" alt="Avatar">
+                                <img class="w-8 h-8 rounded-full" src="{{ $employee->user ? $employee->user->getAvatarUrl() : 'https://ui-avatars.com/api/?name=Unknown&color=7F9CF5&background=EBF4FF' }}" alt="Avatar">
                             </div>
                             <div>
                                 <div class="font-medium">{{ $employee->user->name ?? 'Không xác định' }}</div>
-                                <div class="text-xs text-gray-500">{{ $employee->user->email }}</div>
-                                <div class="text-xs text-gray-500">{{ $employee->user->phone }}</div>
+                                <div class="text-xs text-gray-500">{{ $employee->user->email ?? 'Email không xác định' }}</div>
+                                <div class="text-xs text-gray-500">{{ $employee->user->phone ?? 'SĐT không xác định' }}</div>
                             </div>
                         </div>
                     </td>

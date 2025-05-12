@@ -132,11 +132,20 @@
                     <td class="py-3 px-4">
                         <div class="flex items-center">
                             <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                <span class="text-blue-800 font-bold">{{ substr($notification->user->name, 0, 1) }}</span>
+                                @if($notification->user)
+                                    <span class="text-blue-800 font-bold">{{ substr($notification->user->name, 0, 1) }}</span>
+                                @else
+                                    <span class="text-blue-800 font-bold">?</span>
+                                @endif
                             </div>
                             <div class="ml-4">
-                                <div class="text-sm font-medium text-gray-900">{{ $notification->user->name }}</div>
-                                <div class="text-sm text-gray-500">{{ $notification->user->email }}</div>
+                                @if($notification->user)
+                                    <div class="text-sm font-medium text-gray-900">{{ $notification->user->name }}</div>
+                                    <div class="text-sm text-gray-500">{{ $notification->user->email }}</div>
+                                @else
+                                    <div class="text-sm font-medium text-gray-900">Người dùng đã xóa</div>
+                                    <div class="text-sm text-gray-500">Không có thông tin</div>
+                                @endif
                             </div>
                         </div>
                     </td>
