@@ -49,7 +49,7 @@ public function category()
      */
     public function durations()
     {
-        return Duration::whereIn('id', $this->contractDurations()->pluck('duration_id'))->orderBy('months')->get();
+        return Duration::whereIn('id', $this->contractDurations()->pluck('duration_id'))->orderBy('months', 'asc')->get();
     }
     
     /**

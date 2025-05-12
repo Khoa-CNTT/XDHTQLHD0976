@@ -83,7 +83,7 @@
         </div>
         
         @php
-            $contractDurations = $service->contractDurations()->with('duration')->orderBy('price')->get();
+            $contractDurations = $service->contractDurations()->with('duration')->orderBy('duration_id', 'asc')->get();
         @endphp
         
         @if($contractDurations->count() > 0)

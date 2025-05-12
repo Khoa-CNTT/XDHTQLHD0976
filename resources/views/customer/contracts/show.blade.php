@@ -1,7 +1,19 @@
 @extends('layouts.customer')
 
 @section('title', 'Chi Tiết Hợp Đồng')
-
+@if(session()->has('success'))
+    @push('scripts')
+    <script>
+        Swal.fire({
+            icon: 'success',
+            title: 'Thành công!',
+            text: '{{ session('success') }}',
+            showConfirmButton: false,
+            timer: 2000
+        });
+    </script>
+    @endpush
+@endif
 @section('content')
 <div class="max-w-5xl mx-auto mt-10 mb-20 min-h-screen pb-24">
 <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-10">
@@ -35,10 +47,6 @@
             <label class="block text-sm font-medium text-gray-900">Loại Dịch Vụ</label>
             <p class="mt-1  text-gray-600"> {{ $contract->service->category->name ?? 'Chưa xác định' }}</p>
         </div>
-        <div>
-            <label class="block text-sm font-medium text-gray-900">Giá Dịch Vụ</label>
-            <p class="mt-1 text-gray-600">{{ number_format($contract->service->price, 0, ',', '.') }} VND</p>
-        </div>
        
         <div>
             <label class="block text-sm font-medium text-gray-900">Ngày Bắt Đầu</label>
@@ -60,19 +68,34 @@
             </p>
         </div>
         <div >
-            <label class="block text-sm font-medium text-gray-900">Ngày Hết Hạn Hợp Đồng</label>
-            <p class="mt-1 text-gray-600">{{ \Carbon\Carbon::parse($contract->end_date)->format('d/m/Y') }}</p>
-      </div>
-        @foreach ($contract->signatures as $signature)
-        <div>
-            <label class="block text-sm font-medium text-gray-700">Thời hạn</label>
-            <p class="mt-1 text-gray-600">{{ $signature->duration }}</p>
-        </div>
-        @endforeach
-        <div>
             <label class="block text-sm font-medium text-gray-900">Tổng giá trị hợp đồng</label>
             <p class="mt-1 text-gray-600">{{ number_format($contract->total_price, 0, ',', '.') }} VND</p>
         </div>
+        
+        @if($contract->signatures && $contract->signatures->count() > 0)
+        <div>
+            <label class="block text-sm font-medium text-gray-900">Thời hạn</label>
+            <p class="mt-1 text-gray-600">
+                @if($contract->signatures->first()->contractDuration && $contract->signatures->first()->contractDuration->duration)
+                    {{ $contract->signatures->first()->contractDuration->duration->label }}
+                @else
+                    Không có thông tin
+                @endif
+            </p>
+        </div>
+        <div>
+            <label class="block text-sm font-medium text-gray-900">Ngày ký hợp đồng</label>
+            <p class="mt-1 text-gray-600">{{ \Carbon\Carbon::parse($contract->signatures->first()->signed_at)->format('d/m/Y H:i:s') }}</p>
+        </div>
+        @endif
+        
+        @if($contract->status === 'Hoạt động' || $contract->status === 'Hoàn thành')
+        <div>
+            <label class="block text-sm font-medium text-gray-900">Ngày hết hạn</label>
+            <p class="mt-1 text-gray-600">{{ \Carbon\Carbon::parse($contract->end_date)->format('d/m/Y') }}</p>
+        </div>
+        @endif
+        
         <div class="w-80 h-32 overflow-hidden rounded-lg">
             <img class="w-full h-full object-cover" src="{{ asset('storage/' . $contract->service->image) }}" alt="Ảnh dịch vụ">
         </div> 
@@ -155,11 +178,17 @@
         <a href="{{ route('customer.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">
             Quay lại
         </a>
-        <input type="hidden" name="contract_id" value="{{ $contract->id }}">
-        <input type="hidden" name="amount" value="{{ $contract->total_price }}">
-        <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
-            Thanh Toán Qua VNPay
-        </button>
+        @if ($contract->payments && $contract->payments->count() > 0)
+            <div class="px-4 py-2 bg-gray-300 text-gray-600 rounded cursor-not-allowed">
+                Đã gửi yêu cầu thanh toán
+            </div>
+        @else
+            <input type="hidden" name="contract_id" value="{{ $contract->id }}">
+            <input type="hidden" name="amount" value="{{ $contract->total_price }}">
+            <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700">
+                Thanh Toán Qua VNPay
+            </button>
+        @endif
     </div>
 </form>
 @else
@@ -167,6 +196,13 @@
         <a href="{{ route('customer.contracts.index') }}" class="px-6 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition duration-200">
             ← Quay lại danh sách
         </a>
+        @if($contract->status === 'Hoạt động')
+            <div class="px-6 py-3 bg-green-100 text-green-800 rounded-lg border border-green-200">
+                <span class="font-semibold">Thời gian còn lại:</span>
+                {{ \Carbon\Carbon::now()->diffForHumans(\Carbon\Carbon::parse($contract->end_date), true) }}
+                (Hết hạn ngày {{ \Carbon\Carbon::parse($contract->end_date)->format('d/m/Y') }})
+            </div>
+        @endif
     </div>
 @endif
 </div>

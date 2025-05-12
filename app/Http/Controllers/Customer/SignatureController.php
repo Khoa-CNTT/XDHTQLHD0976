@@ -21,6 +21,20 @@ class SignatureController extends Controller
         try {
             $service = Service::findOrFail($serviceId);
             
+            // Kiểm tra xem người dùng đã có hợp đồng cho dịch vụ này chưa và đã ký chưa
+            $customerId = Auth::user()->customer->id;
+            $existingContract = Contract::where('service_id', $serviceId)
+                                      ->where('customer_id', $customerId)
+                                      ->first();
+                                      
+            if ($existingContract) {
+                $hasSignature = Signature::where('contract_id', $existingContract->id)->exists();
+                if ($hasSignature) {
+                    return redirect()->route('customer.contracts.show', $existingContract->id)
+                                    ->with('error', 'Bạn đã ký hợp đồng cho dịch vụ này. Không thể ký lại.');
+                }
+            }
+            
             $duration = $request->input('duration');
             $selectedPrice = $request->input('selected_price');
             
@@ -32,7 +46,7 @@ class SignatureController extends Controller
             
             // Validate the duration exists for this service
             $durationInfo = null;
-            $availableDurations = $service->contractDurations()->with('duration')->get();
+            $availableDurations = $service->contractDurations()->with('duration')->join('durations', 'contract_durations.duration_id', '=', 'durations.id')->orderBy('durations.months', 'asc')->get();
             
             foreach ($availableDurations as $contractDuration) {
                 $durationCode = Str::slug($contractDuration->duration->label, '_');
@@ -101,7 +115,7 @@ class SignatureController extends Controller
             $price = $service->price; // Default price
             $months = 12; // Default months
             
-            foreach ($service->contractDurations()->with('duration')->get() as $contractDuration) {
+            foreach ($service->contractDurations()->with('duration')->join('durations', 'contract_durations.duration_id', '=', 'durations.id')->orderBy('durations.months', 'asc')->get() as $contractDuration) {
                 $currentCode = Str::slug($contractDuration->duration->label, '_');
                 if ($currentCode == $durationCode) {
                     $durationInfo = $contractDuration;
@@ -148,7 +162,7 @@ class SignatureController extends Controller
                 'signature_data' => $request->otp, // Lưu mã OTP
                 'signature_image' => $request->signature_data, // Lưu base64 ảnh chữ ký
                 'identity_card' => $request->identity_card,
-                'duration' => $durationInfo->duration->label,
+                'contract_duration_id' => $durationInfo->id, // Lưu contract_duration_id thay vì duration
                 'status' => 'Đang xử lý',
                 'signed_at' => now(),
                 'otp_verified_at' => now(),

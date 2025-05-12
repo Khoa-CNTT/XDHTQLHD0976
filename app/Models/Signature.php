@@ -15,8 +15,8 @@ class Signature extends Model
     'customer_email',
     'signature_data',
     'identity_card',
-    'duration', 
-        'status',
+    'contract_duration_id', 
+    'status',
     'signed_at',
     'signature_image', 
     'otp_verified_at', 
@@ -25,5 +25,10 @@ class Signature extends Model
     public function contract()
     {
         return $this->belongsTo(Contract::class);
+    }
+    
+    public function contractDuration()
+    {
+        return $this->belongsTo(ContractDuration::class);
     }
 }

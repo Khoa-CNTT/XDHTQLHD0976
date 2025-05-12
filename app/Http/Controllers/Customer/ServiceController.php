@@ -57,7 +57,8 @@ class ServiceController extends Controller
             // Lấy các thời hạn có giá đã được thiết lập cho dịch vụ này
             $availableDurations = $service->contractDurations()
                 ->with('duration')
-                ->orderBy('price')
+                ->join('durations', 'contract_durations.duration_id', '=', 'durations.id')
+                ->orderBy('durations.months', 'asc')
                 ->get();
             
             return view('customer.services.show', compact('service', 'availableDurations'));
