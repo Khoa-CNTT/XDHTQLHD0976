@@ -116,29 +116,29 @@
                                 <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center hidden"></span>
                             @endif
                         </button>
-                        <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto">
-                            <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
-                                <span class="font-medium text-gray-800">Thông báo</span>
-                                @if($unreadNotificationsCount > 0)
-                                    <form action="{{ route('customer.notifications.markAllAsRead') }}" method="POST" class="inline">
-                                        @csrf
-                                        <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 bg-transparent border-0 p-0">
-                                            Đánh dấu tất cả đã đọc
-                                        </button>
-                                    </form>
-                                @endif
-                            </div>
-                            <div id="notifications-list">
-                                <div class="px-4 py-6 text-center text-gray-500">
-                                    <p>Đang tải thông báo...</p>
-                                </div>
-                            </div>
-                            <div class="px-4 py-2 border-t border-gray-200">
-                                <a href="{{ route('customer.notifications.index') }}" class="block text-center text-blue-600 hover:text-blue-800 text-sm font-medium">
-                                    Xem tất cả thông báo
-                                </a>
-                            </div>
-                        </div>
+                       <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto">
+    <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
+        <span class="font-medium text-gray-800">Thông báo</span>
+        @if($unreadNotificationsCount > 0)
+            <form action="{{ route('customer.notifications.markAllAsRead') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 bg-transparent border-0 p-0">
+                    Đánh dấu tất cả đã đọc
+                </button>
+            </form>
+        @endif
+    </div>
+    <div id="notifications-list">
+        <div class="px-4 py-6 text-center text-gray-500">
+            <p>Đang tải thông báo...</p>
+        </div>
+    </div>
+    <div class="px-4 py-2 border-t border-gray-200">
+        <a href="{{ route('customer.notifications.index') }}" class="block text-center text-blue-600 hover:text-blue-800 text-sm font-medium">
+            Xem tất cả thông báo
+        </a>
+    </div>
+</div>
                     </div>
                     <div class="relative mt-4 md:mt-0">
                         <button id="user-menu-button" class="flex items-center focus:outline-none">
@@ -161,9 +161,21 @@
                                     <i class="fas fa-credit-card mr-2"></i> Lịch sử thanh toán
                                 </a>
 
-                                <a href="{{ route('customer.support.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative z-50">
-                                    <i class="fas fa-headset mr-2"></i> Yêu cầu hỗ trợ
-                                </a>
+                               <a href="{{ route('customer.support.index') }}" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 relative z-50">
+    <i class="fas fa-headset mr-2"></i> Yêu cầu hỗ trợ
+    @php
+        $supportNotificationsCount = auth()->user()->notifications()
+            ->where('created_by', 'employee') 
+            ->where('type', 'support') 
+            ->where('is_read', false)
+            ->count();
+    @endphp
+    @if($supportNotificationsCount > 0)
+        <span class="absolute top-0 right-0 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center">
+            {{ $supportNotificationsCount }}
+        </span>
+    @endif
+</a>
                                 
                                 <hr class="my-1 border-gray-200">
                                 
@@ -352,95 +364,45 @@
         let displayedNotificationIds = new Set();
         
         // Hàm cập nhật danh sách thông báo
-        function updateNotificationsList() {
-            fetch('/customer/api/notifications/latest')
-                .then(response => response.json())
-                .then(data => {
-                    const notificationsList = document.querySelector('#notifications-list');
-                    if (notificationsList && data.notifications.length > 0) {
-                        // Tạo Map từ ID thông báo để loại bỏ trùng lặp
-                        const notificationsMap = new Map();
-                        
-                        // Chỉ xử lý các thông báo chưa hiển thị
-                        data.notifications.forEach(notification => {
-                            if (!displayedNotificationIds.has(notification.id)) {
-                                notificationsMap.set(notification.id, notification);
-                                // Đánh dấu đã hiển thị
-                                displayedNotificationIds.add(notification.id);
-                            }
-                        });
-                        
-                        // Giới hạn kích thước Set để tránh tràn bộ nhớ
-                        if (displayedNotificationIds.size > 50) {
-                            // Giữ lại 30 ID mới nhất
-                            displayedNotificationIds = new Set(
-                                Array.from(displayedNotificationIds).slice(-30)
-                            );
-                        }
-                        
-                        // Chuyển lại thành mảng
-                        const uniqueNotifications = Array.from(notificationsMap.values());
-                        
-                        // Cập nhật danh sách thông báo
-                        let notificationsHtml = '';
-                        
-                        // Kết hợp thông báo mới với thông báo hiện tại
-                        if (uniqueNotifications.length > 0) {
-                            // Lấy nội dung HTML hiện tại
-                            const currentHtml = notificationsList.innerHTML;
-                            
-                            // Thêm thông báo mới vào đầu
-                            uniqueNotifications.forEach(notification => {
-                                notificationsHtml += `
-                                <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 mr-3">
-                                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                                </svg>
-                                            </div>
-                                        </div>
-                                        <div class="flex-1">
-                                            <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                                            <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
-                                            <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
-                                        </div>
-                                    </div>
-                                </a>
-                                `;
-                            });
-                            
-                            // Nếu là lần đầu tiên tải, thay thế hoàn toàn
-                            if (currentHtml.includes('Đang tải thông báo...')) {
-                                notificationsList.innerHTML = notificationsHtml;
-                            } else {
-                                // Nếu đã có nội dung, chỉ cập nhật nếu có thông báo mới
-                                if (notificationsHtml) {
-                                    notificationsList.innerHTML = notificationsHtml + currentHtml;
-                                    
-                                    // Giới hạn số lượng thông báo hiển thị để tránh quá dài
-                                    const notificationItems = notificationsList.querySelectorAll('a');
-                                    if (notificationItems.length > 5) {
-                                        // Chỉ giữ lại 5 thông báo đầu tiên
-                                        for (let i = 5; i < notificationItems.length; i++) {
-                                            notificationItems[i].remove();
-                                        }
-                                    }
-                                }
-                            }
-                        } else if (notificationsList.innerHTML.includes('Đang tải thông báo...')) {
-                            // Nếu không có thông báo nào và đang hiển thị "Đang tải..."
-                            notificationsList.innerHTML = `
-                            <div class="px-4 py-6 text-center text-gray-500">
-                                <p>Không có thông báo nào</p>
+       function updateNotificationsList() {
+    fetch('/customer/api/notifications/latest')
+        .then(response => response.json())
+        .then(data => {
+            const notificationsList = document.querySelector('#notifications-list');
+            if (notificationsList && data.notifications.length > 0) {
+                let notificationsHtml = '';
+                data.notifications.forEach(notification => {
+                    notificationsHtml += `
+                    <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
                             </div>
-                            `;
-                        }
-                    }
-                })
-                .catch(error => console.error('Lỗi tải thông báo mới:', error));
-        }
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
+                                <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
+                            </div>
+                        </div>
+                    </a>
+                    `;
+                });
+                notificationsList.innerHTML = notificationsHtml;
+            } else {
+                notificationsList.innerHTML = `
+                <div class="px-4 py-6 text-center text-gray-500">
+                    <p>Không có thông báo nào</p>
+                </div>
+                `;
+            }
+        })
+        .catch(error => console.error('Lỗi tải thông báo mới:', error));
+}
+        
         
         // Kiểm tra thông báo khi trang tải xong và sau mỗi 30 giây
         document.addEventListener('DOMContentLoaded', function() {
@@ -453,23 +415,44 @@
             }
             
             // Tải danh sách thông báo ngay khi trang tải xong
-            updateNotificationsList();
-            
-            // Kiểm tra thông báo mới sau 5 giây đầu tiên
-            setTimeout(checkNewNotifications, 5000);
-            
-            // Kiểm tra thông báo mỗi 30 giây
-            setInterval(checkNewNotifications, 30000);
-            
-            // Thêm sự kiện click vào nút thông báo
-            const notificationsButton = document.getElementById('notifications-menu-button');
-            if (notificationsButton) {
-                notificationsButton.addEventListener('click', function() {
-                    // Cập nhật danh sách thông báo mỗi khi click vào nút
-                    updateNotificationsList();
+        function updateNotificationsList() {
+    fetch('/customer/api/notifications/latest')
+        .then(response => response.json())
+        .then(data => {
+            const notificationsList = document.querySelector('#notifications-list');
+            if (notificationsList && data.notifications.length > 0) {
+                let notificationsHtml = '';
+                data.notifications.forEach(notification => {
+                    notificationsHtml += `
+                    <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                        <div class="flex items-start">
+                            <div class="flex-shrink-0 mr-3">
+                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                    </svg>
+                                </div>
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
+                                <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
+                            </div>
+                        </div>
+                    </a>
+                    `;
                 });
+                notificationsList.innerHTML = notificationsHtml;
+            } else {
+                notificationsList.innerHTML = `
+                <div class="px-4 py-6 text-center text-gray-500">
+                    <p>Không có thông báo nào</p>
+                </div>
+                `;
             }
-        });
+        })
+        .catch(error => console.error('Lỗi tải thông báo mới:', error));
+}
     </script>
     
     @stack('scripts')

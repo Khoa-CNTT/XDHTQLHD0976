@@ -62,19 +62,7 @@
 </style>
 @endpush
 
-@if(session()->has('success'))
-    @push('scripts')
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công!',
-            text: '{{ session('success') }}',
-            showConfirmButton: false,
-            timer: 2000
-        });
-    </script>
-    @endpush
-@endif
+
 
 @section('content')
 <div class="container mx-auto mt-6">
@@ -519,6 +507,33 @@
     if (Notification.permission !== "granted" && Notification.permission !== "denied") {
         Notification.requestPermission();
     }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        const responseInput = document.getElementById('response');
+        const responseForm = document.getElementById('response-form');
+        const typingIndicator = document.getElementById('typing-indicator');
+
+        // Lắng nghe sự kiện nhập phím
+        responseInput.addEventListener('input', function () {
+            // Hiển thị dấu ba chấm khi đang nhập
+            typingIndicator.style.display = 'flex';
+            clearTimeout(responseInput.typingTimeout);
+            responseInput.typingTimeout = setTimeout(() => {
+                typingIndicator.style.display = 'none';
+            }, 2000); // Ẩn sau 2 giây nếu không nhập
+        });
+
+        // Lắng nghe phím Enter để gửi tin nhắn
+        responseInput.addEventListener('keypress', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault(); // Ngăn chặn xuống dòng
+                responseForm.submit(); // Gửi biểu mẫu
+            }
+        });
+    });
+</script>
+
+    
 </script>
 @endpush
 @endsection 

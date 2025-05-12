@@ -28,22 +28,9 @@
         <h3 class="text-xl font-semibold text-gray-800">Thông tin dịch vụ</h3>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-600">
         <p>Dịch vụ: {{ $service->service_name }}</p>
-        <p>Loại dịch vụ: {{ $service->service_type }}</p>
-        <p>Thời hạn hợp đồng:
-            @php
-                $durations = [
-                    '6_thang' => '6 Tháng',
-                    '1_nam' => '1 Năm',
-                    '3_nam' => '3 Năm'
-                ];
-
-                // Gán lại duration đúng dạng chuẩn
-                $selectedDuration = $durations[$duration] ?? 'Không xác định';
-                
-            @endphp
-            {{ $selectedDuration }}
-        </p>
-        <p>Giá: {{ number_format($service->price, 0, ',', '.') }} VND</p>
+        <p>Loại dịch vụ: {{ $service->category->name ?? 'Không xác định' }}</p>
+        <p>Thời hạn hợp đồng: {{ $durationInfo->duration->label }}</p>
+        <p>Giá: {{ number_format($durationInfo->price, 0, ',', '.') }} VND</p>
         </div>
     </div>
 
@@ -108,6 +95,8 @@
         @csrf
         <input type="hidden" id="signature-data" name="signature_data">
         <input type="hidden" name="duration" value="{{ $duration }}">
+        <input type="hidden" name="duration_id" value="{{ $durationInfo->duration_id }}">
+        <input type="hidden" name="price" value="{{ $durationInfo->price }}">
 
         <div class="flex flex-col items-center">
             <label for="otp" class="block font-medium mb-1 text-center">Nhập mã OTP để ký</label>

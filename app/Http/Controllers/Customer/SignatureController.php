@@ -5,48 +5,61 @@ use App\Http\Controllers\Controller;
 use App\Models\Contract;
 use App\Models\Signature;
 use App\Models\Service;
+use App\Models\Duration;
+use App\Models\ContractDuration;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Mail;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
+
 class SignatureController extends Controller
 {
-    
-    private function getDurationLabel($key) {
-        $durations = [
-            '6_thang' => '6 tháng',
-            '1_nam' => '1 năm',
-            '3_nam' => '3 năm'
-        ];
-        return $durations[$key] ?? $key;
-    }
     public function showSignForm(Request $request, $serviceId)
     {
         try {
             $service = Service::findOrFail($serviceId);
             
             $duration = $request->input('duration');
-            $validDurations = ['6_thang', '1_nam', '3_nam'];
-            $durationLabel = $this->getDurationLabel($duration);
-            if (!in_array($duration, $validDurations)) {
+            $selectedPrice = $request->input('selected_price');
+            
+            // Validate duration
+            if (empty($duration)) {
                 return redirect()->route('customer.services.show', $serviceId)
-                                 ->withErrors(['duration' => 'Vui lòng chọn thời hạn hợp đồng hợp lệ.']);
+                                 ->withErrors(['duration' => 'Vui lòng chọn thời hạn hợp đồng.']);
+            }
+            
+            // Validate the duration exists for this service
+            $durationInfo = null;
+            $availableDurations = $service->contractDurations()->with('duration')->get();
+            
+            foreach ($availableDurations as $contractDuration) {
+                $durationCode = Str::slug($contractDuration->duration->label, '_');
+                if ($durationCode == $duration) {
+                    $durationInfo = $contractDuration;
+                    break;
+                }
+            }
+            
+            if (!$durationInfo) {
+                return redirect()->route('customer.services.show', $serviceId)
+                                 ->withErrors(['duration' => 'Thời hạn hợp đồng không hợp lệ.']);
             }
         
             $tempSignature = session('temp_signature');
-            return view('customer.contracts.sign', compact('service', 'duration', 'tempSignature'));
+            return view('customer.contracts.sign', compact('service', 'duration', 'durationInfo', 'tempSignature'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('customer.services.index')
                             ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
         } catch (\Exception $e) {
             return redirect()->route('customer.services.index')
-                            ->with('error', 'Đã xảy ra lỗi khi truy cập form ký hợp đồng.');
+                            ->with('error', 'Đã xảy ra lỗi khi truy cập form ký hợp đồng: ' . $e->getMessage());
         }
     }
+    
     public function sendOtp(Request $request, $serviceId)
     {
-       
         $customerName = Auth::user()->name;
         $customerEmail = Auth::user()->email;
 
@@ -54,7 +67,6 @@ class SignatureController extends Controller
 
         Cache::put('otp_' . $customerEmail, $otp, now()->addMinutes(5));
 
-       
         Mail::raw("Mã OTP của bạn để ký hợp đồng là: $otp", function ($message) use ($customerEmail) {
             $message->to($customerEmail)
                     ->subject('Mã OTP Ký Hợp Đồng');
@@ -82,21 +94,29 @@ class SignatureController extends Controller
 
             $service = Service::findOrFail($serviceId);
             $customer = Auth::user()->customer;
+            
+            // Find the duration info
+            $durationCode = $request->duration;
+            $durationInfo = null;
+            $price = $service->price; // Default price
+            $months = 12; // Default months
+            
+            foreach ($service->contractDurations()->with('duration')->get() as $contractDuration) {
+                $currentCode = Str::slug($contractDuration->duration->label, '_');
+                if ($currentCode == $durationCode) {
+                    $durationInfo = $contractDuration;
+                    $price = $contractDuration->price;
+                    $months = $contractDuration->duration->months;
+                    break;
+                }
+            }
+            
+            if (!$durationInfo) {
+                return redirect()->back()->withErrors(['duration' => 'Thời hạn hợp đồng không hợp lệ.']);
+            }
 
             $startDate = $request->contract_date;
-            switch ($request->duration) {
-                case '6_thang':
-                    $endDate = Carbon::parse($startDate)->addMonths(6);
-                    break;
-                case '1_nam':
-                    $endDate = Carbon::parse($startDate)->addYear();
-                    break;
-                case '3_nam':
-                    $endDate = Carbon::parse($startDate)->addYears(3);
-                    break;
-                default:
-                    $endDate = Carbon::parse($startDate)->addYear();
-            }
+            $endDate = Carbon::parse($startDate)->addMonths($months);
 
             // Tạo hoặc lấy hợp đồng
             $contract = Contract::where('service_id', $serviceId)
@@ -110,7 +130,7 @@ class SignatureController extends Controller
                     'start_date' => $startDate,
                     'end_date' => $endDate,
                     'status' => 'Chờ xử lý',
-                    'total_price' => $service->price,
+                    'total_price' => $price,
                 ]);
             }
 
@@ -128,7 +148,7 @@ class SignatureController extends Controller
                 'signature_data' => $request->otp, // Lưu mã OTP
                 'signature_image' => $request->signature_data, // Lưu base64 ảnh chữ ký
                 'identity_card' => $request->identity_card,
-                'duration' => $this->getDurationLabel($request->duration),
+                'duration' => $durationInfo->duration->label,
                 'status' => 'Đang xử lý',
                 'signed_at' => now(),
                 'otp_verified_at' => now(),
@@ -145,6 +165,4 @@ class SignatureController extends Controller
                             ->with('error', 'Đã xảy ra lỗi khi ký hợp đồng: ' . $e->getMessage());
         }
     }
-
-    
 }

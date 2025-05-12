@@ -20,13 +20,17 @@
     <h2 class="text-2xl font-semibold mb-6">Danh sách dịch vụ</h2>
 
     <div class="flex flex-col md:flex-row md:justify-between mb-6 gap-4">
-        <div>
+        <div class="flex flex-wrap gap-2">
             <a href="{{ route('admin.services.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
                 <i class="fas fa-plus mr-2"></i> Thêm dịch vụ mới
             </a>
             <a href="{{ route('admin.service-categories.index') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
                 <i class="fas fa-folder mr-2"></i> Quản lý loại dịch vụ
             </a>
+            <a href="{{ route('admin.durations.index') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                <i class="fas fa-clock mr-2"></i> Quản lý thời hạn
+            </a>
+           
         </div>
     </div>
 
@@ -64,20 +68,6 @@
                 </select>
             </div>
             
-            <div>
-                <label for="price_from" class="block text-sm font-medium text-gray-700 mb-1">Giá từ</label>
-                <input type="text" id="price_from" name="price_from" value="{{ request('price_from') }}" 
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                       placeholder="Giá thấp nhất">
-            </div>
-            
-            <div>
-                <label for="price_to" class="block text-sm font-medium text-gray-700 mb-1">Đến giá</label>
-                <input type="text" id="price_to" name="price_to" value="{{ request('price_to') }}" 
-                       class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500" 
-                       placeholder="Giá cao nhất">
-            </div>
-            
             <div class="flex items-end">
                 <div class="flex items-center mb-1">
                     <input type="checkbox" id="is_hot" name="is_hot" value="1" {{ request('is_hot') ? 'checked' : '' }} 
@@ -99,7 +89,7 @@
     </div>
     
     <!-- Hiển thị kết quả tìm kiếm -->
-    @if(request()->anyFilled(['search', 'category_id', 'created_by', 'price_from', 'price_to', 'is_hot']))
+    @if(request()->anyFilled(['search', 'category_id', 'created_by', 'is_hot']))
     <div class="mb-4 text-sm text-gray-600">
         Kết quả tìm kiếm {{ $services->total() }} dịch vụ
         @if(request('search'))
@@ -121,8 +111,8 @@
                 <tr class="bg-gray-200 text-gray-600 uppercase text-sm leading-normal">
                     <th class="py-3 px-6 text-left">Tên dịch vụ</th>
                     <th class="py-3 px-6 text-left">Mô tả</th>
-                    <th class="py-3 px-6 text-center">Giá</th>
                     <th class="py-3 px-6 text-center">Loại dịch vụ</th>
+                    <th class="py-3 px-6 text-center">Thời hạn</th>
                     <th class="py-3 px-6 text-center">Người tạo</th>
                     <th class="py-3 px-6 text-center">Hành động</th>
                 </tr>
@@ -140,10 +130,18 @@
                         {{ $service->description }}
                     </td>
                     <td class="py-3 px-6 text-center">
-                        {{ $service->price ? number_format($service->price, 0, ',', '.') . ' VND' : 'N/A' }}
+                        {{$service->category->name ?? 'Không có danh mục' }}
                     </td>
                     <td class="py-3 px-6 text-center">
-                        {{$service->category->name ?? 'Không có danh mục' }}
+                        @if($service->hasDurations())
+                            <span class="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
+                                {{ $service->contractDurations->count() }} thời hạn
+                            </span>
+                        @else
+                            <span class="bg-gray-100 text-gray-800 text-xs font-medium px-2 py-0.5 rounded">
+                                Chưa thiết lập
+                            </span>
+                        @endif
                     </td>
                     <td class="py-3 px-6 text-center">
                         {{ $service->employee->user->name ?? 'Admin' }}
@@ -221,7 +219,7 @@
         function formatMoney(input) {
             let value = input.value.replace(/\D/g, '');
             if (value) {
-                value = parseInt(value, 10).toLocaleString('vi-VN');
+                value = parseInt(value, 10).toLocaleString('en-US');
             }
             input.value = value;
         }
@@ -231,14 +229,44 @@
         
         if (priceFromInput) {
             priceFromInput.addEventListener('input', function() {
-                formatMoney(this);
+                // Lưu vị trí con trỏ
+                let position = this.selectionStart;
+                let originalLength = this.value.length;
+                
+                // Loại bỏ tất cả dấu phẩy hiện tại
+                let value = this.value.replace(/,/g, '');
+                
+                // Thêm dấu phẩy mới
+                if (value) {
+                    this.value = parseInt(value, 10).toLocaleString('en-US');
+                }
+                
+                // Điều chỉnh vị trí con trỏ sau khi định dạng
+                let newLength = this.value.length;
+                position = position + (newLength - originalLength);
+                this.setSelectionRange(position, position);
             });
             formatMoney(priceFromInput);
         }
         
         if (priceToInput) {
             priceToInput.addEventListener('input', function() {
-                formatMoney(this);
+                // Lưu vị trí con trỏ
+                let position = this.selectionStart;
+                let originalLength = this.value.length;
+                
+                // Loại bỏ tất cả dấu phẩy hiện tại
+                let value = this.value.replace(/,/g, '');
+                
+                // Thêm dấu phẩy mới
+                if (value) {
+                    this.value = parseInt(value, 10).toLocaleString('en-US');
+                }
+                
+                // Điều chỉnh vị trí con trỏ sau khi định dạng
+                let newLength = this.value.length;
+                position = position + (newLength - originalLength);
+                this.setSelectionRange(position, position);
             });
             formatMoney(priceToInput);
         }

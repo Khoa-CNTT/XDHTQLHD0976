@@ -6,7 +6,10 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\HasPermissions;
-use Illuminate\Database\Eloquent\Model;
+use App\Models\Employee;
+
+
+
 
 class User extends Authenticatable
 {
@@ -67,15 +70,6 @@ class User extends Authenticatable
         return $this->hasOne(Customer::class);
     }
 
-    public function notifications()
-    {
-        return $this->hasMany(Notification::class);
-    }
-
-    public function unreadNotifications()
-    {
-        return $this->notifications()->where('is_read', false);
-    }
 
     public function activityLogs()
     {
@@ -94,7 +88,19 @@ class User extends Authenticatable
         }
         return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
     }
+    public function notifications()
+    {
+        // Trả về tất cả thông báo của người dùng
+        return $this->hasMany(Notification::class);
+    }
+    public function unreadNotifications()
+    {
+        // Trả về thông báo chưa đọc của người dùng
+        return $this->hasMany(Notification::class)->where('is_read', false);
+    }
+  
 }
+
 //Model này dùng để xác định các trường trong bảng users
 //ví dụ: protected $fillable = ['name', 'email', 'password', 'role'];
 //các trường này sẽ được lấy từ form và lưu vào database

@@ -189,9 +189,7 @@ class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
             <h3 class="text-xl font-semibold text-gray-800 mb-2">{{ $service->service_name }}</h3>
             <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
             <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->category->name ?? 'Không có danh mục' }}</p>
-            <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
-                <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
-            </p>
+           
         </div>
         <div>
             <a href="{{ route('customer.services.show', $service->id) }}" 

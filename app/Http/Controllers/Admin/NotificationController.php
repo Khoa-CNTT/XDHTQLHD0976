@@ -7,9 +7,30 @@ use Illuminate\Http\Request;
 use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
+use App\Models\SupportTicket;
+use App\Models\SupportTicketResponse;
+use App\Models\Customer;
 
 class NotificationController extends Controller
 {
+
+
+    public function respond(Request $request, $id)
+{
+    $ticket = SupportTicket::findOrFail($id);
+
+    // Lưu phản hồi
+    $response = $ticket->responses()->create([
+        'content' => $request->content,
+        'user_id' => Auth::id(),
+    ]);
+
+    // Không tạo thông báo cho tin nhắn của nhân viên
+    return response()->json([
+        'success' => true,
+        'message' => 'Phản hồi đã được gửi.',
+    ]);
+}
     /**
      * Display a listing of the notifications.
      *
@@ -79,36 +100,37 @@ class NotificationController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
-            'message' => 'required|string'
-        ]);
+public function store(Request $request)
+{
+    $validated = $request->validate([
+        'user_id' => 'required|exists:users,id',
+        'title' => 'required|string|max:255',
+        'message' => 'required|string'
+    ]);
 
-        // Kiểm tra thông báo trùng lặp trong vòng 5 phút qua
-        $exists = Notification::where('user_id', $validated['user_id'])
-            ->where('title', $validated['title'])
-            ->where('message', $validated['message'])
-            ->where('created_at', '>', now()->subMinutes(5))
-            ->exists();
-            
-        if (!$exists) {
-            $notification = Notification::create([
-                'user_id' => $validated['user_id'],
-                'title' => $validated['title'],
-                'message' => $validated['message'],
-                'is_read' => false
-            ]);
-            
-            return redirect()->route('admin.notifications.index')
-                ->with('status', 'Thông báo đã được tạo thành công.');
-        } else {
-            return redirect()->route('admin.notifications.index')
-                ->with('warning', 'Thông báo tương tự đã được gửi trong 5 phút qua. Hệ thống đã chặn thông báo trùng lặp.');
-        }
+    // Kiểm tra thông báo trùng lặp trong vòng 5 phút qua
+    $exists = Notification::where('user_id', $validated['user_id'])
+        ->where('title', $validated['title'])
+        ->where('message', $validated['message'])
+        ->where('created_at', '>', now()->subMinutes(5))
+        ->exists();
+        
+    if (!$exists) {
+        Notification::create([
+            'user_id' => $validated['user_id'],
+            'title' => $validated['title'],
+            'message' => $validated['message'],
+            'is_read' => false,
+            'created_by' => Auth::user()->role, 
+        ]);
+        
+        return redirect()->route('admin.notifications.index')
+            ->with('status', 'Thông báo đã được tạo thành công.');
+    } else {
+        return redirect()->route('admin.notifications.index')
+            ->with('warning', 'Thông báo tương tự đã được gửi trong 5 phút qua. Hệ thống đã chặn thông báo trùng lặp.');
     }
+}
 
     /**
      * Show the form to send a notification to all users
@@ -127,51 +149,51 @@ class NotificationController extends Controller
      * @return \Illuminate\Http\Response
      */
     public function storeMassNotification(Request $request)
-    {
-        $validated = $request->validate([
-            'title' => 'required|string|max:255',
-            'message' => 'required|string'
-        ]);
+{
+    $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'message' => 'required|string'
+    ]);
 
-        // Get all active customer users
-        $users = User::where('role', 'customer')
-            ->where('status', 'active')
-            ->get();
+    // Get all active customer users
+    $users = User::where('role', 'customer')
+        ->where('status', 'active')
+        ->get();
 
-        $notificationCount = 0;
-        $skippedCount = 0;
+    $notificationCount = 0;
+    $skippedCount = 0;
 
-        // Create a notification for each user
-        foreach ($users as $user) {
-            // Kiểm tra thông báo trùng lặp trong vòng 5 phút qua
-            $exists = Notification::where('user_id', $user->id)
-                ->where('title', $validated['title'])
-                ->where('message', $validated['message'])
-                ->where('created_at', '>', now()->subMinutes(5))
-                ->exists();
-                
-            if (!$exists) {
-                Notification::create([
-                    'user_id' => $user->id,
-                    'title' => $validated['title'],
-                    'message' => $validated['message'],
-                    'is_read' => false
-                ]);
-                $notificationCount++;
-            } else {
-                $skippedCount++;
-            }
-        }
-
-        if ($skippedCount > 0) {
-            return redirect()->route('admin.notifications.index')
-                ->with('status', "Đã gửi thông báo đến {$notificationCount} người dùng. Bỏ qua {$skippedCount} người dùng do thông báo trùng lặp.");
+    // Create a notification for each user
+    foreach ($users as $user) {
+        // Kiểm tra thông báo trùng lặp trong vòng 5 phút qua
+        $exists = Notification::where('user_id', $user->id)
+            ->where('title', $validated['title'])
+            ->where('message', $validated['message'])
+            ->where('created_at', '>', now()->subMinutes(5))
+            ->exists();
+            
+        if (!$exists) {
+            Notification::create([
+                'user_id' => $user->id,
+                'title' => $validated['title'],
+                'message' => $validated['message'],
+                'is_read' => false,
+                'created_by' => Auth::user()->role, // Ghi nhận người tạo (admin hoặc employee)
+            ]);
+            $notificationCount++;
         } else {
-            return redirect()->route('admin.notifications.index')
-                ->with('status', "Thông báo đã được gửi đến tất cả {$notificationCount} người dùng thành công.");
+            $skippedCount++;
         }
     }
 
+    if ($skippedCount > 0) {
+        return redirect()->route('admin.notifications.index')
+            ->with('status', "Đã gửi thông báo đến {$notificationCount} người dùng. Bỏ qua {$skippedCount} người dùng do thông báo trùng lặp.");
+    } else {
+        return redirect()->route('admin.notifications.index')
+            ->with('status', "Thông báo đã được gửi đến tất cả {$notificationCount} người dùng thành công.");
+    }
+}
     /**
      * Remove the specified notification from storage.
      *

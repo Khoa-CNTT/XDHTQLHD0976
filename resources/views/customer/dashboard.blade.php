@@ -300,9 +300,9 @@
                 </p>
             </div>
 
-            {{-- Danh sách hợp đồng dịch vụ --}}
+    {{-- Danh sách hợp đồng dịch vụ --}}
             <div class="grid md:grid-cols-3 gap-6">
-                @forelse($services as $service)
+        @forelse($services as $service)
                 <div class="flex flex-col justify-between bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition transform hover:-translate-y-2 relative">
             
             <!-- Nhãn "Mới" (Bao phủ góc trên trái) -->
@@ -329,9 +329,6 @@
                         <h3 class="text-xl font-semibold text-gray-800 mb-2 mt-4">{{ $service->service_name }}</h3>
                 <p class="text-gray-600 mb-2 line-clamp-3">{{ $service->description }}</p>
                 <p class="text-gray-600 mb-1"><strong>Loại dịch vụ:</strong> {{ $service->category->name ?? 'Không có danh mục' }}</p>
-                <p class="text-gray-600 mb-4"><strong>Giá:</strong> 
-                    <span class="text-green-600 font-bold">{{ number_format($service->price, 0, ',', '.') }} VND</span>
-                </p>
             </div>
             <div>
                 <a href="{{ route('customer.services.show', $service->id) }}" 

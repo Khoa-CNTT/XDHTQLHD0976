@@ -37,29 +37,29 @@ class VNPayController extends Controller
             $vnp_IpAddr = $request->ip();
             $vnp_CreateDate = date('YmdHis');
 
-            $inputData = [
+        $inputData = [
                 "vnp_Version" => config('vnpay.vnp_version'),
-                "vnp_TmnCode" => $vnp_TmnCode,
-                "vnp_Amount" => $vnp_Amount,
+            "vnp_TmnCode" => $vnp_TmnCode,
+            "vnp_Amount" => $vnp_Amount,
                 "vnp_Command" => config('vnpay.vnp_command'),
                 "vnp_CreateDate" => $vnp_CreateDate,
                 "vnp_CurrCode" => config('vnpay.vnp_currcode'),
-                "vnp_IpAddr" => $vnp_IpAddr,
-                "vnp_Locale" => $vnp_Locale,
-                "vnp_OrderInfo" => $vnp_OrderInfo,
+            "vnp_IpAddr" => $vnp_IpAddr,
+            "vnp_Locale" => $vnp_Locale,
+            "vnp_OrderInfo" => $vnp_OrderInfo,
                 "vnp_OrderType" => $vnp_OrderType,
                 "vnp_ReturnUrl" => $vnp_Returnurl,
-                "vnp_TxnRef" => $vnp_TxnRef,
+            "vnp_TxnRef" => $vnp_TxnRef,
                 "vnp_ExpireDate" => date('YmdHis', strtotime('+15 minutes')),
-            ];
+        ];
 
             Log::info('VNPay - Input Data for Payment URL:', $inputData);
 
-            ksort($inputData);
-            $query = "";
+        ksort($inputData);
+        $query = "";
             $i = 0;
-            $hashdata = "";
-            foreach ($inputData as $key => $value) {
+        $hashdata = "";
+        foreach ($inputData as $key => $value) {
                 if ($i == 1) {
                     $hashdata .= '&' . urlencode($key) . "=" . urlencode($value);
                 } else {
@@ -69,7 +69,7 @@ class VNPayController extends Controller
                 $query .= urlencode($key) . "=" . urlencode($value) . '&';
             }
 
-            $vnp_Url = $vnp_Url . "?" . $query;
+        $vnp_Url = $vnp_Url . "?" . $query;
             $vnpSecureHash = hash_hmac('sha512', $hashdata, $vnp_HashSecret);
             $vnp_Url .= 'vnp_SecureHash=' . $vnpSecureHash;
 
@@ -146,11 +146,11 @@ class VNPayController extends Controller
             // Kiểm tra trạng thái giao dịch
             if ($request->vnp_ResponseCode == '00' && $request->vnp_TransactionStatus == '00') {
                 // Lưu thanh toán thành công
-                Payment::create([
+        Payment::create([
                     'contract_id' => $txnRef,
                     'amount' => ($request->vnp_Amount ?? 0) / 100,
-                    'date' => now(),
-                    'method' => 'VNPay',
+            'date' => now(),
+            'method' => 'VNPay',
                     'transaction_id' => $request->vnp_TransactionNo ?? null,
                     'order_id' => $txnRef,
                     'payment_type' => $request->vnp_CardType ?? null, 
@@ -214,11 +214,11 @@ class VNPayController extends Controller
             unset($inputData['vnp_SecureHashType']);
             
             // Sắp xếp mảng theo key
-            ksort($inputData);
+        ksort($inputData);
             
             // Build hashData theo chuẩn VNPay (không encode)
             $hashData = '';
-            foreach ($inputData as $key => $value) {
+        foreach ($inputData as $key => $value) {
                 if (!empty($hashData)) {
                     $hashData .= '&' . $key . "=" . $value;
                 } else {
@@ -227,8 +227,8 @@ class VNPayController extends Controller
             }
             
             // Tạo secure hash
-            $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-            
+        $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
+
             // Log debug
             Log::info('VNPay IPN - hashData String (VNPAY standard):', ['hashData' => $hashData]);
             Log::info('VNPay IPN - Calculated Secure Hash:', ['hash' => $secureHash]);

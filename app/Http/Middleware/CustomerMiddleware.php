@@ -26,8 +26,11 @@ class CustomerMiddleware
 
     public function handle($request, Closure $next)
 {
-    // Cho phép khách chưa đăng nhập truy cập vào trang customer/dashboard
-    if ($request->is('customer/dashboard')) {
+    // Cho phép khách chưa đăng nhập truy cập vào trang customer/dashboard và các trang dịch vụ
+    if ($request->is('customer/dashboard') || 
+        $request->is('services') || 
+        $request->is('services/*') || 
+        $request->routeIs('customer.services.*')) {
         return $next($request);
     }
 

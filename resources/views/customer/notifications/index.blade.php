@@ -67,11 +67,11 @@
         </div>
         
         <div class="mt-6">
-            <a href="{{ route('customer.profile') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
+            <a href="{{ route('customer.dashboard') }}" class="inline-flex items-center text-blue-600 hover:text-blue-800">
                 <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Quay lại trang cá nhân
+                Quay lại trang chủ
             </a>
         </div>
     </div>

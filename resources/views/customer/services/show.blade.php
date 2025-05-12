@@ -37,36 +37,32 @@
             alt="{{ $service->service_name }}" 
             class="w-full h-60 object-cover rounded-xl shadow">
        
-            <div>
-                <span class="text-gray-500">Giá dịch vụ</span>
-                <div class="text-2xl font-bold text-pink-600">
-                    {{ number_format($service->price, 0, ',', '.') }} VND
-                </div>
-            </div>         
+                
             <form id="contractForm" action="{{ route('customer.contracts.sign', $service->id) }}" method="GET">
                 @csrf
                 <label class="block text-gray-700 font-semibold mb-2">Chọn thời hạn hợp đồng:</label>
-                <div class="flex space-x-4 mb-6">
-                    @php
-                        $durations = [
-                            '6_thang' => '6 Tháng',
-                            '1_nam' => '1 Năm',
-                            '3_nam' => '3 Năm'
-                        ];
-                    @endphp
-            
-             
-                    @foreach($durations as $key => $label)
-                        <button type="button" 
-                                class="contract-option px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200" 
-                                onclick="selectDuration('{{ $key }}', this)">
-                            {{ $label }}
-                        </button>
-                    @endforeach
+                <div class="flex flex-wrap gap-2 mb-6">
+                    @if($availableDurations->count() > 0)
+                        @foreach($availableDurations as $contractDuration)
+                            <button type="button" 
+                                    data-duration-id="{{ $contractDuration->duration_id }}"
+                                    data-duration-code="{{ Str::slug($contractDuration->duration->label, '_') }}"
+                                    data-price="{{ $contractDuration->price }}"
+                                    class="contract-option px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200" 
+                                    onclick="selectDuration('{{ Str::slug($contractDuration->duration->label, '_') }}', this, {{ $contractDuration->price }})">
+                                {{ $contractDuration->duration->label }} - {{ number_format($contractDuration->price, 0, ',', '.') }} VND
+                            </button>
+                        @endforeach
+                    @else
+                        <div class="w-full text-center py-3 text-gray-500">
+                            Chưa có thời hạn nào được thiết lập cho dịch vụ này
+                        </div>
+                    @endif
                 </div>
             
                 <!-- Trường ẩn để lưu giá trị thời gian hợp đồng -->
                 <input type="hidden" id="duration" name="duration" value="">
+                <input type="hidden" id="selected_price" name="selected_price" value="">
 
                 <div class="flex flex-col space-y-3 mt-4">
                     <a href="{{ route('customer.dashboard') }}"
@@ -75,7 +71,9 @@
                     </a>
             
                     <button type="submit" 
-                            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition transform duration-300 ease-in-out text-center block">
+                            class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition transform duration-300 ease-in-out text-center block"
+                            {{ $availableDurations->count() == 0 ? 'disabled' : '' }}
+                            {{ $availableDurations->count() == 0 ? 'style=opacity:0.5;cursor:not-allowed' : '' }}>
                         📝 Gửi Yêu Cầu Hợp Đồng
                     </button>
                 </div>
@@ -89,29 +87,23 @@
 
              
 <script>
-
-
- // Kiểm tra trước khi gửi form
- document.getElementById('contractForm').onsubmit = function(event) {
-        var duration = document.getElementById('duration').value;
-        if (!duration) {
-            event.preventDefault();
-            alert("Vui lòng chọn thời gian hợp đồng.");
-        }
-    };
-
-
-
-    function selectDuration(value, button) {
+    function selectDuration(value, button, price) {
         // Gán giá trị thời hạn hợp đồng vào input ẩn
         document.getElementById('duration').value = value;
+        document.getElementById('selected_price').value = price;
 
         // Thay đổi giao diện nút được chọn
         const buttons = document.querySelectorAll('.contract-option');
         buttons.forEach(btn => {
             btn.classList.remove('bg-blue-600', 'text-white');
+            btn.classList.add('text-gray-700');
         });
         button.classList.add('bg-blue-600', 'text-white');
+        button.classList.remove('text-gray-700');
+        
+        // Cập nhật hiển thị giá
+        document.querySelector('.text-2xl.font-bold.text-pink-600').textContent = 
+            new Intl.NumberFormat('vi-VN').format(price) + ' VND';
     }
 
     // Kiểm tra trước khi gửi form

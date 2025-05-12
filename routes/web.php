@@ -4,13 +4,12 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ContractController as CustomerContractController;
-use App\Http\Controllers\Customer\MoMoPaymentController as MoMoPaymentController;
 use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
 use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
 use App\Http\Controllers\Customer\SignatureController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
 use App\Http\Controllers\CustomerProfileController;
-use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\Customer\NotificationController;
 
 use App\Http\Controllers\Admin\ContractAmendmentController as AdminContractAmendmentController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -23,6 +22,8 @@ use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\PaymentController as AdminPaymentController;
 use App\Http\Controllers\Admin\NotificationController as AdminNotificationController;
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
+use App\Http\Controllers\Admin\DurationController;
+use App\Http\Controllers\Admin\ContractDurationController;
 
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\ContractController as EmployeeContractController;
@@ -38,18 +39,13 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
 
+// Public routes - for everyone, no authentication required
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
-
 Route::get('/services/{id}', [CustomerServiceController::class, 'show'])->name('customer.services.show');
-
-Route::get('services', [CustomerServiceController::class, 'index'])->name('customer.services.index');
-
-
-      // Routes cho dịch vụ (cho phép cả khách và người dùng đã đăng nhập)
-      Route::get('/services/filter/{type}', [CustomerServiceController::class, 'filter'])->name('customer.services.filter');
-      Route::get('/customer/services/search', [CustomerServiceController::class, 'search'])->name('customer.services.search');
-
-
+Route::get('/services', [CustomerServiceController::class, 'index'])->name('customer.services.index');
+Route::get('/services/filter/{type}', [CustomerServiceController::class, 'filter'])->name('customer.services.filter');
+Route::get('/customer/services/search', [CustomerServiceController::class, 'search'])->name('customer.services.search');
+Route::get('/services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('customer.services.filterByCategory');
 
 Route::get('/', function () {
     if (Auth::check()) {
@@ -107,6 +103,31 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::resource('contracts', AdminContractController::class);
         Route::resource('services', AdminServiceController::class);
 
+        // Routes for duration management
+        Route::prefix('durations')->name('durations.')->group(function() {
+            Route::get('/', [DurationController::class, 'index'])->name('index');
+            Route::get('/create', [DurationController::class, 'create'])->name('create');
+            Route::post('/', [DurationController::class, 'store'])->name('store');
+            Route::get('/{duration}/edit', [DurationController::class, 'edit'])->name('edit');
+            Route::put('/{duration}', [DurationController::class, 'update'])->name('update');
+            Route::delete('/{duration}', [DurationController::class, 'destroy'])->name('destroy');
+            Route::get('/price-config', [DurationController::class, 'priceConfig'])->name('price-config');
+            Route::post('/save-price', [DurationController::class, 'savePrice'])->name('save-price');
+            Route::post('/calculate-prices', [DurationController::class, 'calculatePrices'])->name('calculate-prices');
+            Route::post('/{duration}/set-default-prices', [DurationController::class, 'setDefaultPrices'])->name('set-default-prices');
+        });
+        
+    
+        // Routes for service-specific price configuration
+        Route::prefix('services')->name('services.')->group(function() {
+            Route::get('/{service}/durations', [ContractDurationController::class, 'showServicePriceForm'])->name('contract-durations.edit');
+            Route::post('/{service}/durations', [ContractDurationController::class, 'saveServicePrices'])->name('contract-durations.save');
+            Route::get('/{service}/durations/{duration}/price', [ContractDurationController::class, 'getServicePrice'])->name('contract-durations.price');
+            Route::delete('/{service}/durations/{duration}', [ContractDurationController::class, 'deleteServicePrice'])->name('contract-durations.delete');
+            Route::post('/batch-update-prices', [ContractDurationController::class, 'batchUpdatePrices'])->name('contract-durations.batch-update');
+            Route::post('/apply-price-formula', [ContractDurationController::class, 'applyPriceFormula'])->name('contract-durations.apply-formula');
+        });
+
         Route::resource('customers', CustomerController::class);
         Route::resource('employees', EmployeeController::class);
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
@@ -127,6 +148,10 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::resource('service-categories', ServiceCategoryController::class)->except(['show']);
         Route::post('services/categories', [AdminServiceController::class, 'createCategory'])->name('services.categories.create');
         Route::delete('services/categories/{id}', [AdminServiceController::class, 'deleteCategory'])->name('services.categories.delete');
+
+     
+        
+        
 
         Route::get('/contracts/{contractId}/amendments', [AdminContractAmendmentController::class, 'index'])->name('contracts.admendments.index');
         Route::get('/contracts/admendments', [AdminContractAmendmentController::class, 'create'])->name('contracts.admendments.create');
@@ -192,9 +217,8 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/support/{id}/respond', [CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
         Route::post('/support/{id}/typing', [CustomerProfileController::class, 'updateTypingStatus'])->name('support.typing');
         Route::get('/support/{id}/check-responses', [CustomerProfileController::class, 'checkNewResponses'])->name('support.check-responses');
+        Route::post('/support/{id}/close', [CustomerProfileController::class, 'closeSupportTicket'])->name('support.close');
 
-        Route::get('services/category/{id}', [CustomerServiceController::class, 'filterByCategory'])->name('services.filterByCategory');
-        
         Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('profile');
         Route::post('/profile', [CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [CustomerProfileController::class, 'changePassword'])->name('profile.change-password');

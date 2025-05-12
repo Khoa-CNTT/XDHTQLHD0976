@@ -403,4 +403,38 @@ class CustomerProfileController extends Controller
             'responses' => $formattedResponses
         ]);
     }
+    
+    /**
+     * Đóng yêu cầu hỗ trợ
+     */
+    public function closeSupportTicket($id)
+    {
+        $user = Auth::user();
+        $ticket = SupportTicket::where('user_id', $user->id)->findOrFail($id);
+        
+        $ticket->status = 'closed';
+        $ticket->save();
+        
+        // Ghi log hoạt động
+        \App\Models\ActivityLog::create([
+            'user_id' => $user->id,
+            'action' => 'Đóng yêu cầu hỗ trợ',
+            'description' => 'Bạn đã đóng yêu cầu hỗ trợ #' . $ticket->id . ': ' . $ticket->title
+        ]);
+        
+        // Tạo thông báo cho admin và nhân viên
+        $admins = User::whereIn('role', ['admin', 'employee'])->get();
+        foreach ($admins as $admin) {
+            $notification = new Notification([
+                'user_id' => $admin->id,
+                'title' => 'Yêu cầu hỗ trợ đã được đóng',
+                'message' => 'Khách hàng "' . $user->name . '" đã đóng yêu cầu hỗ trợ #' . $ticket->id,
+                'is_read' => false
+            ]);
+            
+            $notification->save();
+        }
+        
+        return redirect()->route('customer.support.index')->with('success', 'Yêu cầu hỗ trợ đã được đóng thành công');
+    }
 }

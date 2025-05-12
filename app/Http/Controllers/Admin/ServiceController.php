@@ -9,15 +9,16 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Employee; 
 use Illuminate\Support\Facades\Storage;
 use App\Models\ServiceCategory;
+use App\Models\ContractDuration;
+use App\Models\Duration;
+use Illuminate\Support\Facades\DB;
 
 class ServiceController extends Controller
-
 {
-    
     // Hiển thị danh sách các dịch vụ
     public function index(Request $request)
     {
-        $query = Service::with('employee', 'category');
+        $query = Service::with(['employee', 'category', 'contractDurations']);
 
         // Tìm kiếm theo tên dịch vụ hoặc mô tả
         if ($request->has('search') && !empty($request->search)) {
@@ -38,15 +39,6 @@ class ServiceController extends Controller
             $query->where('created_by', $request->created_by);
         }
 
-        // Lọc theo giá (từ - đến)
-        if ($request->has('price_from') && !empty($request->price_from)) {
-            $query->where('price', '>=', str_replace('.', '', $request->price_from));
-        }
-
-        if ($request->has('price_to') && !empty($request->price_to)) {
-            $query->where('price', '<=', str_replace('.', '', $request->price_to));
-        }
-
         // Lọc theo dịch vụ nổi bật
         if ($request->has('is_hot') && $request->is_hot) {
             $query->where('is_hot', 1);
@@ -61,11 +53,13 @@ class ServiceController extends Controller
 
         return view('admin.services.index', compact('services', 'categories', 'employees'));
     }
+    
     // Hiển thị form tạo mới dịch vụ
     public function create()
     {
         $categories = ServiceCategory::all();
-        return view('admin.services.create', compact('categories'));
+        $durations = Duration::orderBy('months')->get();
+        return view('admin.services.create', compact('categories', 'durations'));
     }
 
     // Lưu dịch vụ mới vào cơ sở dữ liệu
@@ -75,43 +69,85 @@ class ServiceController extends Controller
             'service_name' => 'required|string|max:255|unique:services',
             'description' => 'required|string',
             'content' => 'required|string',
-            'price' => 'required|string', 
+            
             'category_id' => 'required|exists:service_categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,jfif|max:2048',
+            'duration_prices' => 'nullable|array',
+            'duration_prices.*' => 'nullable|string',
+        ], [
+            'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
+            'image.image' => 'Ảnh không hợp lệ.',
+            'image.mimes' => 'Ảnh phải có định dạng jpeg, png, jpg, gif, svg hoặc jfif.',
+            'image.max' => 'Ảnh không được lớn hơn 2MB.',
+            'category_id.exists' => 'Danh mục không tồn tại.',
+            'description.required' => 'Mô tả là bắt buộc.',
+            'content.required' => 'Nội dung là bắt buộc.',
+            'service_name.required' => 'Tên dịch vụ là bắt buộc.',
+            'service_name.string' => 'Tên dịch vụ phải là một chuỗi.',
+            'service_name.max' => 'Tên dịch vụ không được vượt quá 255 ký tự.',
         ]);
 
-        $data = $request->all();
-
-  
-        $data['price'] = str_replace('.', '', $data['price']);
-
+        // Xử lý ảnh
         if ($request->hasFile('image')) {
             $imagePath = $request->file('image')->store('services', 'public');
-            $data['image'] = $imagePath;
+        } else {
+            $imagePath = null;
         }
 
-        $data['created_by'] = optional(Auth::user()->employee)->id;
-        $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
+        // Loại bỏ dấu phẩy phân cách hàng nghìn
+        $cleanPrice = str_replace(',', '', $request->price);
 
-        Service::create($data);
+        DB::beginTransaction();
+        
+        try {
+            $service = Service::create([
+                'service_name' => $request->service_name,
+                'description' => $request->description,
+                'content' => $request->content,
+                'category_id' => $request->category_id,
+                'created_by' => optional(Auth::user()->employee)->id,
+                'is_hot' => $request->has('is_hot') ? 1 : 0,
+                'image' => $imagePath,
+            ]);
 
-        return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công!');
+            // Lưu giá theo thời hạn
+            if ($request->has('duration_prices')) {
+                foreach ($request->duration_prices as $durationId => $price) {
+                    if (!empty($price)) {
+                        // Loại bỏ dấu phẩy phân cách hàng nghìn trước khi lưu
+                        $cleanDurationPrice = str_replace(',', '', $price);
+                        
+                        ContractDuration::create([
+                            'service_id' => $service->id,
+                            'duration_id' => $durationId,
+                            'price' => $cleanDurationPrice,
+                        ]);
+                    }
+                }
+            }
+            
+            DB::commit();
+            return redirect()->route('admin.services.index')->with('success', 'Dịch vụ đã được thêm thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Lỗi: ' . $e->getMessage())->withInput();
+        }
     }
         
-
     // Hiển thị chi tiết một dịch vụ
     public function show($id)
     {
-        $service = Service::with('category', 'employee')->findOrFail($id);  
+        $service = Service::with(['category', 'employee', 'contractDurations.duration'])->findOrFail($id);  
         return view('admin.services.show', compact('service'));
     }
     
     // Hiển thị form chỉnh sửa dịch vụ
     public function edit($id)
     {
-        $service = Service::with('category')->findOrFail($id);
+        $service = Service::with(['category', 'contractDurations'])->findOrFail($id);
         $categories = ServiceCategory::all();
-        return view('admin.services.edit', compact('service', 'categories'));
+        $durations = Duration::orderBy('months')->get();
+        return view('admin.services.edit', compact('service', 'categories', 'durations'));
     }
 
     // Cập nhật thông tin dịch vụ
@@ -119,58 +155,126 @@ class ServiceController extends Controller
     {
         $service = Service::findOrFail($id);
 
-        // Làm sạch giá trị giá trước khi validate
-        $rawPrice = $request->input('price');
-        $cleanPrice = str_replace(['.', ','], '', $rawPrice);
-        $formattedPrice = number_format((float)$cleanPrice, 2, '.', '');
-
-        // Merge lại giá đã xử lý để validation không báo lỗi
-        $request->merge(['price' => $formattedPrice]);
-
-        // Validate dữ liệu
-        $data = $request->validate([
+        $request->validate([
             'service_name' => 'required|string|max:255|unique:services,service_name,' . $id,
             'description' => 'required|string',
             'content' => 'required|string',
-            'price' => 'required|numeric|min:0',
+            
             'category_id' => 'required|exists:service_categories,id',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg,jfif|max:2048',
-
-        ], [
-            'service_name.unique' => 'Tên dịch vụ đã tồn tại.',
+            'duration_prices' => 'nullable|array',
+            'duration_prices.*' => 'nullable|string',
         ]);
+
+        // Xử lý ảnh
         if ($request->hasFile('image')) {
-            // Xóa ảnh cũ nếu có
             if ($service->image) {
                 Storage::disk('public')->delete($service->image);
             }
-
-            // Lưu ảnh mới
             $imagePath = $request->file('image')->store('services', 'public');
-            $data['image'] = $imagePath;
         } else {
-            // Giữ lại ảnh cũ
-            $data['image'] = $service->image;
+            $imagePath = $service->image;
         }
-        $data['is_hot'] = $request->has('is_hot') ? 1 : 0;
-        $service->update($data);
 
-        return redirect()->route('admin.services.index')->with('success', 'Cập nhật dịch vụ thành công!');
+        // Loại bỏ dấu phẩy phân cách hàng nghìn
+        $cleanPrice = str_replace(',', '', $request->price);
+
+        DB::beginTransaction();
+        
+        try {
+            $service->update([
+                'service_name' => $request->service_name,
+                'description' => $request->description,
+                'content' => $request->content,
+                'category_id' => $request->category_id,
+                'is_hot' => $request->has('is_hot') ? 1 : 0,
+                'image' => $imagePath,
+            ]);
+
+            // Cập nhật giá theo thời hạn
+            if ($request->has('duration_prices')) {
+                foreach ($request->duration_prices as $durationId => $price) {
+                    if (empty($price)) {
+                        // Xóa giá nếu trống
+                        ContractDuration::where('service_id', $service->id)
+                            ->where('duration_id', $durationId)
+                            ->delete();
+                        continue;
+                    }
+                    
+                    $cleanDurationPrice = str_replace(',', '', $price);
+                    
+                    ContractDuration::updateOrCreate(
+                        [
+                            'service_id' => $service->id,
+                            'duration_id' => $durationId
+                        ],
+                        ['price' => $cleanDurationPrice]
+                    );
+                }
+            }
+            
+            DB::commit();
+            return redirect()->route('admin.services.index')->with('success', 'Cập nhật dịch vụ thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Lỗi: ' . $e->getMessage())->withInput();
+        }
     }
-
    
     public function destroy($id)
     {
-        Service::destroy($id);
-        return redirect()->back()->with('success', 'Xoá dịch vụ thành công!');
+        try {
+            DB::beginTransaction();
+            
+            // Xóa các contract durations liên quan trước
+            ContractDuration::where('service_id', $id)->delete();
+            
+            // Sau đó xóa dịch vụ
+            $service = Service::findOrFail($id);
+            
+            // Xóa ảnh nếu có
+            if ($service->image) {
+                Storage::disk('public')->delete($service->image);
+            }
+            
+            $service->delete();
+            
+            DB::commit();
+            return redirect()->back()->with('success', 'Xóa dịch vụ thành công!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa dịch vụ: ' . $e->getMessage());
+        }
     }
 
-
-    public function search(Request $request)
+    public function createCategory(Request $request)
     {
-        $query = $request->input('query');
-        $services = Service::where('service_name', 'LIKE', "%{$query}%")->get();
-        return view('admin.services.index', compact('services'));
+        $request->validate([
+            'name' => 'required|string|max:255|unique:service_categories,name',
+        ]);
+
+        ServiceCategory::create([
+            'name' => $request->name,
+        ]);
+
+        return redirect()->back()->with('success', 'Tạo danh mục dịch vụ thành công!');
     }
 
+    public function deleteCategory($id)
+    {
+        try {
+            $category = ServiceCategory::findOrFail($id);
+            
+            // Kiểm tra xem có dịch vụ nào dùng danh mục này không
+            if ($category->services()->exists()) {
+                return redirect()->back()->with('error', 'Không thể xóa danh mục đang được sử dụng bởi các dịch vụ');
+            }
+            
+            $category->delete();
+            return redirect()->back()->with('success', 'Xóa danh mục thành công!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Có lỗi xảy ra khi xóa danh mục: ' . $e->getMessage());
+        }
+    }
 }

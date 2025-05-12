@@ -35,15 +35,6 @@ class ServiceController extends Controller
             $query->where('category_id', $request->category_id);
         }
 
-        // Lọc theo giá (từ - đến)
-        if ($request->has('price_from') && !empty($request->price_from)) {
-            $query->where('price', '>=', str_replace('.', '', $request->price_from));
-        }
-
-        if ($request->has('price_to') && !empty($request->price_to)) {
-            $query->where('price', '<=', str_replace('.', '', $request->price_to));
-        }
-
         // Lấy dịch vụ theo điều kiện đã lọc
         $services = $query->paginate(10);
         

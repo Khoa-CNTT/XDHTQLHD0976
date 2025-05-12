@@ -8,9 +8,13 @@ class Notification extends Model
 {
     protected $table = 'notifications';
     protected $fillable = [
-        'user_id', 'title', 'message', 'is_read',
-    ];
-    
+    'user_id',
+    'title',
+    'message',
+    'is_read',
+    'created_by',
+    'type',
+];
   
     protected $dates = ['created_at', 'updated_at'];
     
