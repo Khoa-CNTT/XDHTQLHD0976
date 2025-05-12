@@ -37,7 +37,12 @@
             alt="{{ $service->service_name }}" 
             class="w-full h-60 object-cover rounded-xl shadow">
        
-                
+            <div>
+                <span class="text-gray-500">Giá dịch vụ</span>
+                <div class="text-2xl font-bold text-pink-600" id="price-display">
+                    Vui lòng chọn thời hạn hợp đồng
+                </div>
+            </div>         
             <form id="contractForm" action="{{ route('customer.contracts.sign', $service->id) }}" method="GET">
                 @csrf
                 <label class="block text-gray-700 font-semibold mb-2">Chọn thời hạn hợp đồng:</label>
@@ -50,7 +55,7 @@
                                     data-price="{{ $contractDuration->price }}"
                                     class="contract-option px-4 py-2 rounded-lg border border-gray-300 text-gray-700 transition-all duration-200" 
                                     onclick="selectDuration('{{ Str::slug($contractDuration->duration->label, '_') }}', this, {{ $contractDuration->price }})">
-                                {{ $contractDuration->duration->label }} - {{ number_format($contractDuration->price, 0, ',', '.') }} VND
+                                {{ $contractDuration->duration->label }}
                             </button>
                         @endforeach
                     @else
@@ -102,7 +107,7 @@
         button.classList.remove('text-gray-700');
         
         // Cập nhật hiển thị giá
-        document.querySelector('.text-2xl.font-bold.text-pink-600').textContent = 
+        document.getElementById('price-display').textContent = 
             new Intl.NumberFormat('vi-VN').format(price) + ' VND';
     }
 
