@@ -54,7 +54,13 @@
             </div>
             <div>
                 <div class="text-gray-500 text-sm">Người tạo</div>
-                <div class="text-gray-900">{{ $service->employee->user->name ?? 'Admin' }}</div>
+                <div class="text-gray-900">
+                    @if($service->employee && $service->employee->user)
+                        {{ $service->employee->user->name }}
+                    @else
+                        Admin
+                    @endif
+                </div>
             </div>
             <div>
                 <div class="text-gray-500 text-sm">Ngày tạo</div>

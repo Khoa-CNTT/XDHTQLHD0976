@@ -62,7 +62,7 @@
                     <option value="">Tất cả người tạo</option>
                     @foreach($employees as $employee)
                         <option value="{{ $employee->id }}" {{ request('created_by') == $employee->id ? 'selected' : '' }}>
-                            {{ $employee->user->name }}
+                            {{ $employee->user->name ?? 'Nhân viên #'.$employee->id }}
                         </option>
                     @endforeach
                 </select>
@@ -144,7 +144,11 @@
                         @endif
                     </td>
                     <td class="py-3 px-6 text-center">
-                        {{ $service->employee->user->name ?? 'Admin' }}
+                        @if($service->employee && $service->employee->user)
+                            {{ $service->employee->user->name }}
+                        @else
+                            Admin
+                        @endif
                     </td>
                     <td class="py-3 px-6 text-center">
                         <div class="flex items-center justify-center space-x-2">

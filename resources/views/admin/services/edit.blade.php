@@ -79,26 +79,6 @@
                             <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
                         @enderror
                     </div>
-                    
-                    <div class="mb-4">
-                        <label for="price" class="block mb-1 font-medium">Giá cơ bản <span class="text-red-500">*</span></label>
-                        <div class="relative">
-                            <input 
-                                type="text" 
-                                id="price" 
-                                name="price" 
-                                value="{{ old('price', $service->price) }}" 
-                                class="price-format w-full px-4 py-2 border @error('price') border-red-500 @else border-gray-300 @enderror rounded"
-                                required
-                            >
-                            <div class="absolute top-1/2 transform -translate-y-1/2 right-3 text-gray-500 pointer-events-none">
-                                VNĐ
-                            </div>
-                        </div>
-                        @error('price')
-                            <p class="mt-1 text-sm text-red-500">{{ $message }}</p>
-                        @enderror
-                    </div>
                 </div>
             </div>
             

@@ -49,7 +49,7 @@ class ServiceController extends Controller
         
         // Lấy danh sách danh mục và nhân viên cho dropdown
         $categories = ServiceCategory::all();
-        $employees = Employee::all();
+        $employees = Employee::whereHas('user')->get();
 
         return view('admin.services.index', compact('services', 'categories', 'employees'));
     }
@@ -105,7 +105,7 @@ class ServiceController extends Controller
                 'description' => $request->description,
                 'content' => $request->content,
                 'category_id' => $request->category_id,
-                'created_by' => optional(Auth::user()->employee)->id,
+                'created_by' => Auth::user()->role === 'employee' ? Auth::user()->employee->id : null,
                 'is_hot' => $request->has('is_hot') ? 1 : 0,
                 'image' => $imagePath,
             ]);
