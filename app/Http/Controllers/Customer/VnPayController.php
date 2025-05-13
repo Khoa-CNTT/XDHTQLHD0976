@@ -228,7 +228,7 @@ class VNPayController extends Controller
                                     ]);
                                     
                                     // Cập nhật trạng thái hợp đồng
-                                    $contract->status = 'Hoạt động';
+                                   $contract->status = 'Hoàn thành'; 
                                     $contract->save();
                                     
                                     // Tự động áp dụng chữ ký của công ty
@@ -395,7 +395,7 @@ class VNPayController extends Controller
                                     ]);
                                     
                                     // Cập nhật trạng thái hợp đồng
-                                    $contract->status = 'Hoạt động';
+                                   $contract->status = 'Hoàn thành'; 
                                     $contract->save();
                                     
                                     // Tự động áp dụng chữ ký của công ty

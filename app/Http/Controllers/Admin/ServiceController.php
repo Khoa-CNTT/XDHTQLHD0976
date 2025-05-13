@@ -21,28 +21,25 @@ class ServiceController extends Controller
         $query = Service::with(['employee', 'category', 'contractDurations']);
 
         // Tìm kiếm theo tên dịch vụ hoặc mô tả
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('service_name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+       if ($request->filled('search')) {
+    $search = trim($request->search);
+    $query->where(function($q) use ($search) {
+        $q->where('service_name', 'like', "%{$search}%")
+          ->orWhere('description', 'like', "%{$search}%");
+    });
+}
 
-        // Lọc theo danh mục
-        if ($request->has('category_id') && !empty($request->category_id)) {
-            $query->where('category_id', $request->category_id);
-        }
+if ($request->filled('category_id')) {
+    $query->where('category_id', $request->category_id);
+}
 
-        // Lọc theo người tạo
-        if ($request->has('created_by') && !empty($request->created_by)) {
-            $query->where('created_by', $request->created_by);
-        }
+if ($request->filled('created_by')) {
+    $query->where('created_by', $request->created_by);
+}
 
-        // Lọc theo dịch vụ nổi bật
-        if ($request->has('is_hot') && $request->is_hot) {
-            $query->where('is_hot', 1);
-        }
+if ($request->filled('is_hot')) {
+    $query->where('is_hot', 1);
+}
 
         // Lấy dịch vụ theo điều kiện đã lọc
         $services = $query->paginate(10);

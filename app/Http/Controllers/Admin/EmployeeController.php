@@ -15,20 +15,19 @@ class EmployeeController extends Controller
         $query = Employee::query()->with('user');
         
         // Xử lý tìm kiếm
-        if ($request->has('search')) {
-            $search = $request->search;
-            $query->whereHas('user', function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%");
-            })
-            ->orWhere('position', 'like', "%{$search}%")
-            ->orWhere('department', 'like', "%{$search}%");
-        }
-        
-        // Xử lý lọc theo phòng ban
-        if ($request->has('department') && $request->department != '') {
-            $query->where('department', $request->department);
-        }
+        if ($request->filled('search')) {
+    $search = trim($request->search);
+    $query->whereHas('user', function($q) use ($search) {
+        $q->where('name', 'like', "%{$search}%")
+          ->orWhere('email', 'like', "%{$search}%");
+    })
+    ->orWhere('position', 'like', "%{$search}%")
+    ->orWhere('department', 'like', "%{$search}%");
+}
+
+if ($request->filled('department')) {
+    $query->where('department', $request->department);
+}
         
         $employees = $query->latest()->paginate(10);
         
