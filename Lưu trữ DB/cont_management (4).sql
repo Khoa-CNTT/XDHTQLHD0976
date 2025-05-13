@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th5 12, 2025 lúc 07:51 PM
+-- Thời gian đã tạo: Th5 13, 2025 lúc 03:28 PM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.2.12
 
@@ -35,6 +35,13 @@ CREATE TABLE `activity_logs` (
   `created_at` timestamp NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
+--
+-- Đang đổ dữ liệu cho bảng `activity_logs`
+--
+
+INSERT INTO `activity_logs` (`id`, `user_id`, `action`, `description`, `created_at`) VALUES
+(13, 17, 'Đổi mật khẩu', 'Bạn đã thay đổi mật khẩu thành công', '2025-05-13 12:11:51');
+
 -- --------------------------------------------------------
 
 --
@@ -46,6 +53,13 @@ CREATE TABLE `cache` (
   `value` mediumtext NOT NULL,
   `expiration` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Đang đổ dữ liệu cho bảng `cache`
+--
+
+INSERT INTO `cache` (`key`, `value`, `expiration`) VALUES
+('laravel_cache_otp_nguyenducthangg899@gmail.com', 'i:979023;', 1747138516);
 
 -- --------------------------------------------------------
 
@@ -85,7 +99,7 @@ CREATE TABLE `contracts` (
 
 INSERT INTO `contracts` (`id`, `service_id`, `customer_id`, `contract_number`, `start_date`, `end_date`, `status`, `total_price`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (27, 19, 7, 'HD-1747062496', '2025-05-12', '2026-05-12', 'Chờ xử lý', 500000.00, '2025-05-12 15:08:16', '2025-05-12 15:08:16', NULL),
-(28, 108, 7, 'HD-1747065980', '2025-05-12', '2028-05-12', 'Hoạt động', 1000000.00, '2025-05-12 16:06:20', '2025-05-12 16:07:01', NULL);
+(28, 108, 7, 'HD-1747065980', '2025-05-12', '2028-05-12', 'Hoàn thành', 1000000.00, '2025-05-12 16:06:20', '2025-05-13 05:59:03', NULL);
 
 -- --------------------------------------------------------
 
@@ -170,7 +184,8 @@ INSERT INTO `customers` (`id`, `user_id`, `company_name`, `tax_code`, `created_a
 (4, 13, 'cty abc', '0509', '2025-04-10 21:12:22', '2025-04-10 21:12:22', NULL),
 (5, 14, 'Ngapham23', '0987654321100', '2025-04-13 01:07:45', '2025-04-13 01:07:45', NULL),
 (6, 15, 'Hà Nội', '1234567890', '2025-04-27 01:28:18', '2025-04-27 01:28:18', NULL),
-(7, 17, 'ngaphammm', '0987654321023', '2025-05-12 14:35:33', '2025-05-12 14:35:33', NULL);
+(7, 17, 'ngaphammm', '0987654321023', '2025-05-12 14:35:33', '2025-05-12 14:35:33', NULL),
+(8, 19, 'DTU LỎ NHẤT', '0000020000000', '2025-05-13 12:06:49', '2025-05-13 12:06:49', NULL);
 
 -- --------------------------------------------------------
 
@@ -513,8 +528,8 @@ CREATE TABLE `sessions` (
 --
 
 INSERT INTO `sessions` (`id`, `user_id`, `ip_address`, `user_agent`, `payload`, `last_activity`) VALUES
-('o3WDsEzQPYzHMxTjgbyIFaSjLyQuHPqsIRxhf8VF', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJbmhuYkhaNGJYY3lRVXRUVmxoQmJEQmFhRmhuWWtFOVBTSXNJblpoYkhWbElqb2lZbkpSVXpGaVozcEdOVU5tYkhkQ1prUk5iVXhYTlZvNVpWZEJaVU5EYTBwM01qVnBkbFJ1ZDJ0S01tTkVVMUZDTW1GQldtVXhNbE5xUml0YVlWYzJUMFEzUlhrdk5FbFhORm9yUVdzM1ozaHVjVGR4V0cxNlpGZHZaazlpYzJ0cWRVbHJkWFp5TjNsTk16aFRXamxyUWxWRFpWRlFkVlF2YmpkdmQwSTNNazQ1VDNoeWRGSnliVzV3T0ZwTUwwUnpObnByTHpoc1JtTm1hMUI1UWtGdVpUbERWazVYYlhwd1kzaDRXRUk0WnpOaE4ycG1SWEV2Tkc0MmRHRmtiVlp1VXpBeGRrUm1XVlYxZG1zMk1sWjVjMDFqYlZoeGIxbFpXSGt5V1UxVVdUTjNPVTlxVUdWSVpHOTZlbXR4Ukc5dVoxUXlVV051ZVdOck1rbHVkazgzT1RCT2IzWlphVTFTYnpSMWVtNXZRamxLWkNzNGRVRjJTbGh5ZVdkeVpWQm9WbmN6V1ZOV1RXc3lNMnBpWnl0dlZGaHVTbFpvUmt4RWJ6VkNlVE0zTmpKVE9VaFNhMGRQUXpab2JqaFBVRmdyU1ZsMVJGSkZOQzlDVDBGdmQyNXpXVTA0ZDA1b05rWjRkbVJwT0M5aGNtWTVkWFZ0V1c5Nk9YUldPSFY2TUhkdElpd2liV0ZqSWpvaVlUSTFNVGxqTlRGbFkyUmpPVEEzTXpSaU5URTBNVGMzTTJJeVlqTmlNR00yTVdSbE1HWmtNekF5WmpobE1EQmpNMlJsWXpRelpEa3pabUptWVRCbFpDSXNJblJoWnlJNklpSjk=', 1747072230),
-('RmmqCzNURpRqB1bicbz1asAyiAL0fRbm2sMzJnVm', 17, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJbEJUTTNsd01GRTJOelIxVnk5clNHTkViUzlwUzFFOVBTSXNJblpoYkhWbElqb2lWVXhzV0UxbmJrNUVTa2xVZDBWWU1tOWFTRGhGVFV4RloxazJkMVZXVFhocVJFVlFOMmR5TTJaeVpqTjVjRXhzU3pCSlNHOWtNVzF4YUU0clUwVnpOMlYxUkdGMVRUWkVhMFYwVUU5T1UxcGxlRlZqUlZsVVJuZHVRemwxVjJVeVYyOHZNV2d6WmtWNlYwczNNWGhIU2xGTVZHNURiak52VFZaUVlrNXhNMjVxV2twemVXaFpSMlppUVZKQ2FtZHlRVlZtZDJ0WmIxQjZOV2x5U3k5TFZYbEhlRkJMWTJObVFsaFFSbXcwVVVwSlpEVTBjSFV5WnpaR1JDOTBhV2hCWlZGQ2NWaEpiMmw2UTBNNFYwOTRjRmcwTlhGUlpXUkVXRXBJVGpOMmFWazJSRGhvSzFOSVlVMUdjVWswVFdRM1RGaFVUbEkxYUhWcGJreHpPQ3N3TjNGeWFGZHBVbGh6YVd0QlIyWnBjRzQ0VTFkbVJ6RTNiVFV2Vm1kVU4wMVBkV012ZVdGelYybG1TR2xPVUZCTFZ6RlpSWFYxUzBvMU1FVjVSbEZ5VTJOSldtSjRSVlJCZG10TmJIWkxUMnh6TmpSb01HMURlVmxMZURoNFF6QXdaM1UwUzBJM1JTOU1NRXBoTHpJMVIxVlNSU3QwVUhoMWRqUm9UWFpvV0U1dmJXNVdWSGhSVGxNdlJtaGxVVGhPTlV4R2IxWnRSVUZrTjNCNEszUllkM2hLVDFJMGVEVlBNbTVzYVdKamVERkhWVGQ0U2l0V0swRlhLM1EwY0hSdlEwVnhNVlpuSzFGcFpXOUdVbTlHV2l0dFlsaEJlWGhoYlZOUk1UTkhTVGxLTHl0emNXUldjbXd5ZEdKbksySlNiM0ZrTmpsSVN5c3ZWVzVUT0hWM1dGWkthRXRPVUZVeVRsbFdSMDFvYjFkdlFtdG1WSFIzVVdOQlNIVnZUeTk2TDI5MFlVMVVPV3hyUkdWSWEyd3lTVkJvVnpjcmNpODNNM1UyYkVoV0szVnNiVzkwTlRNdmJWTklVMUp0YUVwYVVHbHJlRUpvZEhaalRTdGFPVVpKZVRSNFlYSlROMlpKVlhwQlZrZFZiV3g0YzA5S2F6VXZhemhXUnpSVVdWSjBSRU5rVFhObFFqQktabkZaTUV0bGRpdFlVRkJpTlVWeVJpODBkMFZzYlVacFRYbE9WVTlyVnl0NmRDdHBaMVIyUW0xT2MxWnNTRXN3YUZvNFJWUldRMGR5ZUdwcVRXOHZja2hWZVRScGNXSnlMMHBPZW1sM09XeHdLM0ZtTVRKcVZHTklibVp1UVRBeldrOW1XRUo1T0hkNmJHOUdkMFE0VG14UU5VMVNaM0YxUm1GS2NVOTRRVUkxTmsxRFMydExiRnBHWVU5YWRFcGxWMGR0VjBGUWVYUjNZWE4wZEhGaFRYaHNNMEZRTWpoNE0wOXJOQzlaU1hocGFFZzVhakZJUnlJc0ltMWhZeUk2SWprMFlqRXdNelptTWpBNU56WmpZbUUzWWpZeVpqQXdPVEJrWlRBek16VmxNMlUwTTJVM1kyVTFZalptTXpaaU0ySXdaalU0T0RFek9EUmxOV05sWkRFaUxDSjBZV2NpT2lJaWZRPT0=', 1747072255);
+('G1Z8lzBhNbqyaGUdvThZFv03EmMVfgzVQKkAZim6', 2, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJamQyZHpZeGJHcHlaRVozZEdWa1VrRmFlbU5ZTUZFOVBTSXNJblpoYkhWbElqb2lSbmx4V1VJeldrNVFaVXBuY1hkdmFtbEVjR1JRTVRFeldrNXhlRWx6TVc5T1JVOU9NRk5IVEZsTU9FMVBaV1ZpUmxCRE5YVnlVakJ1ZFhOeU5YTlNaa1UzVm5kUWNVcERSbGQwTjNKWlozcFpXbHBpYVZCMFJURjVRVVJ1UzFOUVUycENNRXhvYWtadVptdDVSRVY0VW1kR1pFVjJTRXczVkVsSGVrVndUV3BzV25ReFdXNXllbGt6VjBWRVpqTktNRVJYV0RCTFlubHdhV3hqVkZsdVVYRjBhazVwUmxoRGJFZG5hbXBFYzA0eFdIQjRkM1YxZGxoUWVXZGFNVkZ1UWxWVU1uRnJOVFpCVVZWaVpHVjRiV0lyY0V4bFkwMXJielpQYzJ4d2MyWjJaalpvWXlzeFZuZ3hUMHB2VTNoWFNrbERVM1JPUlNzd1VtUm5SMFZ6V1d0RmREZHNkamx5VGtSRVZXVjVUVFl6UkZvM2NqZEROR0ZIU0VsSmJGVktlWG93ZEVGVFZuSnBXaTk2TVN0eVNWQlZjbVYxU1V4NldUSnVaV2xoVkZCNVFWUjZhbGRsWVhWUlFYVndSbVZvTDBOcFZVTjFWemxyV1RGNFJtbHJOVlJaWmxkMWFWZHpPVnBuUFNJc0ltMWhZeUk2SWpnek1USmpNVFkyWm1FNVlUQTFNamMwT0RVek1XSmxPVFUwTWpZNE5HWmlZems0TVRFeE5qaG1PV1l3WXpoak4yRXhPRE5tWldZM09XUXhNelpoWmpjaUxDSjBZV2NpT2lJaWZRPT0=', 1747137888),
+('UQlLgPJO7W7QFSzj8jW0BLXnpldvErUnCHGU1Da0', 17, '127.0.0.1', 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/136.0.0.0 Safari/537.36 Edg/136.0.0.0', 'ZXlKcGRpSTZJbEV4ZFVVemFtOVliR0ZhTURsNlltSm5iVk16Wm1jOVBTSXNJblpoYkhWbElqb2lRbmw2ZFhsUk9GRjRkazlJWWxCblRYZHBhUzlXUzBSc2JVRnBNbmxYZURWTWFGbGFhbTgyYm5SVmJDOXhXQ3N3Y0dGR2NGTTVZa3BNVjFScFIydFhSRkp6VjNGTGIyRkJRV2huVEZOTFVWZFpWSFZuYWtkcFZqTnNWMVpuVTFsck1qRmpTa1pIZWpkaFN5OXNOV3BaYnpoeGIxSk1ZbTFJZDFOdlNuVk5SMW94U0RWVE0yRm5TbUpLT1dWSk1VOWtkVkZWU0ROV2FWRlRWbEpyYWtac1IyTXJhVFpyTkcweGQwODBkVE5IZUZKc1FYSnZhV0ozZVN0eVVVVjFiekYxTVV4elkxRmpVMlZyU2l0a01ITlViVmsyYkcxcFFrZEROSFZ5U21KaksyUkRlSEJQWjFsQ2NraElXa2cyUkZoc1RVZEliWE00ZURKRmNGaG1aRFUyYnpKYU5FWTRaa0k1TTA5R1kwZzJZVGxSTlhoelpqUnBTa1JIZVZGSmFUQnhZbFJrU0hWM2VVcEpaekZDV1ZOa2FYTXdjekJIZFRJek5rSnJTMGxzYWpOWlZYcERVMnBQTjJ0RFIxY3dSMGg1TjJsc1VXMUpVM0IxY1RGMlVtWmhWWE5hU25acFJIRXhOMUo0V2psNVRFSTBSRXBhUVVGUmJETlFVR2RUUTFOSkwyRmpPVmd4VGpkM1NERlNTMmhWWm1WT1ZVOTNiM2N2ZUhVemVVYzVNSEUzYzJkMk5FdG9XRGRUZEVGM01HazBNV0ozWWxWMU5VbG5iR1JDTVdGVWRWUmFjUzl3WlVacU4yMDRkMGhDTkRCek9UUldhMkp6U2pjNGVVSnpiRVJpVEU4ME9HVldPV3hwWlc5bGMxQjRiVUpETTFsT2VIaFdTVWRFVERGWFNVNDVORFpLVFdORGFrRXlWRkZZZVdWQlFtOU5kWEZJV25WNFRrZE9jbWhIZUZKak9IUjRhRmRVUzBoQ2FUZEdkMW8yUTBKS1N6TlFRV3g0TTBwWFZuTnZWVEZxZDA5elozSTNjV0pJSzJsaldqTlZPRXhKT0VVcmVHdHdNVE5OWWxsMmEyWkJkMjl1ZGtoNFNqSlBMM2hvYUVZNWFtdG1hM0pKZW5KbVNHbEZlVlZsT0hZNVRqTlJSbWxHZFhaTFpHZG1UbEJCVkZGR1FUTjRXbFV2Y0hjcldVWk1WVEYzWW1sYWVrRTlJaXdpYldGaklqb2lOamhqWmpZd1pUVmpNV1k0WlRZMU1UTmpNbVpsWlRneE1EZGxOV0ZoT0RVMk4ySTVOVEpoWm1VMVlUbGhaVEEyTTJJeE16azVaalUwT0RBeU1EZGlaQ0lzSW5SaFp5STZJaUo5', 1747142854);
 
 -- --------------------------------------------------------
 
@@ -614,8 +629,9 @@ INSERT INTO `users` (`id`, `name`, `email`, `identity_card`, `password`, `role`,
 (13, 'NGUYEN HUU TRUONG', 'nguyenhuutruong05092003@gmail.com', NULL, '$2y$12$sjhQiATK1MhM2N8/cmvCSO8ObCJp5/jCMyrqdBORTR64xJ8owwshq', 'customer', 'active', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', NULL, '2025-04-10 21:12:22', '2025-04-27 01:32:16', NULL),
 (15, 'NGUYEN HUU TRUONG', 'nguyentruong05092003@gmail.com', NULL, '$2y$12$/Q0sbN.Vtskt/iqkW9Cdo.Hp4sAWO9lpMHyyzsCkkmIC11lvtgO6a', 'customer', 'active', '0328394538', 'K45A/38 Dũng Sĩ Thanh Khê, Thanh Khê Tây, Thanh Khê, Đà Nẵng', NULL, '2025-04-27 01:28:18', '2025-04-27 01:28:18', NULL),
 (16, 'Pham Quang Ngà', 'okami@gmail.com', NULL, '$2y$12$aCBCzBDJb4eSgCX.8AG1UutLIG33nGoyHoP7NVtXHkduVz09Cib76', 'employee', 'active', '0987653214', 'hahaha-hahaha-hahah', 'avatars/KuESARkRoejgCurFrbnYrADKYWeIKVvoB4Jz5qXx.png', '2025-05-11 09:39:17', '2025-05-11 10:16:00', NULL),
-(17, 'ngapham', 'okamibada@gmail.com', NULL, '$2y$12$ZHD8jMlEPM2BSp5BnWJZpOpYZU5TG2udoX1RtDbkwMf9ZW.bjwH9i', 'customer', 'active', '0987653214', '12312313123', NULL, '2025-05-12 14:35:33', '2025-05-12 14:35:33', NULL),
-(18, 'sâccsacas', 'okami213bada@gmail.com', NULL, '$2y$12$B.rgn5Y8kjxmnH4oKOUeqO.ovgnV3u1AhUQE2Ss3X9b1AtmsWGPsu', 'employee', 'active', '0987654321', 'sadsada', NULL, '2025-05-12 17:18:21', '2025-05-12 17:18:21', NULL);
+(17, 'ngapham', 'okamibada@gmail.com', NULL, '$2y$12$fApbKHhy7GHFujNfCm0EYezU7CLsw0rGTFVDxQC7npq5KBEsbMA5e', 'customer', 'active', '0987653214', '12312313123', NULL, '2025-05-12 14:35:33', '2025-05-13 12:11:51', NULL),
+(18, 'sâccsacas', 'okami213bada@gmail.com', NULL, '$2y$12$B.rgn5Y8kjxmnH4oKOUeqO.ovgnV3u1AhUQE2Ss3X9b1AtmsWGPsu', 'employee', 'active', '0987654321', 'sadsada', NULL, '2025-05-12 17:18:21', '2025-05-12 17:18:21', NULL),
+(19, 'Thắng CU NHỎ', 'nguyenducthangg899@gmail.com', NULL, '$2y$12$vrXP4galrWEI8BiH5pc/ReKMAhKwEky73yr.B6Hg9epC4FxMpY.e.', 'customer', 'active', '0987653214', 'hahahahaha', NULL, '2025-05-13 12:06:49', '2025-05-13 12:06:49', NULL);
 
 --
 -- Chỉ mục cho các bảng đã đổ
@@ -820,7 +836,7 @@ ALTER TABLE `users`
 -- AUTO_INCREMENT cho bảng `activity_logs`
 --
 ALTER TABLE `activity_logs`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 
 --
 -- AUTO_INCREMENT cho bảng `contracts`
@@ -850,7 +866,7 @@ ALTER TABLE `contract_durations`
 -- AUTO_INCREMENT cho bảng `customers`
 --
 ALTER TABLE `customers`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=9;
 
 --
 -- AUTO_INCREMENT cho bảng `durations`
@@ -940,7 +956,7 @@ ALTER TABLE `support_tickets`
 -- AUTO_INCREMENT cho bảng `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=19;
+  MODIFY `id` bigint(20) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=20;
 
 --
 -- Các ràng buộc cho các bảng đã đổ

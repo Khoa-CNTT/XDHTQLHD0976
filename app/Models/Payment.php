@@ -9,19 +9,21 @@ class Payment extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'contract_id',
-        'contract_duration_id',
-        'amount',
-        'date',
-        'method',
-        'status',
-        'transaction_id',
-        'order_id',
-        'payment_type',
-        'payment_response',
-        'request_id'
-    ];
+   protected $fillable = [
+    'contract_id',
+    'contract_duration_id',
+    'amount',
+    'date',
+    'method',
+    'transaction_id',
+    'order_id',
+    'payment_type',
+    'payment_response',
+    'ipn_response',
+    'error_message', 
+    'status'    
+];
+
 
     /**
      * The attributes that should be cast.

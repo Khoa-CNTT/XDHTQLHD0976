@@ -262,5 +262,6 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('payments/{id}/download', [CustomerPaymentController::class, 'downloadReceipt'])->name('payments.download');
 
         Route::get('/customer/contracts/{id}/download', [CustomerContractController::class, 'downloadPdf']) ->name('contracts.download');
+        Route::get('/contracts/{id}/pdf', [CustomerContractController::class, 'downloadPdf'])->name('contracts.pdf');
     }); 
 

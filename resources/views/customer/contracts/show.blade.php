@@ -212,17 +212,7 @@
 
 
 <div class="mt-8 bg-white rounded-lg shadow-md overflow-hidden">
-    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-        <h3 class="text-lg font-semibold text-gray-800">Chữ ký hợp đồng</h3>
-        @if($contract->signatures->isNotEmpty() && $contract->signatures->first()->isFullySigned())
-        <a href="{{ route('customer.contracts.pdf', $contract->id) }}" class="px-4 py-2 bg-green-600 text-white rounded hover:bg-green-700 inline-flex items-center">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
-            </svg>
-            Xuất PDF hợp đồng
-        </a>
-        @endif
-    </div>
+  
     
     <div class="p-6">
         @if($contract->signatures->isEmpty())

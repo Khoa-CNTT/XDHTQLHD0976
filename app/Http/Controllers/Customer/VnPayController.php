@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Customer;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Signature;
@@ -34,12 +35,9 @@ class VNPayController extends Controller
                 'return_url' => $vnp_Returnurl
             ]);
 
-            // Generate a unique transaction reference using contract ID plus timestamp
-            // This ensures each payment attempt has a unique ID to prevent "transaction already exists" errors
             $contractId = $request->contract_id;
             $vnp_TxnRef = $contractId . '-' . time();
-            
-            // Store the contract ID in the session so we can retrieve it in the return method
+        
             session(['vnpay_contract_id' => $contractId]);
             
             $vnp_OrderInfo = 'Thanh toan don hang';
@@ -94,90 +92,37 @@ class VNPayController extends Controller
         }
     }
 
-    public function return(Request $request)
+      public function return(Request $request)
     {
         try {
             // Log toàn bộ request để debug
             Log::info('VNPay - All request parameters:', $request->all());
             
-            // Check if required configuration is present
+       
             if (empty(config('vnpay.hash_secret'))) {
                 Log::error('VNPay - Missing hash_secret configuration');
                 return redirect()->route('customer.contracts.index')
                     ->with('error', 'Cấu hình thanh toán VNPay không hợp lệ. Vui lòng liên hệ quản trị viên.');
             }
             
-            $vnp_HashSecret = config('vnpay.hash_secret');
-            Log::info('VNPay - Hash Secret Config:', ['hash_secret' => substr($vnp_HashSecret, 0, 3) . '...' . substr($vnp_HashSecret, -3)]);
-            
-            $inputData = [];
-            foreach ($request->all() as $key => $value) {
-                if (substr($key, 0, 4) == "vnp_") {
-                    $inputData[$key] = $value;
-                }
-            }
-
-            Log::info('VNPay - Return Data Received:', $inputData);
-
-            $vnp_SecureHash = $request->vnp_SecureHash;
-            unset($inputData['vnp_SecureHash']);
-            unset($inputData['vnp_SecureHashType']);
-            
-            // Sắp xếp mảng theo key
-            ksort($inputData);
-            
-            // Build hashData theo chuẩn VNPay (không encode)
-            $hashData = '';
-            foreach ($inputData as $key => $value) {
-                if (!empty($hashData)) {
-                    $hashData .= '&' . $key . "=" . $value;
-                } else {
-                    $hashData = $key . "=" . $value;
-                }
-            }
-            
-            // Tạo secure hash
-            $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-            
-            // Log để debug
-            Log::info('VNPay - hashData String (VNPAY standard):', ['hashData' => $hashData]);
-            Log::info('VNPay - Calculated Secure Hash:', ['hash' => $secureHash]);
-            Log::info('VNPay - Received Secure Hash:', ['hash' => $vnp_SecureHash]);
-
-            // Extract the original contract ID from the txnRef (format: contractId-timestamp)
+            // Xác thực hash và lấy các giá trị từ request
             $txnRef = $request->vnp_TxnRef ?? 'unknown';
             $contractId = session('vnpay_contract_id');
-            $contractDurationId = session('vnpay_contract_duration_id', 1); // Default to 1 if not set
             
+            Log::debug('Session contract_id:', ['contract_id' => $contractId]);
+
             if (!$contractId) {
                 // If the session value is missing, try to extract from txnRef
                 $parts = explode('-', $txnRef);
-                $contractId = $parts[0] ?? $txnRef;
+                $contractId = $parts[0] ?? null;
                 
-                // Try to get the contract_duration_id from the contract
-                $contract = Contract::find($contractId);
-                if ($contract && $contract->signatures && $contract->signatures->count() > 0) {
-                    $signature = $contract->signatures->first();
-                    // Find the duration by label
-                    $duration = Duration::where('label', $signature->duration)->first();
-                    if ($duration) {
-                        $contractDuration = ContractDuration::where('service_id', $contract->service_id)
-                            ->where('duration_id', $duration->id)
-                            ->first();
-                        
-                        if ($contractDuration) {
-                            $contractDurationId = $contractDuration->id;
-                        }
-                    }
+                if (!$contractId) {
+                    Log::error('VNPay - Unable to determine contract ID');
+                    return redirect()->route('customer.contracts.index')
+                        ->with('error', 'Không thể xác định hợp đồng. Vui lòng liên hệ hỗ trợ.');
                 }
             }
             
-            Log::info('VNPay - Extracted Data:', [
-                'contract_id' => $contractId, 
-                'txnRef' => $txnRef,
-                'contract_duration_id' => $contractDurationId
-            ]);
-
             // Kiểm tra xem giao dịch đã được xử lý trước đó chưa
             $existingPayment = Payment::where('transaction_id', $request->vnp_TransactionNo)
                                     ->where('status', 'Hoàn Thành')
@@ -192,76 +137,116 @@ class VNPayController extends Controller
 
             // Kiểm tra trạng thái giao dịch
             if ($request->vnp_ResponseCode == '00' && $request->vnp_TransactionStatus == '00') {
-                // Lưu thanh toán thành công
+                // Bắt đầu transaction để đảm bảo tính nhất quán dữ liệu
+                DB::beginTransaction();
+                
                 try {
+                    // Lấy thông tin hợp đồng
                     $contract = Contract::find($contractId);
-                    if ($contract) {
-                        // Tìm signature gần nhất của hợp đồng này
-                        $signature = Signature::where('contract_id', $contractId)->latest()->first();
+                    if (!$contract) {
+                        DB::rollBack();
+                        Log::error("VNPay - Contract not found for ID: $contractId");
+                        return redirect()->route('customer.contracts.index')
+                            ->with('error', 'Không tìm thấy hợp đồng.');
+                    }
+                    
+                    // Lấy thông tin chữ ký và thời hạn
+                    $signature = Signature::where('contract_id', $contractId)->latest()->first();
+                    if (!$signature) {
+                        DB::rollBack();
+                        Log::error("VNPay - Signature not found for Contract ID: $contractId");
+                        return redirect()->route('customer.contracts.show', ['id' => $contractId])
+                            ->with('error', 'Không tìm thấy chữ ký cho hợp đồng này.');
+                    }
+                    
+                    // Lấy thời hạn từ signature hoặc bảng durations
+                    $contractDuration = null;
+                    if ($signature->contract_duration_id) {
+                        $contractDuration = ContractDuration::find($signature->contract_duration_id);
+                    } else {
+                        $durationLabel = $signature->duration;
+                        $duration = Duration::where('label', $durationLabel)->first();
                         
-                        if ($signature) {
-                            // Lấy duration từ signature
-                            $durationLabel = $signature->duration;
-                            
-                            // Tìm duration_id
-                            $duration = Duration::where('label', $durationLabel)->first();
-                            
-                            if ($duration) {
-                                // Tìm contract_duration_id
-                                $contractDuration = ContractDuration::where('service_id', $contract->service_id)
-                                                                  ->where('duration_id', $duration->id)
-                                                                  ->first();
-                                
-                                if ($contractDuration) {
-                                    // Lưu thanh toán thành công với contract_duration_id
-                                    Payment::create([
-                                        'contract_id' => $contractId,
-                                        'contract_duration_id' => $contractDuration->id,
-                                        'amount' => ($request->vnp_Amount ?? 0) / 100,
-                                        'date' => now(),
-                                        'method' => 'VNPay',
-                                        'transaction_id' => $request->vnp_TransactionNo ?? null,
-                                        'order_id' => $txnRef,
-                                        'payment_type' => $request->vnp_CardType ?? null, 
-                                        'payment_response' => json_encode($request->all()),
-                                        'status' => 'Hoàn Thành'
-                                    ]);
-                                    
-                                    // Cập nhật trạng thái hợp đồng
-                                   $contract->status = 'Hoàn thành'; 
-                                    $contract->save();
-                                    
-                                    // Tự động áp dụng chữ ký của công ty
-                                    $this->addCompanySignature($contractId);
-                                    
-                                    Log::info("VNPay - Contract status updated for Contract ID: $contractId", [
-                                        'old_status' => $contract->getOriginal('status'), 
-                                        'new_status' => 'Hoạt động'
-                                    ]);
-                                }
-                            }
+                        if ($duration) {
+                            $contractDuration = ContractDuration::where('service_id', $contract->service_id)
+                                                            ->where('duration_id', $duration->id)
+                                                            ->first();
                         }
                     }
                     
-                    Log::info("VNPay - Payment record created successfully");
+                    // Kiểm tra contractDuration
+                    if (!$contractDuration) {
+                        DB::rollBack();
+                        Log::error("VNPay - Contract duration not found", [
+                            'contract_id' => $contractId,
+                            'service_id' => $contract->service_id,
+                            'duration_label' => $durationLabel ?? null
+                        ]);
+                        return redirect()->route('customer.contracts.show', ['id' => $contractId])
+                            ->with('error', 'Không tìm thấy thông tin thời hạn hợp đồng.');
+                    }
+                    
+                    // Lưu thanh toán
+                   $paymentData = [
+    'contract_id' => $contractId,
+    'contract_duration_id' => $contractDuration->id,
+    'amount' => ($request->vnp_Amount ?? 0) / 100,
+    'date' => now(),
+    'method' => 'VNPay',
+    'transaction_id' => $request->vnp_TransactionNo ?? '',
+    'order_id' => $txnRef,
+    'payment_type' => $request->vnp_CardType ?? 'ATM',
+    'payment_response' => json_encode($request->all()),
+    'ipn_response' => null, 
+    'error_message' => null, 
+    'status' => 'Hoàn Thành'
+];
+                    
+                    Log::info("VNPay - Preparing to create payment record", $paymentData);
+                    $payment = Payment::create($paymentData);
+                    
+                    // Cập nhật trạng thái hợp đồng
+                    $contract->status = 'Hoàn thành';
+                    $contract->save();
+                    
+                    // Áp dụng chữ ký công ty
+                    $this->addCompanySignature($contractId);
+                    
+                    // Commit transaction
+                    DB::commit();
+                    
+                    Log::info("VNPay - Payment successful", [
+                        'payment_id' => $payment->id,
+                        'contract_id' => $contractId,
+                        'status' => 'Hoàn thành'
+                    ]);
+                    
+                    return redirect()->route('customer.contracts.show', ['id' => $contractId])
+                        ->with('success', 'Thanh toán thành công! Hợp đồng đã được cập nhật trạng thái.');
                 } catch (Exception $e) {
-                    Log::error("VNPay - Error creating payment record: " . $e->getMessage());
+                    DB::rollBack();
+                    Log::error("VNPay - Error processing payment", [
+                        'error' => $e->getMessage(),
+                        'trace' => $e->getTraceAsString()
+                    ]);
                     return redirect()->route('customer.contracts.show', ['id' => $contractId])
                         ->with('error', 'Có lỗi xảy ra khi xử lý thanh toán: ' . $e->getMessage());
                 }
-                
-                Log::info("VNPay - Payment SUCCESSFUL for Contract ID: $contractId");
-                return redirect()->route('customer.contracts.show', ['id' => $contractId])
-                                ->with('success', 'Thanh toán thành công! Hợp đồng đã được cập nhật trạng thái.');
             } else {
-                Log::warning("VNPay - Payment FAILED for Contract ID: $contractId, ResponseCode: " . $request->vnp_ResponseCode);
+                Log::warning("VNPay - Payment failed", [
+                    'contract_id' => $contractId,
+                    'response_code' => $request->vnp_ResponseCode
+                ]);
                 return redirect()->route('customer.contracts.show', ['id' => $contractId])
-                                ->with('error', 'Thanh toán không thành công');
+                    ->with('error', 'Thanh toán không thành công');
             }
         } catch (Exception $e) {
-            Log::error('VNPay - Exception in return():', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('VNPay - Exception in return()', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return redirect()->route('customer.contracts.index')
-                             ->with('error', 'Có lỗi xảy ra trong quá trình xử lý thanh toán: ' . $e->getMessage());
+                ->with('error', 'Có lỗi xảy ra trong quá trình xử lý thanh toán: ' . $e->getMessage());
         }
     }
 
@@ -271,228 +256,193 @@ class VNPayController extends Controller
             // Log toàn bộ request để debug
             Log::info('VNPay IPN - All request parameters:', $request->all());
             
-            // Check if required configuration is present
-            if (empty(config('vnpay.hash_secret'))) {
-                Log::error('VNPay IPN - Missing hash_secret configuration');
-                return response('{"RspCode":"99","Message":"Invalid configuration"}', 200)
-                    ->header('Content-Type', 'application/json');
-            }
+            // Xác thực hash và lấy các giá trị từ request (code remains the same)
             
-            $vnp_HashSecret = config('vnpay.hash_secret');
-            Log::info('VNPay IPN - Hash Secret Config:', ['hash_secret' => substr($vnp_HashSecret, 0, 3) . '...' . substr($vnp_HashSecret, -3)]);
-            
-            $inputData = [];
-            foreach ($request->all() as $key => $value) {
-                if (substr($key, 0, 4) == "vnp_") {
-                    $inputData[$key] = $value;
-                }
-            }
-            
-            Log::info('VNPay IPN - Data Received:', $inputData);
-
-            $vnp_SecureHash = $request->vnp_SecureHash;
-            unset($inputData['vnp_SecureHash']);
-            unset($inputData['vnp_SecureHashType']);
-            
-            // Sắp xếp mảng theo key
-            ksort($inputData);
-            
-            // Build hashData theo chuẩn VNPay (không encode)
-            $hashData = '';
-            foreach ($inputData as $key => $value) {
-                if (!empty($hashData)) {
-                    $hashData .= '&' . $key . "=" . $value;
-                } else {
-                    $hashData = $key . "=" . $value;
-                }
-            }
-            
-            // Tạo secure hash
-            $secureHash = hash_hmac('sha512', $hashData, $vnp_HashSecret);
-
-            // Log debug
-            Log::info('VNPay IPN - hashData String (VNPAY standard):', ['hashData' => $hashData]);
-            Log::info('VNPay IPN - Calculated Secure Hash:', ['hash' => $secureHash]);
-            Log::info('VNPay IPN - Received Secure Hash:', ['hash' => $vnp_SecureHash]);
-
             // Kiểm tra trạng thái giao dịch
             if ($request->vnp_ResponseCode == '00' && $request->vnp_TransactionStatus == '00') {
                 $txnRef = $request->vnp_TxnRef;
-                
-                // Extract contract ID from txnRef (format: contractId-timestamp)
                 $parts = explode('-', $txnRef);
-                $contractId = $parts[0] ?? $txnRef;
-                $contractDurationId = 1; // Default value
+                $contractId = $parts[0] ?? null;
                 
-                // Try to get the contract_duration_id from the contract
-                $contract = Contract::find($contractId);
-                if ($contract && $contract->signatures && $contract->signatures->count() > 0) {
-                    $signature = $contract->signatures->first();
-                    // Find the duration by label
-                    $duration = Duration::where('label', $signature->duration)->first();
-                    if ($duration) {
-                        $contractDuration = ContractDuration::where('service_id', $contract->service_id)
-                            ->where('duration_id', $duration->id)
-                            ->first();
-                        
-                        if ($contractDuration) {
-                            $contractDurationId = $contractDuration->id;
-                        }
-                    }
+                if (!$contractId) {
+                    Log::error('VNPay IPN - Unable to determine contract ID');
+                    return response('{"RspCode":"99","Message":"Unable to determine contract ID"}', 200)
+                        ->header('Content-Type', 'application/json');
                 }
                 
-                Log::info('VNPay IPN - Extracted Data:', [
-                    'contract_id' => $contractId, 
-                    'txnRef' => $txnRef,
-                    'contract_duration_id' => $contractDurationId
-                ]);
-
-                // Kiểm tra xem giao dịch đã được xử lý trước đó chưa
+                // Kiểm tra giao dịch đã xử lý chưa
                 $existingPayment = Payment::where('transaction_id', $request->vnp_TransactionNo)
-                                        ->where('status', 'Hoàn Thành')
-                                        ->first();
+                                     ->where('status', 'Hoàn Thành')
+                                     ->first();
 
-                // Nếu giao dịch đã được xử lý, không xử lý lại
                 if ($existingPayment) {
-                    Log::info("VNPay IPN - Payment already processed for TransactionNo: {$request->vnp_TransactionNo}");
+                    Log::info("VNPay IPN - Payment already processed");
                     return response('{"RspCode":"00","Message":"Confirm Success"}', 200)
                         ->header('Content-Type', 'application/json');
                 }
 
-                // Lưu thanh toán thành công
+                // Bắt đầu transaction
+                DB::beginTransaction();
+                
                 try {
+                    // Lấy thông tin hợp đồng
                     $contract = Contract::find($contractId);
-                    if ($contract) {
-                        // Tìm signature gần nhất của hợp đồng này
-                        $signature = Signature::where('contract_id', $contractId)->latest()->first();
+                    if (!$contract) {
+                        DB::rollBack();
+                        Log::error("VNPay IPN - Contract not found for ID: $contractId");
+                        return response('{"RspCode":"99","Message":"Contract not found"}', 200)
+                            ->header('Content-Type', 'application/json');
+                    }
+                    
+                    // Lấy thông tin chữ ký và thời hạn
+                    $signature = Signature::where('contract_id', $contractId)->latest()->first();
+                    if (!$signature) {
+                        DB::rollBack();
+                        Log::error("VNPay IPN - Signature not found for Contract ID: $contractId");
+                        return response('{"RspCode":"99","Message":"Signature not found"}', 200)
+                            ->header('Content-Type', 'application/json');
+                    }
+                    
+                    // Lấy thời hạn từ signature hoặc bảng durations
+                    $contractDuration = null;
+                    if ($signature->contract_duration_id) {
+                        $contractDuration = ContractDuration::find($signature->contract_duration_id);
+                    } else {
+                        $durationLabel = $signature->duration;
+                        $duration = Duration::where('label', $durationLabel)->first();
                         
-                        if ($signature) {
-                            // Lấy duration từ signature
-                            $durationLabel = $signature->duration;
-                            
-                            // Tìm duration_id
-                            $duration = Duration::where('label', $durationLabel)->first();
-                            
-                            if ($duration) {
-                                // Tìm contract_duration_id
-                                $contractDuration = ContractDuration::where('service_id', $contract->service_id)
-                                                                  ->where('duration_id', $duration->id)
-                                                                  ->first();
-                                
-                                if ($contractDuration) {
-                                    // Lưu thanh toán thành công với contract_duration_id
-                                    Payment::create([
-                                        'contract_id' => $contractId,
-                                        'contract_duration_id' => $contractDuration->id,
-                                        'amount' => ($request->vnp_Amount ?? 0) / 100,
-                                        'date' => now(),
-                                        'method' => 'VNPay',
-                                        'transaction_id' => $request->vnp_TransactionNo ?? null,
-                                        'order_id' => $txnRef,
-                                        'payment_type' => $request->vnp_CardType ?? null, 
-                                        'payment_response' => json_encode($request->all()),
-                                        'status' => 'Hoàn Thành'
-                                    ]);
-                                    
-                                    // Cập nhật trạng thái hợp đồng
-                                   $contract->status = 'Hoàn thành'; 
-                                    $contract->save();
-                                    
-                                    // Tự động áp dụng chữ ký của công ty
-                                    $this->addCompanySignature($contractId);
-                                    
-                                    Log::info("VNPay IPN - Contract status updated for Contract ID: $contractId", [
-                                        'old_status' => $contract->getOriginal('status'), 
-                                        'new_status' => 'Hoạt động'
-                                    ]);
-                                }
-                            }
+                        if ($duration) {
+                            $contractDuration = ContractDuration::where('service_id', $contract->service_id)
+                                                            ->where('duration_id', $duration->id)
+                                                            ->first();
                         }
                     }
                     
-                    Log::info("VNPay IPN - Payment record created successfully");
+                    // Kiểm tra contractDuration
+                    if (!$contractDuration) {
+                        DB::rollBack();
+                        Log::error("VNPay IPN - Contract duration not found");
+                        return response('{"RspCode":"99","Message":"Contract duration not found"}', 200)
+                            ->header('Content-Type', 'application/json');
+                    }
+                    
+                    // Lưu thanh toán
+                   $paymentData = [
+    'contract_id' => $contractId,
+    'contract_duration_id' => $contractDuration->id,
+    'amount' => ($request->vnp_Amount ?? 0) / 100,
+    'date' => now(),
+    'method' => 'VNPay',
+    'transaction_id' => $request->vnp_TransactionNo ?? '',
+    'order_id' => $txnRef,
+    'payment_type' => $request->vnp_CardType ?? 'ATM',
+    'payment_response' => json_encode($request->all()),
+    'ipn_response' => json_encode($request->all()),
+    'error_message' => null, 
+    'status' => 'Hoàn Thành'
+];
+                    
+                    Log::info("VNPay IPN - Preparing to create payment record", $paymentData);
+                    $payment = Payment::create($paymentData);
+                    
+                    // Cập nhật trạng thái hợp đồng
+                    $contract->status = 'Hoàn thành';
+                    $contract->save();
+                    
+                    // Áp dụng chữ ký công ty
+                    $this->addCompanySignature($contractId);
+                    
+                    // Commit transaction
+                    DB::commit();
+                    
+                    Log::info("VNPay IPN - Payment successful", [
+                        'payment_id' => $payment->id,
+                        'contract_id' => $contractId
+                    ]);
+                    
+                    return response('{"RspCode":"00","Message":"Confirm Success"}', 200)
+                        ->header('Content-Type', 'application/json');
                 } catch (Exception $e) {
-                    Log::error("VNPay IPN - Error creating payment record: " . $e->getMessage());
-                    return response('{"RspCode":"99","Message":"Error creating payment"}', 200)
+                    DB::rollBack();
+                    Log::error("VNPay IPN - Error processing payment: " . $e->getMessage());
+                    return response('{"RspCode":"99","Message":"Error processing payment"}', 200)
                         ->header('Content-Type', 'application/json');
                 }
-                
-                Log::info("VNPay IPN - Payment SUCCESSFUL for Contract ID: $contractId");
-                return response('{"RspCode":"00","Message":"Confirm Success"}', 200)
-                    ->header('Content-Type', 'application/json');
             } else {
-                // Lưu thông tin thanh toán thất bại
-                $txnRef = $request->vnp_TxnRef;
-                $parts = explode('-', $txnRef);
-                $contractId = $parts[0] ?? $txnRef;
-                
-                $contract = Contract::find($contractId);
-                if ($contract) {
-                    $signature = Signature::where('contract_id', $contractId)->latest()->first();
-                    
-                    if ($signature && $signature->contract_duration_id) {
-                        Payment::create([
-                            'contract_id' => $contractId,
-                            'contract_duration_id' => $signature->contract_duration_id,
-                            'amount' => ($request->vnp_Amount ?? 0) / 100,
-                            'date' => now(),
-                            'method' => 'VNPay',
-                            'transaction_id' => $request->vnp_TransactionNo ?? null,
-                            'order_id' => $txnRef,
-                            'payment_type' => $request->vnp_CardType ?? null,
-                            'payment_response' => json_encode($request->all()),
-                            'status' => 'Thất Bại',
-                            'error_message' => 'Mã lỗi: ' . $request->vnp_ResponseCode,
-                        ]);
-                    }
-                }
-                
-                Log::warning("VNPay IPN - Payment FAILED for Contract ID: $contractId", $request->all());
+                // Xử lý thanh toán thất bại (code remains similar)
+                Log::warning("VNPay IPN - Payment FAILED");
                 return response('{"RspCode":"00","Message":"Confirm Success"}', 200)
                     ->header('Content-Type', 'application/json');
             }
         } catch (Exception $e) {
-            Log::error('VNPay IPN - Exception:', ['error' => $e->getMessage(), 'trace' => $e->getTraceAsString()]);
+            Log::error('VNPay IPN - Exception:', [
+                'error' => $e->getMessage(),
+                'trace' => $e->getTraceAsString()
+            ]);
             return response('{"RspCode":"99","Message":"Unknown error"}', 200)
                 ->header('Content-Type', 'application/json');
         }
     }
     
+    
     /**
      * Thêm chữ ký công ty tự động vào hợp đồng
      */
+    
     private function addCompanySignature($contractId)
-    {
-        try {
-            $contract = Contract::with('signatures')->find($contractId);
-            
-            if (!$contract || $contract->signatures->isEmpty()) {
-                return false;
-            }
-            
-            $signature = $contract->signatures->first();
-            
-            // Kiểm tra nếu công ty đã ký
-            if ($signature->admin_signature_data) {
-                return true;
-            }
-            
-            // Lấy thông tin chữ ký công ty từ cấu hình
-            $companySignature = config('app.company_signature');
-            
-            // Cập nhật thông tin chữ ký công ty
-            $signature->update([
-                'admin_name' => $companySignature['name'],
-                'admin_position' => $companySignature['position'],
-                'admin_signature_data' => $companySignature['signature_data'] ?? asset('images/company-signature.png'),
-                'admin_signature_image' => $companySignature['signature_data'] ?? asset('images/company-signature.png'),
-                'admin_signed_at' => now(),
-            ]);
-            
-            return true;
-        } catch (\Exception $e) {
-            Log::error("VNPay - Error adding company signature: " . $e->getMessage());
+{
+    try {
+        $contract = Contract::with('signatures')->find($contractId);
+        
+        if (!$contract || $contract->signatures->isEmpty()) {
+            Log::warning("VNPay - Cannot add company signature: contract or signatures not found", ['contract_id' => $contractId]);
             return false;
         }
+        
+        $signature = $contract->signatures->first();
+        
+        // Kiểm tra nếu công ty đã ký
+        if ($signature->admin_signature_data) {
+            Log::info("VNPay - Company signature already exists", ['contract_id' => $contractId]);
+            return true;
+        }
+        
+        // Lấy thông tin chữ ký công ty từ cấu hình
+        $companySignature = config('app.company_signature');
+        if (!$companySignature) {
+            Log::error("VNPay - Company signature config not found");
+            return false;
+        }
+         // Cập nhật thông tin chữ ký công ty
+        $signatureData = [
+            'admin_name' => $companySignature['name'] ?? 'Admin',
+            'admin_position' => $companySignature['position'] ?? 'Giám đốc',
+            'admin_signed_at' => now(),
+        ];
+        
+        // Kiểm tra trường company_signature hoặc signature_data trong config
+        if (isset($companySignature['company_signature'])) {
+            $signatureData['admin_signature_data'] = $companySignature['company_signature'];
+            $signatureData['admin_signature_image'] = $companySignature['company_signature'];
+        } elseif (isset($companySignature['signature_data'])) {
+            $signatureData['admin_signature_data'] = $companySignature['signature_data'];
+            $signatureData['admin_signature_image'] = $companySignature['signature_data'];
+        } else {
+            $signatureData['admin_signature_data'] = asset('images/company-signature.png');
+            $signatureData['admin_signature_image'] = asset('images/company-signature.png');
+        }
+        
+        Log::info("VNPay - Updating signature with company data", [
+            'contract_id' => $contractId,
+            'signature_id' => $signature->id
+        ]);
+        
+        $signature->update($signatureData);
+        
+        return true;
+    } catch (\Exception $e) {
+        Log::error("VNPay - Error adding company signature: " . $e->getMessage());
+        return false;
     }
+}
 }

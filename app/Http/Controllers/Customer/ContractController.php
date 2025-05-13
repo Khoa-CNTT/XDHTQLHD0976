@@ -94,31 +94,7 @@ class ContractController extends Controller
     // Tải file PDF
     return $pdf->download('hop-dong-' . $contract->contract_number . '.pdf');
 }
-public function generateContractPdf($id)
-{
-    $contract = Contract::with(['service', 'customer.user', 'signatures'])->findOrFail($id);
 
-    if ($contract->signatures->isEmpty()) {
-        return redirect()->route('admin.contracts.show', $id)
-            ->with('error', 'Hợp đồng chưa có chữ ký của khách hàng.');
-    }
-
-    $signature = $contract->signatures->first();
-
-    // Kiểm tra nếu trạng thái hợp đồng là "Hoàn thành"
-    if ($contract->status !== 'Hoàn thành') {
-        return redirect()->route('admin.contracts.show', $id)
-            ->with('error', 'Hợp đồng chưa hoàn thành.');
-    }
-
-    // Lấy chữ ký admin từ cấu hình
-    $adminSignaturePath = config('app.company_signature');
-
-    // Tạo file PDF
-    $pdf = pdf::loadView('contracts.pdf', compact('contract', 'signature', 'adminSignaturePath'));
-
-    return $pdf->download('hop-dong-' . $contract->contract_number . '.pdf');
-}
 }
 
 

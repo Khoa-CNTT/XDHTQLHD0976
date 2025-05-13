@@ -40,8 +40,8 @@ class Signature extends Model
     /**
      * Kiểm tra xem hợp đồng đã được ký bởi cả hai bên chưa
      */
-    public function isFullySigned()
-    {
-        return $this->signature_data && $this->admin_signature_data;
-    }
+   public function isFullySigned()
+{
+    return !empty($this->signature_data) && !empty($this->admin_signature_data);
+}
 }
