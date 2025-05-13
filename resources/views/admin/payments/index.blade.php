@@ -1,7 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Quản Lý Thanh Toán')
-
+@if(session('success'))
+    @push('scripts')
+        <script>
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endpush
+@endif
 @section('content')
 <div class="bg-white rounded-lg shadow-md p-6">
     <div class="flex justify-between items-center mb-6">

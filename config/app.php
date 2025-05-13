@@ -123,4 +123,21 @@ return [
         'store' => env('APP_MAINTENANCE_STORE', 'database'),
     ],
 
+    /*
+    |--------------------------------------------------------------------------
+    | Company Signature Information
+    |--------------------------------------------------------------------------
+    |
+    | Thông tin chữ ký mặc định của công ty khi ký hợp đồng.
+    |
+    */
+    'company_signature' => [
+        'name' => env('COMPANY_SIGNATURE_NAME', 'Phạm Quang Ngà'),
+        'position' => env('COMPANY_SIGNATURE_POSITION', 'Giám đốc'),
+        'company_signature' => 'signatures/admin_signature.png',
+        'company_name' => env('COMPANY_NAME', 'Công ty Dịch vụ Công Thông Tin'),
+        'company_address' => env('COMPANY_ADDRESS', '123 Đường Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh'),
+        'company_tax_code' => env('COMPANY_TAX_CODE', '0987653214'),
+    ],
+
 ];

@@ -88,7 +88,8 @@
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div class="mb-4">
                     <label for="salary" class="block mb-1 font-medium">Lương <span class="text-red-500">*</span></label>
-                    <input type="text" name="salary" id="salary" class="w-full border border-gray-300 rounded px-4 py-2 @error('salary') border-red-500 @enderror" value="{{ old('salary') }}" required oninput="formatSalary(this)">
+                    <input type="text" name="salary_display" id="salary_display" class="w-full border border-gray-300 rounded px-4 py-2" value="{{ old('salary_display') }}" required oninput="formatSalary(this)">
+                    <input type="hidden" name="salary" id="salary" value="{{ old('salary') }}">
                     @error('salary')
                         <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
                     @enderror
@@ -115,11 +116,12 @@
     function formatSalary(input) {
         let value = input.value.replace(/\D/g, '');
         input.value = value ? new Intl.NumberFormat('vi-VN').format(value) : '';
+        document.getElementById('salary').value = value;
     }
 
-    document.querySelector('form').addEventListener('submit', function (event) {
-        const salaryInput = document.getElementById('salary');
-        salaryInput.value = salaryInput.value.replace(/[.,]/g, '');
+    document.getElementById('salary_display').addEventListener('blur', function() {
+        let value = this.value.replace(/\D/g, '');
+        document.getElementById('salary').value = value;
     });
 </script>
 @endsection

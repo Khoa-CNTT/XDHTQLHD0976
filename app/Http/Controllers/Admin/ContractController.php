@@ -10,6 +10,10 @@ use App\Models\Service;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Barryvdh\DomPDF\Facade\Pdf;
+
+
 
 class ContractController extends Controller
 {
@@ -111,7 +115,7 @@ class ContractController extends Controller
         'contract_number' => 'required',
         'start_date' => 'required|date',
         'end_date' => 'required|date|after_or_equal:start_date',
-        'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
+        'status' => 'required|in:Chờ xử lý,Hoàn thành,Đã huỷ',
         'total_price' => 'required|numeric|min:0',
     ]);
     
@@ -137,30 +141,12 @@ class ContractController extends Controller
 
 
 
-//     public function sign(Request $request, $id)
-// {
-//     $validated = $request->validate([
-//         'customer_name' => 'required|string|max:255',
-//         'customer_email' => 'required|email|max:255',
-//         'signature_data' => 'required',
-//     ]);
-
-    
-//     \App\Models\Signature::create([
-//         'contract_id' => $id,
-//         'customer_name' => $validated['customer_name'],
-//         'customer_email' => $validated['customer_email'],
-//         'signature_data' => $validated['signature_data'],
-//     ]);
-
-//     return redirect()->route('customer.dashboard')->with('success', 'Hợp đồng đã được ký thành công!');
-// }
 public function updateStatus(Request $request, $id)
 {
     $contract = Contract::findOrFail($id);
 
     $request->validate([
-        'status' => 'required|in:Chờ xử lý,Hoạt động,Hoàn thành,Đã huỷ',
+        'status' => 'required|in:Chờ xử lý,Hoàn thành,Đã huỷ',
     ]);
 
     $contract->update([
@@ -195,6 +181,71 @@ public function confirmCancel($id)
     return redirect()->back()->with('success', 'Hợp đồng đã được xác nhận huỷ.');
 }
 
+public function showSigningForm($id)
+{
+    return redirect()->route('admin.contracts.show', $id)
+        ->with('info', 'Chữ ký công ty được áp dụng tự động sau khi khách hàng thanh toán. Không cần thực hiện ký thủ công.');
+}
 
+
+// Phương thức tạo PDF hợp đồng với chữ ký của cả hai bên
+public function generateContractPdf($id)
+{
+    $contract = Contract::with(['service', 'customer.user', 'signatures'])->findOrFail($id);
+    
+    if ($contract->signatures->isEmpty()) {
+        return redirect()->route('admin.contracts.show', $id)
+            ->with('error', 'Hợp đồng chưa có chữ ký.');
+    }
+    
+    $signature = $contract->signatures->first();
+    
+    // Kiểm tra nếu cả hai bên đã ký
+    if (!$signature->isFullySigned()) {
+        return redirect()->route('admin.contracts.show', $id)
+            ->with('error', 'Hợp đồng chưa được ký đầy đủ bởi cả hai bên.');
+    }
+    
+    $pdf = Pdf::loadView('contracts.pdf', compact('contract', 'signature'));
+    
+    return $pdf->download('hop-dong-' . $contract->contract_number . '.pdf');
+}
+
+
+
+private function addCompanySignature($contractId)
+{
+    try {
+        $contract = Contract::with('signatures')->findOrFail($contractId);
+
+        if (!$contract || $contract->signatures->isEmpty()) {
+            return false; // Không có chữ ký khách hàng
+        }
+
+        $signature = $contract->signatures->first();
+
+        // Kiểm tra nếu công ty đã ký
+        if ($signature->admin_signature_data) {
+            return true; // Đã ký trước đó
+        }
+
+        // Lấy thông tin chữ ký công ty từ cấu hình
+        $companySignature = config('app.company_signature');
+
+        // Cập nhật thông tin chữ ký công ty
+        $signature->update([
+            'admin_name' => $companySignature['name'],
+            'admin_position' => $companySignature['position'],
+            'admin_signature_data' => $companySignature['signature_data'],
+            'admin_signature_image' => $companySignature['signature_data'], // Có thể dùng chung
+            'admin_signed_at' => now(),
+        ]);
+
+        return true;
+    } catch (\Exception $e) {
+        Log::error('Error adding company signature: ' . $e->getMessage());
+        return false;
+    }
+}
 
 }

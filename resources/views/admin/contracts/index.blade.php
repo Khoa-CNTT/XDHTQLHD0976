@@ -25,6 +25,9 @@
                 <a href="{{ route('admin.contracts.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
                     <i class="fas fa-plus mr-2"></i> Thêm hợp đồng mới
                 </a>
+                <a href="{{ route('admin.signature.form') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                <i class="fas fa-signature mr-2"></i> Tải lên chữ ký tay
+                </a>
             @endif
         </div>
     </div>
@@ -44,7 +47,6 @@
                 <select id="status" name="status" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                     <option value="">Tất cả trạng thái</option>
                     <option value="Chờ xử lý" {{ request('status') == 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
-                    <option value="Hoạt động" {{ request('status') == 'Hoạt động' ? 'selected' : '' }}>Hoạt động</option>
                     <option value="Hoàn thành" {{ request('status') == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                     <option value="Đã huỷ" {{ request('status') == 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
                     <option value="Yêu cầu huỷ" {{ request('status') == 'Yêu cầu huỷ' ? 'selected' : '' }}>Yêu cầu huỷ</option>
@@ -171,7 +173,6 @@
                                 @method('PUT')
                                 <select name="status" class="form-select text-sm px-2 py-1 rounded-lg border-gray-300">
                                     <option value="Chờ xử lý" {{ $contract->status === 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
-                                    <option value="Hoạt động" {{ $contract->status === 'Hoạt động' ? 'selected' : '' }}>Hoạt động</option>
                                     <option value="Hoàn thành" {{ $contract->status === 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                                     <option value="Đã huỷ" {{ $contract->status === 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
                                 </select>

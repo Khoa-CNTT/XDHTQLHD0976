@@ -44,7 +44,6 @@
             <label class="block text-gray-700 font-bold mb-1">Trạng thái</label>
             <select name="status" class="w-full border border-gray-300 rounded-md px-3 py-2">
                 <option value="Chờ xử lý" {{ $contract->status == 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
-                <option value="Hoạt động" {{ $contract->status == 'Hoạt động' ? 'selected' : '' }}>Hoạt động</option>
                 <option value="Hoàn thành" {{ $contract->status == 'Hoàn thành' ? 'selected' : '' }}>Hoàn thành</option>
                 <option value="Đã huỷ" {{ $contract->status == 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
             </select>

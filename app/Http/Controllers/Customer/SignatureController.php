@@ -129,8 +129,28 @@ class SignatureController extends Controller
                 return redirect()->back()->withErrors(['duration' => 'Thời hạn hợp đồng không hợp lệ.']);
             }
 
-            $startDate = $request->contract_date;
-            $endDate = Carbon::parse($startDate)->addMonths($months);
+            $startDate = Carbon::parse($request->contract_date);
+            
+            // Tính toán ngày hết hạn theo tiêu chuẩn ISO
+            // 1. Tính ngày kết thúc từ tháng
+            $endDate = $startDate->copy()->addMonths($months);
+            
+            // 2. Xử lý các trường hợp đặc biệt (như 31 tháng 1 -> 28/29 tháng 2)
+            // Nếu ngày bắt đầu là ngày cuối tháng, thì ngày kết thúc cũng là ngày cuối của tháng tương ứng
+            if ($startDate->day === $startDate->daysInMonth) {
+                $endDate = $endDate->endOfMonth();
+            }
+            // Nếu ngày bắt đầu lớn hơn số ngày trong tháng kết thúc
+            elseif ($startDate->day > $endDate->daysInMonth) {
+                $endDate = $endDate->endOfMonth();
+            }
+            
+            // Giữ lại giờ, phút, giây từ ngày bắt đầu
+            $endDate->setTime(
+                $startDate->hour,
+                $startDate->minute,
+                $startDate->second
+            );
 
             // Tạo hoặc lấy hợp đồng
             $contract = Contract::where('service_id', $serviceId)
@@ -159,24 +179,63 @@ class SignatureController extends Controller
                 'contract_id' => $contract->id,
                 'customer_name' => Auth::user()->name,
                 'customer_email' => Auth::user()->email,
-                'signature_data' => $request->otp, // Lưu mã OTP
-                'signature_image' => $request->signature_data, // Lưu base64 ảnh chữ ký
+                'signature_data' => $request->signature_data,
+                'signature_image' => $request->signature_data,
                 'identity_card' => $request->identity_card,
-                'contract_duration_id' => $durationInfo->id, // Lưu contract_duration_id thay vì duration
+                'contract_duration_id' => $durationInfo->id,
                 'status' => 'Đang xử lý',
                 'signed_at' => now(),
-                'otp_verified_at' => now(),
+                'otp_verified_at' => now()
             ]);
+            
+            // Tự động thêm chữ ký 
+            $this->addCompanySignature($contract->id);
 
-            Cache::forget('otp_' . Auth::user()->email);
-
-            return redirect()->route('customer.contracts.index')->with('success', 'Hợp đồng đã được ký thành công!');
+            return redirect()->route('customer.contracts.show', ['id' => $contract->id])
+                            ->with('success', 'Bạn đã ký hợp đồng thành công! Vui lòng thanh toán để kích hoạt hợp đồng.');
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
             return redirect()->route('customer.services.index')
                             ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
         } catch (\Exception $e) {
-            return redirect()->route('customer.services.index')
+            return redirect()->route('customer.services.show', $serviceId)
                             ->with('error', 'Đã xảy ra lỗi khi ký hợp đồng: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Thêm chữ ký công ty tự động vào hợp đồng
+     */
+    private function addCompanySignature($contractId)
+    {
+        try {
+            $contract = Contract::with('signatures')->find($contractId);
+            
+            if (!$contract || $contract->signatures->isEmpty()) {
+                return false;
+            }
+            
+            $signature = $contract->signatures->first();
+            
+            // Kiểm tra nếu công ty đã ký
+            if ($signature->admin_signature_data) {
+                return true;
+            }
+            
+            // Lấy thông tin chữ ký công ty từ cấu hình
+            $companySignature = config('app.company_signature');
+            
+            // Cập nhật thông tin chữ ký công ty
+            $signature->update([
+                'admin_name' => $companySignature['name'],
+                'admin_position' => $companySignature['position'],
+                'admin_signature_data' => $companySignature['signature_data'] ?? asset('images/company-signature.png'),
+                'admin_signature_image' => $companySignature['signature_data'] ?? asset('images/company-signature.png'),
+                'admin_signed_at' => now(),
+            ]);
+            
+            return true;
+        } catch (\Exception $e) {
+            return false;
         }
     }
 }

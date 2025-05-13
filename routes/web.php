@@ -24,6 +24,7 @@ use App\Http\Controllers\Admin\NotificationController as AdminNotificationContro
 use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketController;
 use App\Http\Controllers\Admin\DurationController;
 use App\Http\Controllers\Admin\ContractDurationController;
+use App\Http\Controllers\Admin\AdminSignatureController;
 
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\ContractController as EmployeeContractController;
@@ -103,7 +104,16 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::resource('contracts', AdminContractController::class);
         Route::resource('services', AdminServiceController::class);
 
-        // Routes for duration management
+        
+        
+        Route::get('/admin/signature', [AdminSignatureController::class, 'showSignatureForm'])->name('signature.form');
+        Route::post('/admin/signature', [AdminSignatureController::class, 'saveSignature'])->name('signature.save');
+        
+        
+        
+        
+
+        
         Route::prefix('durations')->name('durations.')->group(function() {
             Route::get('/', [DurationController::class, 'index'])->name('index');
             Route::get('/create', [DurationController::class, 'create'])->name('create');
@@ -118,7 +128,6 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         });
         
     
-        // Routes for service-specific price configuration
         Route::prefix('services')->name('services.')->group(function() {
             Route::get('/{service}/durations', [ContractDurationController::class, 'showServicePriceForm'])->name('contract-durations.edit');
             Route::post('/{service}/durations', [ContractDurationController::class, 'saveServicePrices'])->name('contract-durations.save');
@@ -201,6 +210,12 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
             Route::get('/employee/support/{id}', [EmployeeSupportTicketController::class, 'show'])->name('employee.support.show');
             Route::post('/employee/support/{id}/respond', [EmployeeSupportTicketController::class, 'respond'])->name('employee.support.respond');
         });
+
+    
+   
+        Route::get('/contracts/{id}/sign', [AdminContractController::class, 'showSigningForm'])->name('contracts.sign');
+        Route::post('/contracts/{id}/sign', [AdminContractController::class, 'saveSignature'])->name('contracts.sign.save');
+        Route::get('/contracts/{id}/pdf', [AdminContractController::class, 'generateContractPdf'])->name('contracts.pdf');
     });
 // Customer routes
 Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middleware\CustomerMiddleware::class])
@@ -223,8 +238,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::post('/profile', [CustomerProfileController::class, 'updateProfile'])->name('profile.update');
         Route::post('/profile/change-password', [CustomerProfileController::class, 'changePassword'])->name('profile.change-password');
         Route::post('/profile/update-avatar', [CustomerProfileController::class, 'updateAvatar'])->name('profile.update-avatar');
-         
-        // Notification routes for customer
+  
         Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
         Route::get('/notifications/{id}', [NotificationController::class, 'show'])->name('notifications.show');
         Route::post('/notifications/mark-all-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
@@ -246,5 +260,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('payments', [CustomerPaymentController::class, 'index'])->name('payments.index');
         Route::get('payments/{id}', [CustomerPaymentController::class, 'show'])->name('payments.show');
         Route::get('payments/{id}/download', [CustomerPaymentController::class, 'downloadReceipt'])->name('payments.download');
+
+        Route::get('/customer/contracts/{id}/download', [CustomerContractController::class, 'downloadPdf']) ->name('contracts.download');
     }); 
 

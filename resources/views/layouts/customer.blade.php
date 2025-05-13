@@ -31,6 +31,37 @@
             position: relative;
             z-index: 40;
         }
+        
+        /* Style cho dropdown thông báo */
+        #notifications-dropdown {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            border: 1px solid rgba(209, 213, 219, 1);
+        }
+        
+        #notifications-dropdown .px-4 {
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+        
+        #notifications-dropdown .py-3 {
+            padding-top: 0.75rem;
+            padding-bottom: 0.75rem;
+        }
+        
+        #notifications-list a:last-child {
+            border-bottom: none;
+        }
+        
+        #notification-badge {
+            font-size: 0.75rem;
+            font-weight: bold;
+            min-width: 1rem;
+            min-height: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 0 2px #2563eb;
+        }
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -116,13 +147,13 @@
                                 <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center hidden"></span>
                             @endif
                         </button>
-                       <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-10 max-h-96 overflow-y-auto">
-    <div class="px-4 py-2 border-b border-gray-200 flex justify-between items-center">
-        <span class="font-medium text-gray-800">Thông báo</span>
+                       <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
+    <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-blue-50">
+        <span class="font-bold text-gray-800">Thông báo</span>
         @if($unreadNotificationsCount > 0)
             <form action="{{ route('customer.notifications.markAllAsRead') }}" method="POST" class="inline">
                 @csrf
-                <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 bg-transparent border-0 p-0">
+                <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 bg-transparent border-0 p-0 font-medium">
                     Đánh dấu tất cả đã đọc
                 </button>
             </form>
@@ -133,7 +164,7 @@
             <p>Đang tải thông báo...</p>
         </div>
     </div>
-    <div class="px-4 py-2 border-t border-gray-200">
+    <div class="px-4 py-3 border-t border-gray-200 bg-gray-50">
         <a href="{{ route('customer.notifications.index') }}" class="block text-center text-blue-600 hover:text-blue-800 text-sm font-medium">
             Xem tất cả thông báo
         </a>
@@ -271,7 +302,10 @@
         notificationsButton.addEventListener('click', () => {
             notificationsDropdown.classList.toggle('hidden');
             if (userDropdown) userDropdown.classList.add('hidden');
-            if (searchDropdown) searchDropdown.classList.add('hidden');
+            if (typeof searchDropdown !== 'undefined' && searchDropdown) searchDropdown.classList.add('hidden');
+            
+            // Cập nhật danh sách thông báo khi mở dropdown
+            updateNotificationsList();
         });
     }
 
@@ -360,53 +394,60 @@
             .catch(error => console.error('Lỗi kiểm tra thông báo:', error));
         }
         
-        // Biến để theo dõi ID của các thông báo đã hiển thị
-        let displayedNotificationIds = new Set();
-        
         // Hàm cập nhật danh sách thông báo
-       function updateNotificationsList() {
-    fetch('/customer/api/notifications/latest')
-        .then(response => response.json())
-        .then(data => {
-            const notificationsList = document.querySelector('#notifications-list');
-            if (notificationsList && data.notifications.length > 0) {
-                let notificationsHtml = '';
-                data.notifications.forEach(notification => {
-                    notificationsHtml += `
-                    <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mr-3">
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
+        function updateNotificationsList() {
+            const notificationsList = document.getElementById('notifications-list');
+            if (notificationsList) {
+                notificationsList.innerHTML = '<div class="px-4 py-6 text-center text-gray-500"><p>Đang tải thông báo...</p></div>';
+                
+                fetch('/customer/api/notifications/latest')
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.notifications && data.notifications.length > 0) {
+                            let notificationsHtml = '';
+                            data.notifications.forEach(notification => {
+                                notificationsHtml += `
+                                <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mr-3">
+                                            <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <div class="flex-1">
+                                            <p class="text-sm font-medium text-gray-900">${notification.title}</p>
+                                            <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
+                                            <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
+                                        </div>
+                                    </div>
+                                </a>
+                                `;
+                            });
+                            notificationsList.innerHTML = notificationsHtml;
+                        } else {
+                            notificationsList.innerHTML = `
+                            <div class="px-4 py-6 text-center text-gray-500">
+                                <p>Không có thông báo nào</p>
                             </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                                <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
-                                <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
-                            </div>
+                            `;
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Lỗi tải thông báo:', error);
+                        notificationsList.innerHTML = `
+                        <div class="px-4 py-6 text-center text-gray-500">
+                            <p>Có lỗi xảy ra khi tải thông báo</p>
                         </div>
-                    </a>
-                    `;
-                });
-                notificationsList.innerHTML = notificationsHtml;
-            } else {
-                notificationsList.innerHTML = `
-                <div class="px-4 py-6 text-center text-gray-500">
-                    <p>Không có thông báo nào</p>
-                </div>
-                `;
+                        `;
+                    });
             }
-        })
-        .catch(error => console.error('Lỗi tải thông báo mới:', error));
-}
+        }
         
-        
-        // Kiểm tra thông báo khi trang tải xong và sau mỗi 30 giây
+        // Tải danh sách thông báo và thiết lập cập nhật tự động
         document.addEventListener('DOMContentLoaded', function() {
-            // Thêm thẻ meta CSRF
+            // Thêm thẻ meta CSRF nếu cần
             if (!document.querySelector('meta[name="csrf-token"]')) {
                 const metaTag = document.createElement('meta');
                 metaTag.setAttribute('name', 'csrf-token');
@@ -415,44 +456,17 @@
             }
             
             // Tải danh sách thông báo ngay khi trang tải xong
-        function updateNotificationsList() {
-    fetch('/customer/api/notifications/latest')
-        .then(response => response.json())
-        .then(data => {
-            const notificationsList = document.querySelector('#notifications-list');
-            if (notificationsList && data.notifications.length > 0) {
-                let notificationsHtml = '';
-                data.notifications.forEach(notification => {
-                    notificationsHtml += `
-                    <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
-                        <div class="flex items-start">
-                            <div class="flex-shrink-0 mr-3">
-                                <div class="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                    </svg>
-                                </div>
-                            </div>
-                            <div class="flex-1">
-                                <p class="text-sm font-medium text-gray-900">${notification.title}</p>
-                                <p class="text-xs text-gray-500 line-clamp-2">${notification.message}</p>
-                                <p class="text-xs text-gray-400 mt-1">${notification.time_ago}</p>
-                            </div>
-                        </div>
-                    </a>
-                    `;
-                });
-                notificationsList.innerHTML = notificationsHtml;
-            } else {
-                notificationsList.innerHTML = `
-                <div class="px-4 py-6 text-center text-gray-500">
-                    <p>Không có thông báo nào</p>
-                </div>
-                `;
-            }
-        })
-        .catch(error => console.error('Lỗi tải thông báo mới:', error));
-}
+            updateNotificationsList();
+            
+            // Kiểm tra thông báo mới mỗi 30 giây
+            setInterval(checkNewNotifications, 30000);
+            
+            // Khởi tạo AOS (Animate on Scroll)
+            AOS.init({
+                duration: 800,
+                once: true
+            });
+        });
     </script>
     
     @stack('scripts')

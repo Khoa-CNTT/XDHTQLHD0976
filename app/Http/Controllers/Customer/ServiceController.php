@@ -56,18 +56,14 @@ class ServiceController extends Controller
             
             // Lấy các thời hạn có giá đã được thiết lập cho dịch vụ này
             $availableDurations = $service->contractDurations()
-                ->with('duration')
+                ->select('contract_durations.*', 'durations.months', 'durations.label')
                 ->join('durations', 'contract_durations.duration_id', '=', 'durations.id')
                 ->orderBy('durations.months', 'asc')
                 ->get();
             
             return view('customer.services.show', compact('service', 'availableDurations'));
         } catch (\Illuminate\Database\Eloquent\ModelNotFoundException $e) {
-            return redirect()->route('customer.services.index')
-                ->with('error', 'Dịch vụ không tồn tại hoặc đã bị xóa.');
-        } catch (\Exception $e) {
-            return redirect()->route('customer.services.index')
-                ->with('error', 'Đã xảy ra lỗi khi truy cập dịch vụ.');
+            return redirect()->route('customer.services.index')->with('error', 'Dịch vụ không tồn tại!');
         }
     }
 

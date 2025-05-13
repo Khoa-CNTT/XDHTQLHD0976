@@ -45,17 +45,24 @@ class EmployeeController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
+        // Đảm bảo rằng mọi dấu phân cách hàng nghìn đều được loại bỏ
+        $salary = str_replace([',', '.'], '', $request->salary);
+        
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'position' => 'required|string|max:255',
             'department' => 'required|string|max:255',
-            'salary' => 'required|numeric|min:0',
             'hired_date' => 'required|date',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
         ]);
+        
+        // Thêm validation thủ công cho salary
+        if (!is_numeric($salary) || $salary < 0) {
+            return redirect()->back()->with('error', 'Lương phải là số dương')->withInput();
+        }
 
         DB::beginTransaction();
         try {
@@ -75,13 +82,12 @@ class EmployeeController extends Controller
                 'user_id' => $user->id,
                 'position' => $request->position,
                 'department' => $request->department,
-                'salary' => $request->salary,
+                'salary' => $salary, // Sử dụng giá trị đã được xử lý
                 'hired_date' => $request->hired_date,
             ]);
 
             DB::commit();
             return redirect()->route('admin.employees.index')->with('success', 'Thêm nhân viên thành công!');
-            
         } catch (\Exception $e) {
             DB::rollBack();
             return redirect()->back()->with('error', 'Có lỗi xảy ra: ' . $e->getMessage())->withInput();
@@ -98,16 +104,23 @@ class EmployeeController extends Controller
     {
         $employee = Employee::with('user')->findOrFail($id);
         
-        $request->validate([
+        // Đảm bảo rằng mọi dấu phân cách hàng nghìn đều được loại bỏ
+        $salary = str_replace([',', '.'], '', $request->salary);
+        
+        $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $employee->user->id,
             'position' => 'required|string|max:255',
             'department' => 'required|string|max:255',
-            'salary' => 'required|numeric|min:0',
             'hired_date' => 'required|date',
             'phone' => 'nullable|string|max:20',
             'address' => 'nullable|string|max:255',
         ]);
+        
+        // Thêm validation thủ công cho salary
+        if (!is_numeric($salary) || $salary < 0) {
+            return redirect()->back()->with('error', 'Lương phải là số dương')->withInput();
+        }
 
         DB::beginTransaction();
         try {
@@ -130,7 +143,7 @@ class EmployeeController extends Controller
             $employee->update([
                 'position' => $request->position,
                 'department' => $request->department,
-                'salary' => $request->salary,
+                'salary' => $salary, // Sử dụng giá trị đã được xử lý
                 'hired_date' => $request->hired_date,
             ]);
 

@@ -1,7 +1,20 @@
 @extends('layouts.admin')
 
 @section('title', 'Quản lý nhân viên')
-
+@if(session('success'))
+    @push('scripts')
+        <script>
+            Swal.fire({
+                toast: true,
+                position: 'top-end',
+                icon: 'success',
+                title: '{{ session('success') }}',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        </script>
+    @endpush
+@endif
 @section('content')
 <div class="container mx-auto mt-8">
     <h1 class="text-2xl font-semibold mb-6 text-gray-800">Danh sách nhân viên</h1>
