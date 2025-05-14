@@ -146,13 +146,14 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
         Route::resource('customers', CustomerController::class);
         Route::resource('employees', EmployeeController::class);
+
         Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
+        Route::get('/admin/reports/export', [ReportController::class, 'exportToExcel'])->name('reports.export');
 
         Route::post('customers/{id}/ban', [CustomerController::class, 'ban'])->name('customers.ban');
         Route::post('customers/{id}/unban', [CustomerController::class, 'unban'])->name('customers.unban');
       
         Route::put('/contracts/{id}/update-status', [AdminContractController::class, 'updateStatus'])->name('contracts.updateStatus');
-        Route::put('/contracts/{id}/complete', [AdminContractController::class, 'markAsComplete'])->name('contracts.complete');
         Route::post('/admin/contracts/{id}/confirm-cancel', [AdminContractController::class, 'confirmCancel'])->name('contracts.confirmCancel');
         
         Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');

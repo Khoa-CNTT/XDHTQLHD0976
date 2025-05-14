@@ -180,7 +180,6 @@ class SignatureController extends Controller
                 'customer_email' => Auth::user()->email,
                 'signature_data' => $request->signature_data,
                 'signature_image' => $request->signature_data,
-               
                 'contract_duration_id' => $durationInfo->id,
                 'status' => 'Đang xử lý',
                 'signed_at' => now(),

@@ -12,168 +12,85 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 
+use App\Exports\ReportExport;
+use Maatwebsite\Excel\Facades\Excel;
+
 class ReportController extends Controller
 {
-    public function index(Request $request)
+    
+     public function exportToExcel()
     {
-        // Lấy thời gian lọc, mặc định là tháng hiện tại
-        $period = $request->input('period', 'month');
-        $now = Carbon::now();
         
-        switch ($period) {
-            case 'week':
-                $startDate = $now->copy()->startOfWeek();
-                $endDate = $now->copy()->endOfWeek();
-                $periodLabel = 'tuần này';
-                break;
-            case 'month':
-                $startDate = $now->copy()->startOfMonth();
-                $endDate = $now->copy()->endOfMonth();
-                $periodLabel = 'tháng này';
-                break;
-            case 'quarter':
-                $startDate = $now->copy()->startOfQuarter();
-                $endDate = $now->copy()->endOfQuarter();
-                $periodLabel = 'quý này';
-                break;
-            case 'year':
-                $startDate = $now->copy()->startOfYear();
-                $endDate = $now->copy()->endOfYear();
-                $periodLabel = 'năm này';
-                break;
-            case 'all':
-                $startDate = null;
-                $endDate = null;
-                $periodLabel = 'tất cả thời gian';
-                break;
-            default:
-                $startDate = $now->copy()->startOfMonth();
-                $endDate = $now->copy()->endOfMonth();
-                $periodLabel = 'tháng này';
-        }
-
-        // Thống kê số lượng
-        $totalCustomers = Customer::count();
-        $totalEmployees = Employee::count();
-        $totalContracts = Contract::count();
-        $totalServices = Service::count();
-        
-        // Thống kê hợp đồng và thanh toán trong kỳ
-        $contractsQuery = Contract::query();
-        $paymentsQuery = Payment::query();
-        
-        if ($startDate && $endDate) {
-            $contractsQuery->whereBetween('created_at', [$startDate, $endDate]);
-            $paymentsQuery->whereBetween('date', [$startDate, $endDate]);
-        }
-        
-        $periodContracts = $contractsQuery->count();
-        $periodRevenue = $paymentsQuery->where('status', 'Hoàn Thành')->sum('amount');
-
-        // Tổng doanh thu từ thanh toán
-        $totalRevenue = Payment::where('status', 'Hoàn Thành')->sum('amount');
-
-        // Hợp đồng theo trạng thái
-        $contractsByStatus = Contract::selectRaw('status, COUNT(*) as count')
-            ->groupBy('status')
-            ->get();
-
-        // Thanh toán theo trạng thái
-        $paymentsByStatus = Payment::selectRaw('status, COUNT(*) as count, SUM(amount) as total_amount')
-            ->groupBy('status')
-            ->get();
-
-        // Thanh toán theo phương thức
-        $paymentsByMethod = Payment::selectRaw('method, COUNT(*) as count, SUM(amount) as total_amount')
-            ->where('status', 'Hoàn Thành')
-            ->groupBy('method')
-            ->get();
-
-        // Doanh thu theo tháng (6 tháng gần nhất)
-        $monthlyRevenue = Payment::where('status', 'Hoàn Thành')
-            ->selectRaw('MONTH(date) as month, YEAR(date) as year, SUM(amount) as revenue')
-            ->whereDate('date', '>=', Carbon::now()->subMonths(6))
-            ->groupBy('year', 'month')
-            ->orderBy('year')
-            ->orderBy('month')
-            ->get()
-            ->map(function($item) {
-                $month = Carbon::createFromDate($item->year, $item->month, 1);
-                return [
-                    'month_name' => $month->format('m/Y'),
-                    'month_short' => $month->format('m/Y'),
-                    'revenue' => $item->revenue
-                ];
-            });
-
-        // Dịch vụ phổ biến nhất
-        $popularServices = Service::selectRaw('services.service_name, COUNT(contracts.id) as usage_count, SUM(payments.amount) as total_revenue')
-            ->join('contracts', 'services.id', '=', 'contracts.service_id')
-            ->leftJoin('payments', 'contracts.id', '=', 'payments.contract_id')
-            ->where('payments.status', 'Hoàn Thành')
-            ->groupBy('services.id', 'services.service_name')
-            ->orderByDesc('usage_count')
-            ->limit(5)
-            ->get();
-
-        // Khách hàng có giá trị nhất
-        $topCustomers = Customer::selectRaw('customers.id, users.name, COUNT(DISTINCT contracts.id) as contract_count, SUM(payments.amount) as total_spent')
-            ->join('users', 'customers.user_id', '=', 'users.id')
-            ->join('contracts', 'customers.id', '=', 'contracts.customer_id')
-            ->leftJoin('payments', 'contracts.id', '=', 'payments.contract_id')
-            ->where('payments.status', 'Hoàn Thành')
-            ->groupBy('customers.id', 'users.name')
-            ->orderByDesc('total_spent')
-            ->limit(5)
-            ->get();
-
-        // Tỉ lệ chuyển đổi hợp đồng
-        $totalContractsWithPayments = Contract::whereHas('payments', function($query) {
-            $query->where('status', 'Hoàn Thành');
-        })->count();
-        
-        $conversionRate = $totalContracts > 0 ? ($totalContractsWithPayments / $totalContracts) * 100 : 0;
-
-        // Thống kê xu hướng theo thời gian (tăng trưởng)
-        $previousPeriod = [
-            'start' => $startDate ? $startDate->copy()->subMonth() : Carbon::now()->subMonths(2)->startOfMonth(),
-            'end' => $endDate ? $endDate->copy()->subMonth() : Carbon::now()->subMonth()->endOfMonth()
-        ];
-        
-        $previousRevenue = Payment::where('status', 'Hoàn Thành')
-            ->whereBetween('date', [$previousPeriod['start'], $previousPeriod['end']])
-            ->sum('amount');
-            
-        $revenueGrowth = $previousRevenue > 0 ? (($periodRevenue - $previousRevenue) / $previousRevenue) * 100 : 100;
-
-        $previousContractsCount = Contract::whereBetween('created_at', [$previousPeriod['start'], $previousPeriod['end']])->count();
-        $contractsGrowth = $previousContractsCount > 0 ? (($periodContracts - $previousContractsCount) / $previousContractsCount) * 100 : 100;
-
-        // Nhân viên theo phòng ban
-        $employeesByDepartment = Employee::selectRaw('department, COUNT(*) as count')
-            ->groupBy('department')
-            ->get();
-
-        return view('admin.reports.index', compact(
-            'totalCustomers',
-            'totalEmployees',
-            'totalContracts',
-            'totalServices',
-            'totalRevenue',
-            'periodRevenue',
-            'periodContracts',
-            'periodLabel',
-            'period',
-            'contractsByStatus',
-            'paymentsByStatus',
-            'paymentsByMethod',
-            'monthlyRevenue',
-            'popularServices',
-            'topCustomers',
-            'conversionRate',
-            'revenueGrowth',
-            'contractsGrowth',
-            'employeesByDepartment'
-        ));
+        return Excel::download(new ReportExport(), 'contracts_report.xlsx');
     }
+    function index(Request $request)
+{
+     // Tổng số khách hàng
+    $totalCustomers = \App\Models\Customer::count();
+    // Tổng số nhân viên
+    $totalEmployees = \App\Models\Employee::count();
+    // Tổng số hợp đồng
+    $totalContracts = \App\Models\Contract::count();
+    // Tổng doanh thu
+    $totalRevenue = \App\Models\Contract::sum('total_price');
+
+    // Lấy top 5 dịch vụ phổ biến
+    $topServices = \App\Models\Service::withCount('contracts')
+        ->orderByDesc('contracts_count')
+        ->take(5)
+        ->get()
+        ->map(function($service) {
+            return (object)[
+                'service_name' => $service->service_name,
+                'usage_count' => $service->contracts_count
+            ];
+        });
+
+    // Lấy top 5 khách hàng doanh thu cao nhất
+    $topCustomers = \App\Models\Customer::with('user')
+        ->withSum('contracts as total', 'total_price')
+        ->orderByDesc('total')
+        ->take(5)
+        ->get()
+        ->map(function($customer) {
+            return (object)[
+                'name' => optional($customer->user)->name,
+                'total' => $customer->total
+            ];
+        });
+
+    // Doanh thu theo tháng (ví dụ 6 tháng gần nhất)
+    $revenueMonths = [];
+    $revenueValues = [];
+    foreach (range(5, 0) as $i) {
+        $month = now()->subMonths($i)->format('m/Y');
+        $revenue = \App\Models\Contract::whereYear('created_at', now()->subMonths($i)->year)
+            ->whereMonth('created_at', now()->subMonths($i)->month)
+            ->sum('total_price');
+        $revenueMonths[] = $month;
+        $revenueValues[] = $revenue;
+    }
+
+    // Tỷ lệ hợp đồng theo trạng thái
+    $contractStatusLabels = ['Hoàn thành', 'Hoạt động', 'Chờ xử lý', 'Đã huỷ'];
+    $contractStatusValues = [
+        \App\Models\Contract::where('status', 'Hoàn thành')->count(),
+        \App\Models\Contract::where('status', 'Hoạt động')->count(),
+        \App\Models\Contract::where('status', 'Chờ xử lý')->count(),
+        \App\Models\Contract::where('status', 'Đã huỷ')->count(),
+    ];
+
+    return view('admin.reports.index', compact(
+        'totalCustomers',
+        'totalEmployees',
+        'totalContracts',
+        'totalRevenue',
+        'topServices',
+        'topCustomers',
+        'revenueMonths',
+        'revenueValues',
+        'contractStatusLabels',
+        'contractStatusValues'
+    ));
+}
 }

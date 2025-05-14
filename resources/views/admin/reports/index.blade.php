@@ -1,91 +1,119 @@
+{{-- filepath: resources/views/admin/support/index.blade.php --}}
 @extends('layouts.admin')
-
 @section('title', 'Báo cáo thống kê')
-
 @section('content')
-    <h1 class="text-2xl font-bold mb-4">Báo cáo thống kê</h1>
-
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold">Tổng số khách hàng</h2>
-            <p class="text-2xl font-bold">{{ $totalCustomers }}</p>
+<div class="container mx-auto py-8">
+    <h1 class="text-3xl font-bold mb-8 text-blue-800">Báo cáo thống kê</h1>
+ <div>
+    <a href="{{ route('admin.reports.export') }}" class="inline-block px-6 py-3 bg-gradient-to-r from-green-500 via-green-600 to-green-700 text-white font-semibold rounded-lg shadow-lg hover:from-green-600 hover:to-green-800 transform transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-green-600 focus:ring-opacity-50">
+    <i class="fas fa-file-excel mr-3"></i> Xuất Excel
+</a>
+ </div>
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-gradient-to-br from-blue-500 to-blue-300 shadow rounded-xl p-6 flex items-center space-x-4">
+            <div class="bg-white p-3 rounded-full shadow">
+                <i class="fas fa-users text-blue-600 text-3xl"></i>
+            </div>
+            <div>
+                <div class="text-white text-sm">Khách hàng</div>
+                <div class="text-3xl font-bold text-white">{{ $totalCustomers }}</div>
+            </div>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold">Tổng số nhân viên</h2>
-            <p class="text-2xl font-bold">{{ $totalEmployees }}</p>
+        <div class="bg-gradient-to-br from-green-500 to-green-300 shadow rounded-xl p-6 flex items-center space-x-4">
+            <div class="bg-white p-3 rounded-full shadow">
+                <i class="fas fa-user-tie text-green-600 text-3xl"></i>
+            </div>
+            <div>
+                <div class="text-white text-sm">Nhân viên</div>
+                <div class="text-3xl font-bold text-white">{{ $totalEmployees }}</div>
+            </div>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold">Tổng số hợp đồng</h2>
-            <p class="text-2xl font-bold">{{ $totalContracts }}</p>
+        <div class="bg-gradient-to-br from-yellow-500 to-yellow-300 shadow rounded-xl p-6 flex items-center space-x-4">
+            <div class="bg-white p-3 rounded-full shadow">
+                <i class="fas fa-file-contract text-yellow-600 text-3xl"></i>
+            </div>
+            <div>
+                <div class="text-white text-sm">Hợp đồng</div>
+                <div class="text-3xl font-bold text-white">{{ $totalContracts }}</div>
+            </div>
         </div>
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold">Tổng số dịch vụ</h2>
-            <p class="text-2xl font-bold">{{ $totalServices }}</p>
-        </div>
-        <div class="bg-white shadow-md rounded-lg p-6">
-            <h2 class="text-lg font-semibold">Tổng doanh thu</h2>
-            <p class="text-2xl font-bold">{{ number_format($totalRevenue, 0, ',', '.') }} VND</p>
+        <div class="bg-gradient-to-br from-purple-500 to-purple-300 shadow rounded-xl p-6 flex items-center space-x-4">
+            <div class="bg-white p-3 rounded-full shadow">
+                <i class="fas fa-coins text-purple-600 text-3xl"></i>
+            </div>
+            <div>
+                <div class="text-white text-sm">Tổng doanh thu</div>
+                <div class="text-3xl font-bold text-white">{{ number_format($totalRevenue, 0, ',', '.') }} VND</div>
+            </div>
         </div>
     </div>
 
-    <h2 class="text-xl font-bold mt-8 mb-4">Hợp đồng theo trạng thái</h2>
-    <table class="table-auto w-full bg-white shadow-md rounded-lg">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Trạng thái</th>
-                <th class="px-4 py-2">Số lượng</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($contractsByStatus as $status)
-                <tr>
-                    <td class="border px-4 py-2">{{ $status->status }}</td>
-                    <td class="border px-4 py-2">{{ $status->count }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Doanh thu theo tháng</h2>
+            <canvas id="revenueChart" height="120"></canvas>
+        </div>
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Tỷ lệ hợp đồng theo trạng thái</h2>
+            <canvas id="statusChart" height="120"></canvas>
+        </div>
+    </div>
 
-    <h2 class="text-xl font-bold mt-8 mb-4">Doanh thu theo tháng</h2>
-    <table class="table-auto w-full bg-white shadow-md rounded-lg">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Tháng</th>
-                <th class="px-4 py-2">Doanh thu</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($monthlyRevenue as $revenue)
-                <tr>
-                    <td class="border px-4 py-2">{{ $revenue['month_name'] }}</td>
-                    <td class="border px-4 py-2">{{ number_format($revenue['revenue'], 0, ',', '.') }} VND</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Top 5 dịch vụ phổ biến</h2>
+            <ul class="divide-y divide-gray-200">
+                @foreach($topServices as $service)
+                    <li class="py-2 flex justify-between">
+                        <span>{{ $service->service_name }}</span>
+                        <span class="font-semibold">{{ $service->usage_count }} lần</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="bg-white shadow rounded-xl p-6">
+            <h2 class="text-lg font-semibold mb-4">Top 5 khách hàng doanh thu cao</h2>
+            <ul class="divide-y divide-gray-200">
+                @foreach($topCustomers as $customer)
+                    <li class="py-2 flex justify-between">
+                        <span>{{ $customer->name }}</span>
+                        <span class="font-semibold">{{ number_format($customer->total, 0, ',', '.') }} VND</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+    </div>
+</div>
 
-    <h2 class="text-xl font-bold mt-8 mb-4">Dịch vụ phổ biến nhất</h2>
-    <ul class="list-disc pl-6">
-        @foreach($popularServices as $service)
-            <li>{{ $service->service_name }} ({{ $service->usage_count }} lần sử dụng)</li>
-        @endforeach
-    </ul>
+@push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Doanh thu theo tháng
+    new Chart(document.getElementById('revenueChart'), {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($revenueMonths) !!},
+            datasets: [{
+                label: 'Doanh thu (VND)',
+                data: {!! json_encode($revenueValues) !!},
+                backgroundColor: '#6366f1'
+            }]
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
 
-    <h2 class="text-xl font-bold mt-8 mb-4">Nhân viên theo phòng ban</h2>
-    <table class="table-auto w-full bg-white shadow-md rounded-lg">
-        <thead>
-            <tr>
-                <th class="px-4 py-2">Phòng ban</th>
-                <th class="px-4 py-2">Số lượng</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($employeesByDepartment as $department)
-                <tr>
-                    <td class="border px-4 py-2">{{ $department->department }}</td>
-                    <td class="border px-4 py-2">{{ $department->count }}</td>
-                </tr>
-            @endforeach
-        </tbody>
-    </table>
+    // Tỷ lệ hợp đồng theo trạng thái
+    new Chart(document.getElementById('statusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {!! json_encode($contractStatusLabels) !!},
+            datasets: [{
+                data: {!! json_encode($contractStatusValues) !!},
+                backgroundColor: ['#22c55e', '#f59e42', '#ef4444', '#6366f1']
+            }]
+        },
+        options: { responsive: true }
+    });
+</script>
+@endpush
 @endsection

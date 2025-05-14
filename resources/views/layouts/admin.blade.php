@@ -57,6 +57,7 @@
         <li><a href="{{ route('admin.employee.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>
         <li><a href="{{ route('admin.employee.payments.index') }}" class="hover:bg-gray-700">Quản lý thanh toán</a></li>
         <li><a href="{{ route('admin.employee.support.index') }}" class="hover:bg-gray-700">Quản lý yêu cầu hỗ trợ</a></li>
+          <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
         <li><a href="{{ route('admin.profile.show') }}" class="hover:bg-gray-700">Thông tin cá nhân</a></li>
         @endif
       </ul>

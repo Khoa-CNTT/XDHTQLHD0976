@@ -118,7 +118,7 @@
                 <tr class="border-b hover:bg-gray-100">
                     <td class="py-3 px-6">{{ $contract->contract_number }}</td>
                     <td class="py-3 px-6">{{ optional($contract->service)->service_name }}</td>
-                    <td class="py-3 px-6">{{ optional($contract->customer)->name }}</td>
+                    <td class="py-3 px-6">{{ optional($contract->customer)->user->name ?? 'N/A' }}</td>
                     <td class="py-3 px-6">
                         <span class="inline-block px-3 py-1 rounded-full text-xs font-medium
                             @switch($contract->status)
@@ -155,12 +155,7 @@
                             </select>
                             <button type="submit" class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs mt-1">Cập nhật</button>
                         </form>
-                        @if($contract->status !== 'Hoàn thành')
-                        <form action="{{ route('admin.contracts.complete', $contract->id) }}" method="POST">
-                            @csrf @method('PUT')
-                            <button class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs">Đánh dấu Hoàn thành</button>
-                        </form>
-                        @endif
+                        
                         @if($contract->status === 'Yêu cầu huỷ')
                         <form action="{{ route('admin.contracts.confirmCancel', $contract->id) }}" method="POST">
                             @csrf

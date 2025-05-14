@@ -88,10 +88,16 @@ if ($request->filled('customer_name')) {
 
 
     public function show($id)
-    {
-        $contract = Contract::with('customer', 'service')->findOrFail($id);
-        return view('admin.contracts.show', compact('contract'));
-    }
+{
+    $contract = Contract::with('customer', 'service')->findOrFail($id);
+
+  
+    $isPaid = \App\Models\Payment::where('contract_id', $contract->id)
+        ->where('status', 'Hoàn Thành')
+        ->exists();
+
+    return view('admin.contracts.show', compact('contract', 'isPaid'));
+}
 
     public function edit($id)
     {
