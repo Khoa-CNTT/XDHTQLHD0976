@@ -76,13 +76,13 @@
             </div>
         </div>
         <div class="bg-white rounded-xl shadow-sm p-6 border border-gray-100 flex items-center hover:shadow-md transition">
-            <div class="bg-green-100 p-3 rounded-full mr-4">
-                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <div class="bg-red-100 p-3 rounded-full mr-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7 text-red-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
             </div>
             <div>
-                <p class="text-sm text-gray-500">Đang hoạt động</p>
+                <p class="text-sm text-gray-500">Đã huỷ</p>
                 <p class="text-2xl font-bold text-gray-800">{{ $contracts->where('status', 'Hoạt động')->count() }}</p>
             </div>
         </div>
@@ -118,11 +118,6 @@
                 <div class="flex items-center px-2">
                     <span class="inline-block w-3 h-3 rounded-full bg-yellow-100 border border-yellow-600 mr-1"></span>
                     <span>Chờ xử lý</span>
-                </div>
-                <div class="mx-1">|</div>
-                <div class="flex items-center px-2">
-                    <span class="inline-block w-3 h-3 rounded-full bg-green-100 border border-green-600 mr-1"></span>
-                    <span>Hoạt động</span>
                 </div>
                 <div class="mx-1">|</div>
                 <div class="flex items-center px-2">

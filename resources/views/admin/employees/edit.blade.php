@@ -39,6 +39,25 @@
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div class="mb-4">
+                        <label for="identity_card" class="block mb-1 font-medium">Căn cước công dân <span class="text-red-500">*</span></label>
+                        <input type="text" name="identity_card" id="identity_card" class="w-full border border-gray-300 rounded px-4 py-2 @error('identity_card') border-red-500 @enderror" value="{{ old('identity_card', $employee->user->identity_card) }}" required maxlength="12">
+                        @error('identity_card')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                        <p class="text-gray-500 text-sm mt-1">Căn cước công dân gồm 12 chữ số</p>
+                    </div>
+
+                    <div class="mb-4">
+                        <label for="dob" class="block mb-1 font-medium">Ngày sinh <span class="text-red-500">*</span></label>
+                        <input type="date" name="dob" id="dob" class="w-full border border-gray-300 rounded px-4 py-2 @error('dob') border-red-500 @enderror" value="{{ old('dob', $employee->user->dob) }}" required>
+                        @error('dob')
+                            <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                        @enderror
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="mb-4">
                         <label for="password" class="block mb-1 font-medium">Mật khẩu <span class="text-gray-500">(để trống nếu không thay đổi)</span></label>
                         <input type="password" name="password" id="password" class="w-full border border-gray-300 rounded px-4 py-2 @error('password') border-red-500 @enderror">
                         @error('password')

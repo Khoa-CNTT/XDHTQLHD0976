@@ -50,6 +50,8 @@ if ($request->filled('department')) {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'identity_card' => 'required|string|max:12|unique:users',
+            'dob' => 'required|date',
             'password' => 'required|string|min:8',
             'position' => 'required|string|max:255',
             'department' => 'required|string|max:255',
@@ -69,6 +71,8 @@ if ($request->filled('department')) {
             $user = User::create([
                 'name' => $request->name,
                 'email' => $request->email,
+                'identity_card' => $request->identity_card,
+                'dob' => $request->dob,
                 'password' => Hash::make($request->password),
                 'role' => 'employee',
                 'status' => 'active',
@@ -109,6 +113,8 @@ if ($request->filled('department')) {
         $validatedData = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,' . $employee->user->id,
+            'identity_card' => 'required|string|max:12|unique:users,identity_card,' . $employee->user->id,
+            'dob' => 'required|date',
             'position' => 'required|string|max:255',
             'department' => 'required|string|max:255',
             'hired_date' => 'required|date',
@@ -127,6 +133,8 @@ if ($request->filled('department')) {
             $employee->user->update([
                 'name' => $request->name,
                 'email' => $request->email,
+                'identity_card' => $request->identity_card,
+                'dob' => $request->dob,
                 'phone' => $request->phone,
                 'address' => $request->address,
             ]);

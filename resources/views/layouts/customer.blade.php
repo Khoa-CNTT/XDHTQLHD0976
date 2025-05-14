@@ -140,18 +140,16 @@
                                 $unreadNotificationsCount = auth()->user()->notifications()->where('is_read', false)->get()->unique('id')->count();
                             @endphp
                             @if($unreadNotificationsCount > 0)
-                                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center">
-                                    {{ $unreadNotificationsCount }}
-                                </span>
-                            @else
-                                <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center hidden"></span>
+                            <span id="notification-badge" class="absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center">
+                                {{ $unreadNotificationsCount }}
+                            </span>
                             @endif
                         </button>
                        <div id="notifications-dropdown" class="hidden absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg z-50 max-h-96 overflow-y-auto">
     <div class="px-4 py-3 border-b border-gray-200 flex justify-between items-center bg-blue-50">
         <span class="font-bold text-gray-800">Thông báo</span>
         @if($unreadNotificationsCount > 0)
-            <form action="{{ route('customer.notifications.markAllAsRead') }}" method="POST" class="inline">
+            <form action="{{ route('customer.notifications.markAllAsRead') }}" method="POST" class="inline" id="mark-all-read-form">
                 @csrf
                 <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 bg-transparent border-0 p-0 font-medium">
                     Đánh dấu tất cả đã đọc
@@ -210,12 +208,24 @@
                                 
                                 <hr class="my-1 border-gray-200">
                                 
-                                <form action="{{ route('logout') }}" method="POST">
+                                <form action="{{ route('logout') }}" method="POST" id="logout-form">
                                     @csrf
                                     <button type="submit" class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i class="fas fa-sign-out-alt mr-2"></i> Đăng xuất
                                     </button>
                                 </form>
+                                <script>
+                                    // Xóa tất cả dữ liệu chữ ký khi đăng xuất
+                                    document.getElementById('logout-form').addEventListener('submit', function() {
+                                        // Xóa tất cả các key bắt đầu bằng 'savedSignature_'
+                                        for (let i = 0; i < localStorage.length; i++) {
+                                            const key = localStorage.key(i);
+                                            if (key && key.startsWith('savedSignature_')) {
+                                                localStorage.removeItem(key);
+                                            }
+                                        }
+                                    });
+                                </script>
                             </div>
                         </div>
                     </div>
@@ -262,13 +272,14 @@
                     <ul class="space-y-2">
                         <li><a href="{{ route('customer.dashboard') }}" class="hover:underline text-sm md:text-base">Trang Chủ</a></li>
                         <li><a href="{{ route('customer.contracts.index') }}" class="hover:underline text-sm md:text-base">Hợp Đồng</a></li>
-                        <li><a href="#" class="hover:underline text-sm md:text-base">Dịch Vụ</a></li>
+                        <li><a href="{{ route('customer.services.index') }}" class="hover:underline text-sm md:text-base">Dịch Vụ</a></li>
                     </ul>
                 </div>
                 <div>
                     <h3 class="text-lg font-semibold mb-2">Liên Hệ</h3>
                     <p class="text-gray-400 text-sm md:text-base">Email: okamibada@gmail.com</p>
                     <p class="text-gray-400 text-sm md:text-base">Hotline: 0987-653-214</p>
+                    <p class="text-gray-400 text-sm md:text-base">123 Đường Nguyễn Văn Linh, Hải Châu, TP. Đà Nẵng</p>
                 </div>
             </div>
             <div class="mt-6 text-gray-400 text-sm md:text-base">
@@ -343,6 +354,81 @@
             searchDropdown.classList.add('hidden');
         }
     });
+
+    // Mark all as read form handling
+    const markAllReadForm = document.getElementById('mark-all-read-form');
+    if (markAllReadForm) {
+        markAllReadForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Perform AJAX form submission
+            fetch(this.action, {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams(new FormData(this))
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show success message
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'success',
+                    title: 'Tất cả thông báo đã được đánh dấu là đã đọc.',
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+                
+                // Update UI
+                const unreadBadge = document.querySelector('#notification-badge');
+                if (unreadBadge) {
+                    unreadBadge.style.display = 'none';
+                }
+                
+             
+                const notificationItems = document.querySelectorAll('#notifications-list a');
+                notificationItems.forEach(item => {
+                    item.classList.remove('bg-blue-50');
+                    item.classList.add('bg-white');
+                });
+              
+                markAllReadForm.style.display = 'none';
+                
+                
+                fetch('/customer/api/notifications/check', {
+                    method: 'GET',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                    }
+                })
+                .then(response => response.json())
+                .then(checkData => {
+                    console.log('Notification data updated:', checkData);
+                    // Kết quả cập nhật thông báo
+                    localStorage.setItem('lastNotificationUpdate', new Date().getTime());
+                })
+                .catch(error => console.error('Lỗi cập nhật dữ liệu thông báo:', error));
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'error',
+                    title: 'Có lỗi xảy ra khi đánh dấu đã đọc.',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            });
+        });
+    }
 </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
@@ -365,13 +451,22 @@
                 const unreadCount = data.unreadCount;
                 const unreadBadge = document.querySelector('#notification-badge');
                 
-                if (unreadBadge) {
-                    if (unreadCount > 0) {
-                        unreadBadge.textContent = unreadCount;
-                        unreadBadge.classList.remove('hidden');
+                if (unreadCount > 0) {
+                    // Tạo badge nếu không tồn tại
+                    if (!unreadBadge) {
+                        const newBadge = document.createElement('span');
+                        newBadge.id = 'notification-badge';
+                        newBadge.className = 'absolute -top-1 -right-1 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center';
+                        newBadge.textContent = unreadCount;
+                        document.getElementById('notifications-menu-button').appendChild(newBadge);
                     } else {
-                        unreadBadge.classList.add('hidden');
+                        // Cập nhật badge hiện tại
+                        unreadBadge.textContent = unreadCount;
+                        unreadBadge.style.display = '';
                     }
+                } else if (unreadBadge) {
+                    // Ẩn badge khi không có thông báo
+                    unreadBadge.style.display = 'none';
                 }
                 
                 // Cập nhật danh sách thông báo nếu có mới
@@ -405,7 +500,9 @@
                     .then(data => {
                         if (data.notifications && data.notifications.length > 0) {
                             let notificationsHtml = '';
-                            data.notifications.forEach(notification => {
+                            const notificationsToShow = data.notifications.slice(0, 3); // Chỉ hiển thị 3 thông báo
+                            
+                            notificationsToShow.forEach(notification => {
                                 notificationsHtml += `
                                 <a href="/customer/notifications/${notification.id}" class="block px-4 py-3 border-b hover:bg-gray-50 ${notification.is_read ? 'bg-white' : 'bg-blue-50'}">
                                     <div class="flex items-start">
@@ -425,6 +522,7 @@
                                 </a>
                                 `;
                             });
+                            
                             notificationsList.innerHTML = notificationsHtml;
                         } else {
                             notificationsList.innerHTML = `
@@ -453,6 +551,16 @@
                 metaTag.setAttribute('name', 'csrf-token');
                 metaTag.setAttribute('content', '{{ csrf_token() }}');
                 document.head.appendChild(metaTag);
+            }
+            
+            // Kiểm tra cập nhật thông báo từ lần trước
+            const lastUpdate = localStorage.getItem('lastNotificationUpdate');
+            const checkInterval = 5000; // 5 giây
+
+            if (!lastUpdate || (new Date().getTime() - parseInt(lastUpdate)) > checkInterval) {
+                // Lấy thông tin cập nhật từ server
+                checkNewNotifications();
+                localStorage.setItem('lastNotificationUpdate', new Date().getTime());
             }
             
             // Tải danh sách thông báo ngay khi trang tải xong

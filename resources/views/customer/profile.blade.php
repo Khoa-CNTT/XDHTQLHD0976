@@ -65,6 +65,14 @@
                                 <label class="block text-sm font-medium text-gray-600">Mã số thuế</label>
                                 <p class="mt-1 text-gray-900">{{ $customer->tax_code }}</p>
                             </div>
+                            <div>
+    <label class="block text-sm font-medium text-gray-600">Căn cước công dân</label>
+        <p class="mt-1 text-gray-900">{{ $user->identity_card }}</p>
+</div>
+<div>
+    <label class="block text-sm font-medium text-gray-600">Năm sinh</label>
+      <p class="mt-1 text-gray-900">{{ $user->dob }}</p>
+</div>
                         </div>
                     </div>
 

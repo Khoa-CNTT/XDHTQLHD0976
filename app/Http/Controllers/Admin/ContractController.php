@@ -150,20 +150,6 @@ public function updateStatus(Request $request, $id)
     return redirect()->route('admin.contracts.index')->with('success', 'Trạng thái hợp đồng đã được cập nhật.');
 }
 
-public function markAsComplete($id)
-{
-    $contract = Contract::findOrFail($id);
-
-    if ($contract->status !== 'Hoàn thành') {
-        $contract->status = 'Hoàn thành';
-        $contract->save();
-
-        return redirect()->route('admin.contracts.index')->with('success', 'Hợp đồng đã được đánh dấu là hoàn thành.');
-    }
-
-    return redirect()->route('admin.contracts.index')->with('warning', 'Hợp đồng đã ở trạng thái hoàn thành.');
-}
-
 public function confirmCancel($id)
 {
     $contract = Contract::findOrFail($id);
@@ -175,11 +161,6 @@ public function confirmCancel($id)
     return redirect()->back()->with('success', 'Hợp đồng đã được xác nhận huỷ.');
 }
 
-public function showSigningForm($id)
-{
-    return redirect()->route('admin.contracts.show', $id)
-        ->with('info', 'Chữ ký công ty được áp dụng tự động sau khi khách hàng thanh toán. Không cần thực hiện ký thủ công.');
-}
 
 
 // Phương thức tạo PDF hợp đồng với chữ ký của cả hai bên
@@ -207,39 +188,5 @@ public function generateContractPdf($id)
 
 
 
-private function addCompanySignature($contractId)
-{
-    try {
-        $contract = Contract::with('signatures')->findOrFail($contractId);
-
-        if (!$contract || $contract->signatures->isEmpty()) {
-            return false; // Không có chữ ký khách hàng
-        }
-
-        $signature = $contract->signatures->first();
-
-        // Kiểm tra nếu công ty đã ký
-        if ($signature->admin_signature_data) {
-            return true; // Đã ký trước đó
-        }
-
-        // Lấy thông tin chữ ký công ty từ cấu hình
-        $companySignature = config('app.company_signature');
-
-        // Cập nhật thông tin chữ ký công ty
-        $signature->update([
-            'admin_name' => $companySignature['name'],
-            'admin_position' => $companySignature['position'],
-            'admin_signature_data' => $companySignature['signature_data'],
-            'admin_signature_image' => $companySignature['signature_data'], // Có thể dùng chung
-            'admin_signed_at' => now(),
-        ]);
-
-        return true;
-    } catch (\Exception $e) {
-        Log::error('Error adding company signature: ' . $e->getMessage());
-        return false;
-    }
-}
 
 }

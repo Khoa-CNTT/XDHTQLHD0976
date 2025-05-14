@@ -14,7 +14,6 @@ class Signature extends Model
     'customer_name',
     'customer_email',
     'signature_data',
-    'identity_card',
     'contract_duration_id', 
     'status',
     'signed_at',
@@ -26,6 +25,19 @@ class Signature extends Model
     'admin_name',
     'admin_position',
 ];
+public function getSignatureImageUrlAttribute()
+{
+    return $this->signature_image ? asset('storage/signatures/' . $this->signature_image) : null;
+}
+public function isSignedByCustomer()
+{
+    return !empty($this->signature_data);
+}
+
+public function isSignedByAdmin()
+{
+    return !empty($this->admin_signature_data);
+}
 
     public function contract()
     {

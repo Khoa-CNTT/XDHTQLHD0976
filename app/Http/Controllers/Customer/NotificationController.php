@@ -58,9 +58,15 @@ class NotificationController extends Controller
    public function markAllAsRead()
 {
     Notification::where('user_id', Auth::id())
-        ->where('created_by', 'employee') // Chỉ đánh dấu thông báo từ nhân viên
         ->where('is_read', false)
         ->update(['is_read' => true]);
+    
+    if (request()->ajax()) {
+        return response()->json([
+            'success' => true,
+            'message' => 'Tất cả thông báo đã được đánh dấu là đã đọc.'
+        ]);
+    }
     
     return redirect()->back()
         ->with('status', 'Tất cả thông báo đã được đánh dấu là đã đọc.');

@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\File;
 use App\Models\Contract;
 use App\Models\Payment;
 use App\Models\Signature;
@@ -222,7 +224,7 @@ class VNPayController extends Controller
                     ]);
                     
                     return redirect()->route('customer.contracts.show', ['id' => $contractId])
-                        ->with('success', 'Thanh toán thành công! Hợp đồng đã được cập nhật trạng thái.');
+                        ->with('success', 'Thanh toán thành công! ');
                 } catch (Exception $e) {
                     DB::rollBack();
                     Log::error("VNPay - Error processing payment", [
@@ -388,61 +390,73 @@ class VNPayController extends Controller
     /**
      * Thêm chữ ký công ty tự động vào hợp đồng
      */
-    
-    private function addCompanySignature($contractId)
+  private function addCompanySignature($contractId)
 {
     try {
         $contract = Contract::with('signatures')->find($contractId);
-        
+
         if (!$contract || $contract->signatures->isEmpty()) {
-            Log::warning("VNPay - Cannot add company signature: contract or signatures not found", ['contract_id' => $contractId]);
             return false;
         }
-        
+
         $signature = $contract->signatures->first();
-        
-        // Kiểm tra nếu công ty đã ký
-        if ($signature->admin_signature_data) {
-            Log::info("VNPay - Company signature already exists", ['contract_id' => $contractId]);
-            return true;
+
+        $adminSignatureBase64 = $this->getAdminSignatureBase64();
+
+        if (!$adminSignatureBase64) {
+            Log::warning("Không tìm thấy chữ ký admin, dùng ảnh mặc định hoặc null.");
         }
-        
-        // Lấy thông tin chữ ký công ty từ cấu hình
-        $companySignature = config('app.company_signature');
-        if (!$companySignature) {
-            Log::error("VNPay - Company signature config not found");
-            return false;
-        }
-         // Cập nhật thông tin chữ ký công ty
-        $signatureData = [
-            'admin_name' => $companySignature['name'] ?? 'Admin',
-            'admin_position' => $companySignature['position'] ?? 'Giám đốc',
+
+        $signature->update([
+            'admin_name' => 'Phạm Quang Ngà',
+            'admin_position' => 'Giám đốc',
+            'admin_signature_image' => $adminSignatureBase64,
             'admin_signed_at' => now(),
-        ];
-        
-        // Kiểm tra trường company_signature hoặc signature_data trong config
-        if (isset($companySignature['company_signature'])) {
-            $signatureData['admin_signature_data'] = $companySignature['company_signature'];
-            $signatureData['admin_signature_image'] = $companySignature['company_signature'];
-        } elseif (isset($companySignature['signature_data'])) {
-            $signatureData['admin_signature_data'] = $companySignature['signature_data'];
-            $signatureData['admin_signature_image'] = $companySignature['signature_data'];
-        } else {
-            $signatureData['admin_signature_data'] = asset('images/company-signature.png');
-            $signatureData['admin_signature_image'] = asset('images/company-signature.png');
-        }
-        
-        Log::info("VNPay - Updating signature with company data", [
-            'contract_id' => $contractId,
-            'signature_id' => $signature->id
         ]);
-        
-        $signature->update($signatureData);
-        
+
         return true;
     } catch (\Exception $e) {
         Log::error("VNPay - Error adding company signature: " . $e->getMessage());
         return false;
     }
 }
+
+private function getAdminSignatureBase64()
+{
+    $folder = 'signatures';
+    $fallbackFile = 'signatures/Untitled.png';
+    $filename = null;
+
+    // Tìm file chữ ký admin đầu tiên có tên bắt đầu bằng admin_signature
+    $files = Storage::disk('public')->files($folder);
+
+    foreach ($files as $file) {
+        if (str_starts_with(basename($file), 'admin_signature')) {
+            $filename = $file;
+            break;
+        }
+    }
+
+    // Nếu không tìm được thì dùng ảnh mặc định
+    if (!$filename || !Storage::disk('public')->exists($filename)) {
+        if (!Storage::disk('public')->exists($fallbackFile)) {
+            return null; // không có ảnh nào cả
+        }
+        $filename = $fallbackFile;
+    }
+
+    $fullPath = storage_path('app/public/' . $filename);
+
+    if (!file_exists($fullPath)) {
+        return null;
+    }
+
+    $mimeType = File::mimeType($fullPath);
+    $imageContent = Storage::disk('public')->get($filename);
+
+    return 'data:' . $mimeType . ';base64,' . base64_encode($imageContent);
+}
+
+
+
 }

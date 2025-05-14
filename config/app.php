@@ -136,8 +136,10 @@ return [
         'position' => env('COMPANY_SIGNATURE_POSITION', 'Giám đốc'),
         'company_signature' => 'signatures/admin_signature.png',
         'company_name' => env('COMPANY_NAME', 'Công ty Dịch vụ Công Thông Tin'),
-        'company_address' => env('COMPANY_ADDRESS', '123 Đường Nguyễn Văn Linh, Quận 7, TP. Hồ Chí Minh'),
-        'company_tax_code' => env('COMPANY_TAX_CODE', '0987653214'),
+        'company_address' => env('COMPANY_ADDRESS', '123 Đường Nguyễn Văn Linh, Hải Châu, TP. Đà Nẵng'),
+        'company_tax_code' => env('COMPANY_TAX_CODE', '3801317389'),
+         'company_phone' => env('COMPANY_TAX_CODE', '0987653214'),
+        'company_email' => env('COMPANY_EMAIL', 'okamibada@gmail.com'),
     ],
 
 ];

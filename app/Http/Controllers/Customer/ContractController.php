@@ -72,7 +72,7 @@ class ContractController extends Controller
     }
 
     
-    public function downloadPdf($id)
+   public function downloadPdf($id)
 {
     $contract = Contract::with(['service', 'signatures'])->findOrFail($id);
 
@@ -82,8 +82,9 @@ class ContractController extends Controller
             ->with('error', 'Hợp đồng chưa hoàn thành, không thể tải xuống.');
     }
 
-    // Kiểm tra nếu cả hai bên đã ký
-    if ($contract->signatures->isEmpty() || !$contract->signatures->first()->admin_signature_data) {
+    // Kiểm tra nếu cả hai bên đã ký (dùng đúng cột bạn đang lưu chữ ký admin)
+    $signature = $contract->signatures->first();
+    if (!$signature || !$signature->signature_image || !$signature->admin_signature_image) {
         return redirect()->route('customer.contracts.show', $id)
             ->with('error', 'Hợp đồng chưa được ký đầy đủ.');
     }

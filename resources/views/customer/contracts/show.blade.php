@@ -1,33 +1,45 @@
 @extends('layouts.customer')
 
 @section('title', 'Chi Tiết Hợp Đồng')
-@if(session()->has('success'))
-    @push('scripts')
-    <script>
-        Swal.fire({
-            icon: 'success',
-            title: 'Thành công!',
-            text: '{{ session('success') }}',
-            showConfirmButton: false,
-            timer: 2000
-        });
-    </script>
-    @endpush
+@push('scripts')
+@if(session('success'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 @endif
+@if(session('error'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+@endif
+@endpush
 @section('content')
 <div class="max-w-5xl mx-auto mt-10 mb-20 min-h-screen pb-24">
 <div class="bg-white p-8 rounded-2xl shadow-lg border border-gray-200 mb-10">
-@if (session('success'))
-    <div class="bg-green-100 text-green-700 px-4 py-3 rounded-lg mb-4">
-        {{ session('success') }}
-    </div>
-@endif
 
-@if (session('error'))
-    <div class="bg-red-100 text-red-700 px-4 py-3 rounded-lg mb-4">
-        {{ session('error') }}
-    </div>
-@endif
     <h1 class="text-3xl font-bold mb-8 text-center text-gray-800">Chi Tiết Hợp Đồng</h1>
     @if($contract->status === 'Hoàn thành')
     <div class="mt-6 text-right">
@@ -123,6 +135,14 @@
                 <div>
                     <label class="block text-sm font-medium text-gray-900">Địa chỉ</label>
                     <p class="mt-1 text-gray-600">{{ $contract->customer->user->address }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900">Ngày sinh</label>
+                    <p class="mt-1 text-gray-600">{{ $contract->customer->user->dob ? \Carbon\Carbon::parse($contract->customer->user->dob)->format('d/m/Y') : 'Chưa cập nhật' }}</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-900">Căn cước công dân</label>
+                    <p class="mt-1 text-gray-600">{{ $contract->customer->user->identity_card ?? 'Chưa cập nhật' }}</p>
                 </div>
             </div>
         @else
@@ -221,46 +241,69 @@
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
             <p>Hợp đồng này chưa được ký.</p>
-            <a href="{{ route('customer.services.sign', $contract->service_id) }}?duration={{ Str::slug($contract->signatures->first()->duration ?? 'none', '_') }}" class="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
+            <a href="{{ route('customer.contratcs.sign', $contract->service_id) }}?duration={{ Str::slug($contract->signatures->first()->duration ?? 'none', '_') }}" class="mt-2 inline-block px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700 text-sm">
                 Ký ngay
             </a>
         </div>
         @else
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div class="border rounded-lg p-4 bg-gray-50">
-                <h4 class="text-md font-semibold text-gray-700 mb-3">Chữ ký của bạn (Bên B)</h4>
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Người ký:</strong> {{ $contract->signatures->first()->customer_name }}</p>
-                    <p class="mb-1"><strong>Email:</strong> {{ $contract->signatures->first()->customer_email }}</p>
-                    <p class="mb-1"><strong>CMND/CCCD:</strong> {{ $contract->signatures->first()->identity_card }}</p>
-                    <p><strong>Ngày ký:</strong> {{ date('d/m/Y H:i', strtotime($contract->signatures->first()->signed_at)) }}</p>
-                </div>
-                <div class="border p-3 rounded bg-white">
-                    <img src="{{ $contract->signatures->first()->signature_data }}" alt="Chữ ký của bạn" class="max-h-24">
-                </div>
-            </div>
-            
-            <div class="border rounded-lg p-4 bg-gray-50">
-                <h4 class="text-md font-semibold text-gray-700 mb-3">Chữ ký của đơn vị cung cấp (Bên A)</h4>
-                @if($contract->signatures->first()->admin_signature_data)
-                <div class="mb-3">
-                    <p class="mb-1"><strong>Người ký:</strong> {{ $contract->signatures->first()->admin_name }}</p>
-                    <p class="mb-1"><strong>Chức vụ:</strong> {{ $contract->signatures->first()->admin_position }}</p>
-                    <p><strong>Ngày ký:</strong> {{ date('d/m/Y H:i', strtotime($contract->signatures->first()->admin_signed_at)) }}</p>
-                </div>
-                <div class="border p-3 rounded bg-white">
-                    <img src="{{ $contract->signatures->first()->admin_signature_data }}" alt="Chữ ký đơn vị cung cấp" class="max-h-24">
-                </div>
-                <div class="mt-2 text-xs text-gray-500 italic">
-                    <p>Chữ ký được áp dụng tự động bởi hệ thống</p>
-                </div>
+       
+
+        <div>
+    <h3 class="text-lg font-semibold mb-4">✍️ Chữ Ký Hợp Đồng</h3>
+    @php
+        $signature = $contract->signatures->first();
+        // Kiểm tra xem signature_image có phải là base64 hay không
+        $signatureImageSrc = (Str::startsWith($signature->signature_image, 'data:image')) 
+            ? $signature->signature_image 
+            : 'data:image/png;base64,' . $signature->signature_image;
+
+        // Lấy chữ ký admin từ base64
+        $adminSignatureBase64 = $signature->admin_signature_image; 
+    @endphp
+
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {{-- Chữ ký khách hàng --}}
+        <div class="border rounded-lg p-4 bg-gray-50 flex flex-col h-full">
+            <h4 class="text-md font-semibold text-gray-700 mb-3">Chữ ký của bạn (Bên B)</h4>
+           
+            <div class="border p-3 rounded bg-white flex flex-col items-center justify-center" style="min-height: 200px;">
+                @if($signature->signature_image)
+                    <img src="{{ $signatureImageSrc }}" alt="Chữ ký khách hàng" class="max-h-32 mx-auto mb-2">
+                    <p class="mt-2 font-semibold text-blue-700 text-lg underline underline-offset-4 drop-shadow">{{ $signature->customer_name ?? 'Khách hàng' }}</p>
+                    <p class="text-gray-600 font-medium drop-shadow">Khách hàng</p>
                 @else
-                <div class="text-center py-4 text-gray-500">
-                    <p>Hợp đồng sẽ được tự động ký bởi đơn vị cung cấp sau khi thanh toán.</p>
-                </div>
+                    <p>Chưa có chữ ký</p>
                 @endif
             </div>
         </div>
+
+        {{-- Chữ ký admin --}}
+        <div class="border rounded-lg p-4 bg-gray-50 flex flex-col h-full">
+            <h4 class="text-md font-semibold text-gray-700 mb-3">Chữ ký của đơn vị cung cấp (Bên A)</h4>
+            <div class="border p-3 rounded bg-white flex flex-col items-center justify-center" style="min-height: 200px;">
+                @if($contract->status === 'Hoàn thành')
+                    @if($adminSignatureBase64)
+                        <img src="{{ $adminSignatureBase64 }}" alt="Chữ ký admin" class="max-h-32 mx-auto mb-2">
+                        <p class="mt-2 font-semibold text-blue-700 text-lg underline underline-offset-4 drop-shadow">{{ $signature->admin_name ?? 'Phạm Quang Ngà' }}</p>
+                        <p class="text-gray-600 font-medium drop-shadow">{{ $signature->admin_position ?? 'Giám đốc' }}</p>
+                    @else
+                        <img src="{{ asset('storage/signatures/admin_signature.png') }}" alt="Chữ ký admin" class="max-h-32 mx-auto mb-2">
+                        <p class="mt-2 font-semibold text-blue-700 text-lg underline underline-offset-4 drop-shadow">Phạm Quang Ngà</p>
+                        <p class="text-gray-600 font-medium drop-shadow">Giám đốc</p>
+                    @endif
+                @else
+                    <div class="text-center text-gray-400 py-8">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        <p>Chữ ký của đơn vị cung cấp sẽ xuất hiện sau khi bạn <span class="font-semibold text-blue-600">thanh toán hợp đồng</span>.</p>
+                    </div>
+                @endif
+            </div>
+        </div>
+    </div>
+</div>
+
         
         @if($contract->signatures->first()->isFullySigned())
         <div class="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">

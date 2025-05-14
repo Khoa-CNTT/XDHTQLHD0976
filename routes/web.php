@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\SupportTicketController as AdminSupportTicketCont
 use App\Http\Controllers\Admin\DurationController;
 use App\Http\Controllers\Admin\ContractDurationController;
 use App\Http\Controllers\Admin\AdminSignatureController;
+use App\Http\Controllers\Admin\AdminCustomerSignatureController as AdminCustomerSignatureController;
 
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\ContractController as EmployeeContractController;
@@ -40,7 +41,6 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
 
-// Public routes - for everyone, no authentication required
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 Route::get('/services/{id}', [CustomerServiceController::class, 'show'])->name('customer.services.show');
 Route::get('/services', [CustomerServiceController::class, 'index'])->name('customer.services.index');
@@ -106,9 +106,16 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
 
         
         
-        Route::get('/admin/signature', [AdminSignatureController::class, 'showSignatureForm'])->name('signature.form');
-        Route::post('/admin/signature', [AdminSignatureController::class, 'saveSignature'])->name('signature.save');
+        Route::get('/admin/signature', [AdminSignatureController::class, 'showForm'])->name('signature.form');
+        Route::post('/admin/signature', [AdminSignatureController::class, 'save'])->name('signature.save');
         
+       
+        Route::prefix('customer-signatures')->name('customer-signatures.')->group(function() {
+            Route::get('/', [AdminCustomerSignatureController::class, 'index'])->name('index');
+            Route::get('/{customerId}', [AdminCustomerSignatureController::class, 'show'])->name('show');
+            Route::post('/{customerId}/upload', [AdminCustomerSignatureController::class, 'upload'])->name('upload');
+            Route::delete('/{signatureId}', [AdminCustomerSignatureController::class, 'delete'])->name('delete');
+        });
         
         
         

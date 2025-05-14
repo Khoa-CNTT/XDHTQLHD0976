@@ -57,12 +57,37 @@ class AuthController extends Controller
 //    dăng ký
     public function register(Request $request)
 {
+      $currentYear = now()->year;
+     
+    // Xử lý ngày sinh
+    $dob = null;
+    try {
+        // Kiểm tra định dạng ngày và chuyển đổi
+        if (preg_match('/^\d{2}\/\d{2}\/\d{4}$/', $request->dob)) {
+            // Định dạng d/m/Y (VD: 23/01/2003)
+            $dob = \Carbon\Carbon::createFromFormat('d/m/Y', $request->dob)->format('Y-m-d');
+        } else if (preg_match('/^\d{4}-\d{2}-\d{2}$/', $request->dob)) {
+            // Định dạng Y-m-d (VD: 2003-01-23)
+            $dob = $request->dob;
+        } else {
+            return back()->withInput()->withErrors(['dob' => 'Ngày sinh không đúng định dạng. Vui lòng nhập theo định dạng ngày/tháng/năm (VD: 23/01/2003).']);
+        }
+    } catch (\Exception $e) {
+        return back()->withInput()->withErrors(['dob' => 'Ngày sinh không hợp lệ. Vui lòng kiểm tra lại (định dạng: ngày/tháng/năm).']);
+    }
+
+    // Thay thế giá trị ngày sinh trong request để validation có thể xử lý đúng
+    $request->merge(['dob' => $dob]);
+
+    if ($dob == '0000-00-00') {
+        return back()->withErrors(['dob' => 'Ngày sinh không thể là ngày mặc định 0000-00-00.']);
+    }
     $request->validate([
-        'name' => [
-            'required',
-            'string',
-            'max:255',
-            'regex:/^[\p{L}\s]+$/u' , // Chỉ cho phép tên có chữ cái và khoảng trắng
+         'name' => [
+        'required',
+        'string',
+        'max:255',
+        'regex:/^([A-ZÀ-Ỹ][a-zà-ỹ]+)(\s[A-ZÀ-Ỹ][a-zà-ỹ]+)+$/u',
         ],
         'email' => [
             'required',
@@ -71,6 +96,18 @@ class AuthController extends Controller
             'max:255',
             'unique:users',
             'regex:/@gmail\.com$/', // Email phải có đuôi @gmail.com
+        ],
+         'identity_card' => [
+        'required',
+        'string',
+        'regex:/^\d{12}$/', // Căn cước công dân bắt buộc 12 chữ số
+        'unique:users,identity_card', // Không được trùng
+        ],
+           'dob' => [
+            'required',
+            'date',
+            'before:today',
+            'after:1900-01-01',
         ],
         'password' => [
             'required',
@@ -81,41 +118,86 @@ class AuthController extends Controller
             'regex:/[0-9]/', // Phải có ít nhất một chữ số
             'regex:/[@$!%*?&]/', // Phải có ít nhất một ký tự đặc biệt
         ],
-        'phone' => [
-            'nullable',
-            'string',
-            'max:15',
-            'regex:/^\d{10}$/', // Chỉ cho phép số và độ dài từ 10 
+         'phone' => [
+        'required',
+        'regex:/^0\d{9}$/',  
+        'max:10',
+        'min:10' 
         ],
-        'address' => 'nullable|string|max:255',
-        'company_name' => 'required|string|max:255',
+        'address' => [
+        'required',
+        'string',
+        'max:255',
+    ],
+        'company_name' => [
+        'required',
+        'string',
+        'regex:/^[\p{L}0-9\s\.\,\-\(\)]+$/u', // Tên công ty có thể gồm chữ, số, dấu cách và các dấu cơ bản
+        'max:255',
+    ],
         'tax_code' => [
-            'required',
-            'string',
-            'regex:/^\d{10}(\d{3})?$/',
-            'unique:customers,tax_code', // Mã số thuế không được trùng
-        ],
+        'required',
+        'string',
+        'regex:/^\d{10}$/',  // Mã số thuế bắt buộc 10 số
+        'unique:customers,tax_code',
+    ],
     ], [
-        'name.regex' => 'Tên chỉ được chứa chữ cái và khoảng trắng, không chứa ký tự đặc biệt.',
-        'email.regex' => 'Email phải có đuôi @gmail.com.',
-        'password.regex' => 'Mật khẩu phải chứa ít nhất một chữ in hoa, một số và một ký tự đặc biệt.',
-        'password.confirmed' => 'Mật khẩu không khớp nhau.',
-        'phone.regex' => 'Số điện thoại chỉ chứa các chữ số.',
-        'phone.min' => 'Số điện thoại phải có 10 số.',
-        'tax_code.regex' => 'Mã số thuế phải là số và có độ dài từ 10 đến 13 ký tự.',
-        'tax_code.unique' => 'Mã số thuế này đã tồn tại.',
-        'tax_code.min' => 'Mã số thuế phải có ít nhất 10 ký tự.',
-    ]);
+    'name.regex' => 'Họ tên phải đầy đủ (ít nhất 2 từ), viết hoa chữ cái đầu, không chứa ký tự đặc biệt.',
+    'email.regex' => 'Email phải có đuôi @gmail.com.',
+    'identity_card.regex' => 'Căn cước công dân phải đúng 12 chữ số.',
+    'dob.date' => 'Ngày sinh phải là một ngày hợp lệ.',
+          'dob.before' => 'Ngày sinh phải là ngày trong quá khứ và không thể trùng với ngày hôm nay.',
+        'dob.after' => 'Ngày sinh không được quá xa trong quá khứ.',
+        'dob.date_format' => 'Ngày sinh phải theo định dạng (ví dụ: 23-01-2003).',
+        'dob.before:' . $currentYear . '-12-31' => 'Ngày sinh không thể sau năm hiện tại ('.$currentYear.').',
+    'phone.required' => 'Số điện thoại bắt buộc nhập.',
+    'phone.regex' => 'Số điện thoại phải bắt đầu bằng 0 và gồm đúng 10 chữ số.',
+    'company_name.regex' => 'Tên công ty chỉ bao gồm chữ, số, và một số ký tự cơ bản.',
+    'tax_code.regex' => 'Mã số thuế phải là số và gồm đúng 10 chữ số.',
 
-    
+    'password.regex' => 'Mật khẩu phải có ít nhất 8 ký tự, bao gồm chữ hoa, chữ số và ký tự đặc biệt.',
+    'password.confirmed' => 'Mật khẩu xác nhận không khớp.',
+    'identity_card.unique' => 'Căn cước công dân đã tồn tại.',
+    'email.unique' => 'Email đã tồn tại.',
+    'tax_code.unique' => 'Mã số thuế đã tồn tại.',
+    'phone.unique' => 'Số điện thoại đã tồn tại.',
+    'address.required' => 'Địa chỉ không được để trống.',
+    'address.string' => 'Địa chỉ phải là một chuỗi ký tự.',
+    'address.max' => 'Địa chỉ không được vượt quá 255 ký tự.',
+    'company_name.required' => 'Tên công ty không được để trống.',
+    'company_name.string' => 'Tên công ty phải là một chuỗi ký tự.',
+    'company_name.max' => 'Tên công ty không được vượt quá 255 ký tự.',
+    'tax_code.required' => 'Mã số thuế không được để trống.',
+    'tax_code.string' => 'Mã số thuế phải là một chuỗi ký tự.',
+    'tax_code.max' => 'Mã số thuế không được vượt quá 10 ký tự.',
+    'phone.string' => 'Số điện thoại phải là một chuỗi ký tự.',
+    'phone.max' => 'Số điện thoại không được vượt quá 10 ký tự.',
+    'phone.min' => 'Số điện thoại không được ít hơn 10 ký tự.',
+   
+    'identity_card.required' => 'Căn cước công dân không được để trống.',
+    'identity_card.string' => 'Căn cước công dân phải là một chuỗi ký tự.',
+    'identity_card.max' => 'Căn cước công dân không được vượt quá 12 ký tự.',
+    'identity_card.min' => 'Căn cước công dân không được ít hơn 12 ký tự.',
+    'email.required' => 'Email không được để trống.',
+    'email.string' => 'Email phải là một chuỗi ký tự.',
+    'email.max' => 'Email không được vượt quá 255 ký tự.',
+    'email.email' => 'Email không đúng định dạng.',
+    'password.required' => 'Mật khẩu không được để trống.',     
+]);
+
+
+
     $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-        'role' => 'customer', 
-        'phone' => $request->phone,
-        'address' => $request->address,
-    ]);
+    'name' => $request->name,
+    'email' => $request->email,
+    'identity_card' => $request->identity_card, 
+    'dob' => $dob,
+    'password' => Hash::make($request->password),
+    'role' => 'customer', 
+    'phone' => $request->phone,
+    'address' => $request->address,
+]);
+
 
     
     Customer::create([
@@ -129,42 +211,7 @@ class AuthController extends Controller
 
     return redirect()->route('customer.dashboard');
 }
-// public function register(Request $request)
-// {
-    
-//     $request->validate([
-//         'name' => 'required|string|max:255|regex:/^[a-zA-Z\s]+$/',
-//         'email' => 'required|string|email|max:255|unique:users|regex:/^[a-z0-9._%+-]+@gmail\.com$/',
-//         'phone' => 'required|string|regex:/^0[0-9]{9}$/', // Đảm bảo số điện thoại là số và có độ dài 10
-//         'address' => 'required|string|max:255',
-//         'password' => 'required|string|min:6|confirmed|regex:/^(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/',
-//         'company_name' => 'required|string|max:255',
-//         'tax_code' => 'required|string|size:10|regex:/^[0-9]+$/|unique:customers,tax_code',
-//     ]);
 
-//     // Nếu dữ liệu hợp lệ, tạo tài khoản mới
-//     $user = User::create([
-//         'name' => $request->name,
-//         'email' => $request->email,
-//         'password' => Hash::make($request->password),
-//         'role' => 'customer', // Mặc định là khách hàng
-//         'phone' => $request->phone,
-//         'address' => $request->address,
-//     ]);
-
-//     // Tạo thông tin khách hàng
-//     Customer::create([
-//         'user_id' => $user->id,
-//         'company_name' => $request->company_name,
-//         'tax_code' => $request->tax_code,
-//     ]);
-
-//     // Đăng nhập sau khi đăng ký
-//     Auth::login($user);
-
-//     // Chuyển hướng tới trang dashboard
-//     return redirect()->route('customer.dashboard');
-// }
 
 
     // Đăng xuất

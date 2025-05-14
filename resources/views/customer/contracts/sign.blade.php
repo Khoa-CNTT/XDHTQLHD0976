@@ -43,6 +43,8 @@
             <p>Điện thoại: {{ Auth::user()->phone }}</p>
             <p>Mã số thuế: {{ Auth::user()->customer->tax_code ?? 'Chưa cập nhật' }}</p>
             <p>Địa chỉ: {{ Auth::user()->address }}</p>
+            <p>Ngày sinh: {{ Auth::user()->dob ? (is_string(Auth::user()->dob) ? date('d/m/Y', strtotime(Auth::user()->dob)) : Auth::user()->dob->format('d/m/Y')) : 'Chưa cập nhật' }}</p>
+            <p>Căn cước công dân: {{ Auth::user()->identity_card }}</p>
         </div>
     </div>
 
@@ -61,7 +63,17 @@
             ['title' => 'Điều 3: Giá Cả và Thanh Toán', 'content' => '
                 <b>Giá dịch vụ:</b> Bên B sẽ thanh toán cho Bên A một khoản phí tổng cộng theo mức giá đã thỏa thuận trong hợp đồng.<br>
                 <b>Phương thức thanh toán:</b> Thanh toán sẽ được thực hiện qua chuyển khoản ngân hàng, tiền mặt hoặc các hình thức khác mà hai bên thống nhất.<br>
-                <b>Thời gian thanh toán:</b> Bên B sẽ thanh toán 50% giá trị hợp đồng sau khi ký kết hợp đồng, 30% khi hoàn thành 50% công việc, và 20% còn lại khi Bên A hoàn thành và bàn giao sản phẩm dịch vụ.']
+                <b>Thời gian thanh toán:</b> Bên B sẽ thanh toán 50% giá trị hợp đồng sau khi ký kết hợp đồng, 30% khi hoàn thành 50% công việc, và 20% còn lại khi Bên A hoàn thành và bàn giao sản phẩm dịch vụ.'],
+        ['title' => 'Điều 4: Hiệu Lực Của Hợp Đồng', 'content' => '
+            <b>Hiệu lực:</b> Hợp đồng có hiệu lực kể từ ngày ký và kéo dài đến hết .<br>
+            <b>Số bản:</b> Hợp đồng được lập thành 02 bản, mỗi bên giữ 01 bản có giá trị pháp lý như nhau.'],
+        ['title' => 'Điều 5: Chấm Dứt Hợp Đồng', 'content' => '
+            Hợp đồng có thể chấm dứt trước thời hạn khi:<br>
+            - Hai bên cùng thỏa thuận bằng văn bản.<br>
+            - Một bên vi phạm nghiêm trọng điều khoản trong hợp đồng và không khắc phục trong vòng 07 ngày kể từ ngày được thông báo.<br>
+            - Có sự kiện bất khả kháng theo quy định pháp luật.'],
+        ['title' => 'Điều 6: Giải Quyết Tranh Chấp', 'content' => '
+            Mọi tranh chấp phát sinh từ hợp đồng này sẽ được ưu tiên giải quyết bằng thương lượng. Nếu không đạt được thỏa thuận, tranh chấp sẽ được đưa ra Tòa án nhân dân có thẩm quyền tại {{ config("app.company_location", "TP. Hà Nội") }} để giải quyết.']
         ] as $item)
         <details class="border border-gray-300 rounded-lg p-4 mb-4">
             <summary class="font-semibold cursor-pointer text-gray-800">{{ $item['title'] }}</summary>
@@ -114,24 +126,6 @@
             >
         
         </div>
-
-        <div class="flex flex-col items-center">
-            <label for="identity_card" class="block font-medium mb-1 text-center">Căn cước công dân</label>
-            <input
-                type="text"
-                id="identity_card"
-                name="identity_card"
-                required
-                maxlength="12"
-                pattern="\d{12}"
-                inputmode="numeric"
-                class="text-center tracking-widest text-lg border-2 border-blue-400 rounded-lg px-4 py-2 focus:border-blue-600 focus:ring focus:ring-blue-200 transition w-60"
-                placeholder="Nhập 12 số CCCD"
-                value="{{ Auth::user()->identity_card }}"
-            >
-            
-        </div>
-
         <div class="flex flex-col items-center">
             <label for="contract_date" class="block font-medium mb-1 text-center">Ngày ký hợp đồng</label>
             <input
@@ -168,13 +162,15 @@
     const saveBtn = document.getElementById('save-signature');
     const clearBtn = document.getElementById('clear-signature');
     const signatureInput = form.querySelector('#signature-data');
+    const userId = "{{ Auth::id() }}"; // Lấy ID người dùng hiện tại
+    const signatureKey = 'savedSignature_' + userId; // Tạo khóa localStorage riêng cho mỗi người dùng
 
     // Khi vẽ, hiện nút Lưu chữ ký và gán giá trị vào input
     canvas.addEventListener('pointerup', () => {
         if (!signaturePad.isEmpty()) {
             const signatureData = signaturePad.toDataURL();
             signatureInput.value = signatureData;
-            localStorage.setItem('savedSignature', signatureData);
+            localStorage.setItem(signatureKey, signatureData);
             saveBtn.classList.remove('hidden');
         }
     });
@@ -183,7 +179,7 @@
     saveBtn.addEventListener('click', () => {
         if (!signaturePad.isEmpty()) {
             const signatureData = signaturePad.toDataURL();
-            localStorage.setItem('savedSignature', signatureData);
+            localStorage.setItem(signatureKey, signatureData);
             signatureInput.value = signatureData;
             alert('Đã lưu chữ ký!');
         } else {
@@ -195,13 +191,13 @@
     clearBtn.addEventListener('click', () => {
         signaturePad.clear();
         signatureInput.value = '';
-        localStorage.removeItem('savedSignature');
+        localStorage.removeItem(signatureKey);
         saveBtn.classList.add('hidden');
     });
 
     // Khi load lại trang, nếu có chữ ký thì vẽ lại
     window.addEventListener('DOMContentLoaded', () => {
-        const savedSignature = localStorage.getItem('savedSignature');
+        const savedSignature = localStorage.getItem(signatureKey);
         if (savedSignature) {
             signaturePad.fromDataURL(savedSignature);
             signatureInput.value = savedSignature;
@@ -211,13 +207,13 @@
 
     // Khi submit form, lấy chữ ký từ localStorage
     form.addEventListener('submit', function(e) {
-        const signatureData = localStorage.getItem('savedSignature');
+        const signatureData = localStorage.getItem(signatureKey);
         if (!signatureData) {
             e.preventDefault();
             alert('Vui lòng ký và lưu chữ ký trước khi gửi!');
         } else {
             signatureInput.value = signatureData;
-            localStorage.removeItem('savedSignature');
+            localStorage.removeItem(signatureKey); // Xóa chữ ký khỏi localStorage sau khi submit
         }
     });
 </script>

@@ -8,6 +8,7 @@
         background-color: #fff;
         width: 100%;
         height: 200px; /* Đặt chiều cao cố định */
+        display: block;
     }
 
     .signature-container {
@@ -24,6 +25,7 @@
 
     .signature-preview img {
         max-height: 100px;
+        width: auto;
         border: 1px solid #ccc;
         border-radius: 5px;
     }
@@ -132,9 +134,14 @@
     // Đặt kích thước cho canvas
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
-        canvas.width = canvas.offsetWidth * ratio;
-        canvas.height = canvas.offsetHeight * ratio;
-        canvas.getContext('2d').scale(ratio, ratio);
+        const width = canvas.offsetWidth;
+        const height = canvas.offsetHeight;
+
+        if (canvas.width !== width * ratio || canvas.height !== height * ratio) {
+            canvas.width = width * ratio;
+            canvas.height = height * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+        }
     }
 
     window.addEventListener('resize', resizeCanvas);
@@ -145,16 +152,16 @@
         signaturePadData.value = ''; // Xóa dữ liệu khi nhấn "Xóa chữ ký"
     });
 
-    // Lắng nghe sự kiện submit của form
     form.addEventListener('submit', function (e) {
-        // Kiểm tra nếu có chữ ký vẽ
-        if (!signaturePad.isEmpty()) {
-            // Gán dữ liệu base64 của chữ ký vào input hidden
-            const base64 = signaturePad.toDataURL('image/png');
-            signaturePadData.value = base64;
-        } else {
-            // Nếu không có chữ ký, có thể hiển thị cảnh báo
-            console.log('Không có chữ ký để gửi!');
+        const hasDraw = !signaturePad.isEmpty();
+        const hasFile = document.getElementById('signature').files.length > 0;
+        if (!hasDraw && !hasFile) {
+            e.preventDefault();
+            showPopup('Bạn phải chọn hoặc vẽ chữ ký.');
+            return false;
+        }
+        if (hasDraw) {
+            signaturePadData.value = signaturePad.toDataURL('image/png');
         }
     });
 

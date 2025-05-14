@@ -97,7 +97,6 @@ class SignatureController extends Controller
                 'signature_data' => 'required', // Base64 chữ ký
                 'duration' => 'required|string',
                 'contract_date' => 'required|date',
-                'identity_card' => 'required|string',
                 'agreed_terms' => 'required|boolean',
             ]);
 
@@ -181,7 +180,7 @@ class SignatureController extends Controller
                 'customer_email' => Auth::user()->email,
                 'signature_data' => $request->signature_data,
                 'signature_image' => $request->signature_data,
-                'identity_card' => $request->identity_card,
+               
                 'contract_duration_id' => $durationInfo->id,
                 'status' => 'Đang xử lý',
                 'signed_at' => now(),

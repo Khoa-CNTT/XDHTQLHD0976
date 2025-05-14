@@ -51,5 +51,9 @@ public function documents()
 {
     return $this->hasMany(ContractDocument::class);
 }
+public function latestSignature()
+{
+    return $this->hasOne(Signature::class)->latestOfMany();
+}
 
 }
