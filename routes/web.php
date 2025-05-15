@@ -26,6 +26,7 @@ use App\Http\Controllers\Admin\DurationController;
 use App\Http\Controllers\Admin\ContractDurationController;
 use App\Http\Controllers\Admin\AdminSignatureController;
 use App\Http\Controllers\Admin\AdminCustomerSignatureController as AdminCustomerSignatureController;
+use App\Http\Controllers\Admin\SettingController;
 
 use App\Http\Controllers\Employee\DashboardController as EmployeeDashboardController;
 use App\Http\Controllers\Employee\ContractController as EmployeeContractController;
@@ -103,6 +104,9 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
         Route::resource('contracts', AdminContractController::class);
         Route::resource('services', AdminServiceController::class);
+
+        Route::get('settings', [SettingController::class, 'index'])->name('settings');
+        Route::post('settings', [SettingController::class, 'update'])->name('settings.update');
 
         
         

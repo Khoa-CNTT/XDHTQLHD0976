@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Cache;
 
 class SupportTicketController extends Controller
 {
@@ -147,7 +148,7 @@ class SupportTicketController extends Controller
         $ticket = SupportTicket::findOrFail($id);
         
         // Kiểm tra xem khách hàng có đang gõ không
-        $isTyping = \Cache::has("user_{$ticket->user_id}_typing_ticket_{$id}");
+        $isTyping = Cache::has("user_{$ticket->user_id}_typing_ticket_{$id}");
         
         return response()->json([
             'typing' => $isTyping

@@ -6,6 +6,7 @@ use Illuminate\Support\ServiceProvider;
 use App\Models\Role;
 use Illuminate\Support\Facades\URL;
 
+
 class AppServiceProvider extends ServiceProvider
 {
     /**
@@ -18,6 +19,11 @@ class AppServiceProvider extends ServiceProvider
      
         
     ];
+    protected $listen = [
+    \Illuminate\Auth\Events\Login::class => [
+        \App\Listeners\UpdateLastLoginAt::class,
+    ],
+];
     
     public function register(): void
     {

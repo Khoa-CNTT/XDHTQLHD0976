@@ -42,6 +42,8 @@
       <h2 class="text-xl font-semibold mb-4">Menu</h2>
       <ul>
         @if(auth()->user()->role == 'admin')
+          
+        <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700">Trang Chủ</a></li>
         <li><a href="{{ route('admin.customers.index') }}" class="hover:bg-gray-700">Quản lý khách hàng</a></li>
         <li><a href="{{ route('admin.employees.index') }}" class="hover:bg-gray-700">Quản lý nhân viên</a></li>
         <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
@@ -51,6 +53,7 @@
         <li><a href="{{ route('admin.customer-signatures.index') }}" class="hover:bg-gray-700">Quản lý chữ ký khách hàng</a></li>
         <li><a href="{{ route('admin.support.index') }}" class="hover:bg-gray-700">Quản lý yêu cầu hỗ trợ</a></li>
         <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
+        <li><a href="{{ route('admin.settings') }}" class="hover:bg-gray-700">Cài đặt hệ thống</a></li>
         @elseif(auth()->user()->role == 'employee')
         <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700">Trang chủ</a></li>
         <li><a href="{{ route('admin.employee.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>

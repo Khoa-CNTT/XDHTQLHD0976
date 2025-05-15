@@ -1,171 +1,129 @@
+{{-- filepath: resources/views/admin/dashboard.blade.php --}}
 @extends('layouts.admin')
 
 @section('content')
-<style>
-    .dashboard-stats {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        gap: 20px;
-        margin-top: 20px;
-    }
+<div class="container mx-auto py-8">
 
-    .stat-card {
-        background: white;
-        padding: 20px;
-        border-radius: 12px;
-        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        text-align: center;
-        transition: transform 0.3s, box-shadow 0.3s;
-    }
-
-    .stat-card h3 {
-        font-size: 1.2rem;
-        color: #333;
-        margin-bottom: 10px;
-    }
-
-    .stat-card p {
-        font-size: 1.5rem;
-        font-weight: bold;
-        color: #007bff;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-    }
-    /* Dashboard Charts */
-.dashboard-charts {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.chart {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    text-align: center;
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.chart h3 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.chart:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-/* Dashboard Widgets */
-.dashboard-widgets {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 20px;
-    margin-top: 20px;
-}
-
-.widget {
-    background: white;
-    padding: 20px;
-    border-radius: 12px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.3s, box-shadow 0.3s;
-}
-
-.widget h3 {
-    font-size: 1.2rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.widget p, .widget ul {
-    font-size: 1rem;
-    color: #555;
-}
-
-.widget ul {
-    list-style: none;
-    padding: 0;
-}
-
-.widget ul li {
-    background: #f4f4f4;
-    padding: 10px;
-    margin: 5px 0;
-    border-radius: 6px;
-}
-
-.widget:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-}
-
-</style>
-<div class="dashboard-stats">
-    <div class="stat-card">
-        <h3>Doanh thu</h3>
-        <p>40,886,200 VND</p>
+    {{-- Tổng quan --}}
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <div class="bg-blue-500 text-white rounded-lg p-6 shadow flex flex-col items-center">
+            <div class="text-2xl font-bold">{{ $totalUsers }}</div>
+            <div class="text-sm mt-2">Tổng số người dùng</div>
+        </div>
+        <div class="bg-green-500 text-white rounded-lg p-6 shadow flex flex-col items-center">
+            <div class="text-2xl font-bold">{{ $newUsers }}</div>
+            <div class="text-sm mt-2">Người dùng mới</div>
+        </div>
+        <div class="bg-yellow-500 text-white rounded-lg p-6 shadow flex flex-col items-center">
+            <div class="text-2xl font-bold">{{ $activeUsers }}</div>
+            <div class="text-sm mt-2">Người dùng hoạt động</div>
+        </div>
+        <div class="bg-purple-500 text-white rounded-lg p-6 shadow flex flex-col items-center">
+            <div class="text-2xl font-bold">{{ $totalRevenue ? number_format($totalRevenue, 0, ',', '.') : 0 }} VND</div>
+            <div class="text-sm mt-2">Tổng doanh thu</div>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Hợp đồng mới</h3>
-        <p>275,800</p>
+
+    {{-- Biểu đồ --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Doanh thu theo tháng</h3>
+            <canvas id="revenueChart"></canvas>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Tỷ lệ hợp đồng theo trạng thái</h3>
+            <canvas id="contractStatusChart"></canvas>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Lượt truy cập</h3>
-        <p>106,120</p>
+
+    {{-- Danh sách hoạt động --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Hoạt động gần đây</h3>
+            <ul>
+                @foreach($recentActivities as $activity)
+                    <li class="mb-2">
+                        <span class="font-bold">{{ $activity['user'] }}</span> - {{ $activity['action'] }}
+                        <span class="text-xs text-gray-500">({{ $activity['time'] }})</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Ticket hỗ trợ gần đây</h3>
+            <ul>
+                @foreach($recentTickets as $ticket)
+                    <li class="mb-2">
+                        <span class="font-bold">{{ $ticket['user'] }}</span> - {{ $ticket['subject'] }}
+                        <span class="text-xs text-gray-500">({{ $ticket['status'] }} - {{ $ticket['time'] }})</span>
+                    </li>
+                @endforeach
+            </ul>
+        </div>
     </div>
-    <div class="stat-card">
-        <h3>Hoạt động người dùng</h3>
-        <p>80,600</p>
+
+    {{-- Quản lý hệ thống --}}
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Hiệu suất hệ thống</h3>
+            <ul>
+                <li>Server: <span class="font-bold text-green-600">{{ $systemStatus['server'] }}</span></li>
+                <li>API: <span class="font-bold text-green-600">{{ $systemStatus['api'] }}</span></li>
+                <li>Database: <span class="font-bold text-green-600">{{ $systemStatus['database'] }}</span></li>
+            </ul>
+            <h4 class="mt-4 font-semibold">Lỗi hệ thống gần đây</h4>
+            <ul>
+                @foreach($systemErrors as $error)
+                    <li class="text-red-600 text-sm">{{ $error['error'] }} ({{ $error['time'] }})</li>
+                @endforeach
+            </ul>
+        </div>
+        <div class="bg-white rounded-lg shadow p-6">
+            <h3 class="font-semibold mb-4">Thông báo & Sự kiện</h3>
+            <ul>
+                @foreach($notifications as $noti)
+                    <li class="mb-2 text-blue-700">{{ $noti['content'] }} <span class="text-xs text-gray-500">({{ $noti['created_at'] }})</span></li>
+                @endforeach
+            </ul>
+            <h4 class="mt-4 font-semibold">Sự kiện sắp tới</h4>
+            <ul>
+                @foreach($upcomingEvents as $event)
+                    <li class="text-green-700 text-sm">{{ $event['title'] }} ({{ $event['time'] }})</li>
+                @endforeach
+            </ul>
+        </div>
     </div>
 </div>
 
-<div class="dashboard-charts">
-    <div class="chart">
-        <h3>Đơn hàng</h3>
-        <canvas id="ordersChart"></canvas>
-    </div>
-    <div class="chart">
-        <h3>Doanh thu theo tháng</h3>
-        <canvas id="revenueChart"></canvas>
-    </div>
-</div>
-
-<div class="dashboard-widgets">
-    <div class="widget">
-        <h3>Tin nhắn mới</h3>
-        <p>Bạn có 22 tin nhắn chưa đọc</p>
-    </div>
-    <div class="widget">
-        <h3>Danh sách công việc</h3>
-        <ul>
-            <li>Đánh Nhau</li>
-            <li>HEHEHEHEH</li>
-            <li>Gửi tài liệu</li>
-        </ul>
-    </div>
-</div>
-
-
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    var ctx = document.getElementById('ordersChart').getContext('2d');
-    new Chart(ctx, {
+    // Biểu đồ doanh thu
+    new Chart(document.getElementById('revenueChart'), {
         type: 'bar',
         data: {
-            labels: ['Jan', 'Feb', 'Mar', 'Apr'],
+            labels: {!! json_encode($revenueChartLabels) !!},
             datasets: [{
-                label: 'Số lượng đơn hàng',
-                data: [500, 700, 800, 600],
-                backgroundColor: 'rgba(54, 162, 235, 0.6)'
+                label: 'Doanh thu (VND)',
+                data: {!! json_encode($revenueChartData) !!},
+                backgroundColor: '#6366f1'
             }]
-        }
+        },
+        options: { responsive: true, plugins: { legend: { display: false } } }
+    });
+
+    // Biểu đồ trạng thái hợp đồng
+    new Chart(document.getElementById('contractStatusChart'), {
+        type: 'doughnut',
+        data: {
+            labels: {!! json_encode($contractStatusLabels) !!},
+            datasets: [{
+                data: {!! json_encode($contractStatusData) !!},
+                backgroundColor: ['#22c55e', '#f59e42', '#ef4444', '#6366f1']
+            }]
+        },
+        options: { responsive: true }
     });
 </script>
+@endpush
 @endsection

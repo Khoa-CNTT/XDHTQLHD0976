@@ -7,6 +7,10 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\HasPermissions;
 use App\Models\Employee;
+use App\Models\Customer;
+use App\Models\ActivityLog;
+use App\Models\SupportTicket;
+use App\Models\Notification;
 
 
 
@@ -44,6 +48,8 @@ class User extends Authenticatable
         'password' => 'hashed',
     ];
     
+
+
     /**
      * Lấy tên role (dành cho middleware)
      */
@@ -81,24 +87,24 @@ class User extends Authenticatable
         return $this->hasMany(SupportTicket::class);
     }
 
-    public function getAvatarUrl()
+    
+     public function getAvatarUrl()
     {
-        if ($this->avatar) {
-            return asset('storage/' . $this->avatar);
-        }
-        return 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&color=7F9CF5&background=EBF4FF';
+        return $this->avatar
+            ? asset('storage/avatars/' . $this->avatar)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? 'User') . '&color=7F9CF5&background=EBF4FF';
     }
-    public function notifications()
-    {
-        // Trả về tất cả thông báo của người dùng
-        return $this->hasMany(Notification::class);
-    }
-    public function unreadNotifications()
-    {
-        // Trả về thông báo chưa đọc của người dùng
-        return $this->hasMany(Notification::class)->where('is_read', false);
-    }
-  
+public function notifications()
+{
+    return $this->hasMany(Notification::class);
+}
+
+public function unreadNotifications()
+{
+    return $this->hasMany(Notification::class)->where('is_read', false);
+}
+
+
 }
 
 //Model này dùng để xác định các trường trong bảng users
