@@ -73,7 +73,7 @@
         <p class="mt-1 text-gray-900">{{ $user->identity_card }}</p>
 </div>
 <div>
-    <label class="block text-sm font-medium text-gray-600">Năm sinh</label>
+    <label class="block text-sm font-medium text-gray-600">Ngày sinh</label>
      <p class="mt-1 text-gray-900">{{ \Carbon\Carbon::parse($user->dob)->format('d/m/Y') }}</p>
 </div>
                         </div>

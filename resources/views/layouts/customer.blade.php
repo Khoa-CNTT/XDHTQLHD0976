@@ -194,10 +194,9 @@
     <i class="fas fa-headset mr-2"></i> Yêu cầu hỗ trợ
     @php
         $supportNotificationsCount = auth()->user()->notifications()
-            ->where('created_by', 'employee') 
-            ->where('type', 'support') 
-            ->where('is_read', false)
-            ->count();
+            ->where('type', 'support')
+        ->where('is_read', false)
+        ->count();
     @endphp
     @if($supportNotificationsCount > 0)
         <span class="absolute top-0 right-0 bg-red-500 text-xs text-white rounded-full h-4 w-4 flex items-center justify-center">

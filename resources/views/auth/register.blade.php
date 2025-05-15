@@ -49,7 +49,7 @@
 
         <!-- Năm sinh -->
         <div>
-          <label for="dob" class="block text-gray-600 font-medium mb-1">Ngày sinh</label>
+          <label for="dob" class="block text-gray-600 font-medium mb-1">Năm sinh</label>
           <input type="text" id="dob" name="dob" value="{{ old('dob') }}" required maxlength="10" placeholder="dd/mm/yyyy"
             class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-400 focus:outline-none">
         </div>
