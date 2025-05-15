@@ -1,6 +1,42 @@
 @extends('layouts.admin')
 @section('title', 'Tải lên chữ ký tay')
 
+@push('scripts')
+@if(session('success'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endif
+@if(session('error'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+@endif
+@endpush
+
 <style>
     #signature-pad {
         border: 1px solid #ccc;
@@ -78,7 +114,6 @@
     @endif
 
     <form id="signature-form" action="{{ route('admin.signature.save') }}" method="POST" enctype="multipart/form-data">
-
         @csrf
         <div class="mb-4">
             <label for="signature" class="block text-sm font-medium text-gray-700">Chọn file chữ ký:</label>

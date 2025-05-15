@@ -2,178 +2,149 @@
 
 namespace App\Http\Controllers\Customer;
 
-use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
 use App\Models\Notification;
-use Illuminate\Support\Facades\Auth;        
-use App\Http\Requests\NotificationRequest;
-use App\Http\Controllers\Controller; 
-use App\Models\SupportTicket;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class NotificationController extends Controller
 {
     /**
-     * Show a specific notification and mark it as read
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * Hiển thị danh sách thông báo của người dùng hiện tại.
      */
-   public function index()
-{
-    $notifications = Notification::where('user_id', Auth::id()) // Chỉ lấy thông báo của người dùng hiện tại
-        ->latest()
-        ->paginate(10);
+    public function index()
+    {
+        $notifications = Notification::where('user_id', Auth::id())
+            ->latest()
+            ->paginate(10);
 
-    return view('customer.notifications.index', compact('notifications'));
-}
+        return view('customer.notifications.index', compact('notifications'));
+    }
 
     /**
-     * Show a specific notification and mark it as read
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * Hiển thị chi tiết một thông báo và đánh dấu là đã đọc.
      */
-   public function show($id)
-{
-    $notification = Notification::findOrFail($id);
-    
-    // Xác minh thông báo thuộc về người dùng hiện tại
-    if ($notification->user_id !== Auth::id()) {
-        abort(403, 'Unauthorized action.');
+    public function show($id)
+    {
+        $notification = Notification::findOrFail($id);
+
+        if ($notification->user_id !== Auth::id()) {
+            abort(403, 'Unauthorized action.');
+        }
+
+        if (!$notification->is_read) {
+            $notification->is_read = true;
+            $notification->save();
+        }
+
+        return view('customer.notifications.show', compact('notification'));
     }
-    
-    // Đánh dấu thông báo là đã đọc nếu chưa đọc
-    if (!$notification->is_read) {
-        $notification->is_read = true;
-        $notification->save();
-    }
-    
-    return view('customer.notifications.show', compact('notification'));
-}
-    
+
     /**
-     * Mark all notifications as read for the authenticated user
-     *
-     * @return \Illuminate\Http\Response
+     * Đánh dấu tất cả thông báo là đã đọc.
      */
-   public function markAllAsRead()
-{
-    Notification::where('user_id', Auth::id())
-        ->where('is_read', false)
-        ->update(['is_read' => true]);
-    
-    if (request()->ajax()) {
-        return response()->json([
-            'success' => true,
-            'message' => 'Tất cả thông báo đã được đánh dấu là đã đọc.'
-        ]);
+    public function markAllAsRead()
+    {
+        Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
+        if (request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Tất cả thông báo đã được đánh dấu là đã đọc.'
+            ]);
+        }
+
+        return redirect()->back()
+            ->with('status', 'Tất cả thông báo đã được đánh dấu là đã đọc.');
     }
-    
-    return redirect()->back()
-        ->with('status', 'Tất cả thông báo đã được đánh dấu là đã đọc.');
-}
+
     /**
-     * List all notifications for the authenticated user
-     *
-     * @return \Illuminate\Http\Response
-     */
-   
-     
-    
-    /**
-     * Admin method to create a new notification for a specific user
-     *
-     * @param \Illuminate\Http\Request $request
-     * @return \Illuminate\Http\Response|\Illuminate\Http\RedirectResponse
+     * Tạo thông báo mới cho người dùng (dành cho admin).
      */
     public function store(Request $request): \Illuminate\Http\RedirectResponse
     {
         $request->validate([
             'user_id' => 'required|exists:users,id',
-            'title' => 'required|string|max:255',
+            'title'   => 'required|string|max:255',
             'message' => 'required|string'
         ]);
-        
+
         Notification::create([
             'user_id' => $request->user_id,
-            'title' => $request->title,
+            'title'   => $request->title,
             'message' => $request->message,
             'is_read' => false
         ]);
-        
+
         return redirect()->back()
             ->with('status', 'Thông báo đã được gửi thành công.');
     }
-    
-    /**
-     * API endpoint để kiểm tra thông báo mới
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-   public function checkNewNotifications()
-{
-    $lastChecked = session('last_notification_check', now()->subMinutes(30));
-    session(['last_notification_check' => now()]);
-    
-  $unreadCount = Notification::where('user_id', Auth::id()) // Chỉ lấy thông báo của người dùng hiện tại
-    ->where('is_read', false)
-    ->count();
-    
-    $hasNewNotifications = Auth::user()->notifications()
-        ->where('created_at', '>', $lastChecked)
-        ->where('is_read', false)
-        ->exists();
-    
-    return response()->json([
-        'unreadCount' => $unreadCount,
-        'hasNewNotifications' => $hasNewNotifications,
-        'lastChecked' => $lastChecked->toDateTimeString()
-    ]);
-}
-    /**
-     * API endpoint để lấy danh sách thông báo mới nhất
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getLatestNotifications()
-{
-    $notifications = Notification::where('user_id', Auth::id()) // Chỉ lấy thông báo của người dùng hiện tại
-        ->latest()
-        ->take(10)
-        ->get()
-        ->map(function($notification) {
-            return [
-                'id' => $notification->id,
-                'title' => $notification->title,
-                'message' => $notification->message,
-                'is_read' => $notification->is_read,
-                'created_at' => $notification->created_at->toDateTimeString(),
-                'time_ago' => $notification->created_at->diffForHumans()
-            ];
-        });
-    
-    return response()->json([
-        'notifications' => $notifications
-    ]);
-}
 
     /**
-     * Xóa thông báo
-     *
-     * @param int $id
-     * @return \Illuminate\Http\Response
+     * API kiểm tra xem có thông báo mới không.
+     */
+    public function checkNewNotifications()
+    {
+        $lastChecked = session('last_notification_check', now()->subMinutes(30));
+        session(['last_notification_check' => now()]);
+
+        $unreadCount = Notification::where('user_id', Auth::id())
+            ->where('is_read', false)
+            ->count();
+
+        $hasNewNotifications = Auth::user()->notifications()
+            ->where('created_at', '>', $lastChecked)
+            ->where('is_read', false)
+            ->exists();
+
+        return response()->json([
+            'unreadCount'         => $unreadCount,
+            'hasNewNotifications' => $hasNewNotifications,
+            'lastChecked'         => $lastChecked->toDateTimeString()
+        ]);
+    }
+
+    /**
+     * API lấy 10 thông báo mới nhất.
+     */
+    public function getLatestNotifications()
+    {
+        $notifications = Notification::where('user_id', Auth::id())
+            ->latest()
+            ->take(10)
+            ->get()
+            ->map(function ($notification) {
+                return [
+                    'id'         => $notification->id,
+                    'title'      => $notification->title,
+                    'message'    => $notification->message,
+                    'is_read'    => $notification->is_read,
+                    'created_at' => $notification->created_at->toDateTimeString(),
+                    'time_ago'   => $notification->created_at->diffForHumans()
+                ];
+            });
+
+        return response()->json([
+            'notifications' => $notifications
+        ]);
+    }
+
+    /**
+     * Xóa một thông báo cụ thể.
      */
     public function destroy($id)
     {
         $notification = Notification::findOrFail($id);
-        
-        // Xác minh thông báo thuộc về người dùng hiện tại
+
         if ($notification->user_id !== Auth::id()) {
             abort(403, 'Unauthorized action.');
         }
-        
+
         $notification->delete();
-        
+
         return redirect()->back()
             ->with('status', 'Thông báo đã được xóa thành công.');
     }
-} 
+}

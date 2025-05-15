@@ -25,3 +25,5 @@ yarn-error.log
 !/storage/app
 !/storage/app/public
 !/storage/app/public/services
+!/storage/app/public/signatures
+!/storage/app/public/avatars

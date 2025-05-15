@@ -20,45 +20,64 @@ class AdminSignatureController extends Controller
         }
         return view('admin.signatures.form', compact('signaturePath'));
     }
-public function save(Request $request)
+
+    public function save(Request $request)
 {
-    // Tên file chữ ký cố định
     $canvasFilePath = 'signatures/admin_signature.png';
     $uploadFilePath = null;
 
-    // Nếu là vẽ trên canvas (base64)
-    if ($request->filled('signature_pad_data')) {
-        // Xóa chữ ký cũ nếu có
-        if (Storage::disk('public')->exists($canvasFilePath)) {
-            Storage::disk('public')->delete($canvasFilePath);
-        }
-
-        $base64 = $request->input('signature_pad_data');
-        $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
-        Storage::disk('public')->put($canvasFilePath, $image);
-    }
-    // Nếu là upload file hình ảnh
-    elseif ($request->hasFile('signature')) {
-        $file = $request->file('signature');
-        $extension = $file->getClientOriginalExtension();
-        $uploadFilePath = 'signatures/admin_signature.' . $extension;
-
-        // Xóa các bản chữ ký cũ với định dạng có thể khác
-        $existingFiles = Storage::disk('public')->files('signatures');
-        foreach ($existingFiles as $filePath) {
-            if (str_starts_with($filePath, 'signatures/admin_signature')) {
-                Storage::disk('public')->delete($filePath);
+    try {
+        // Nếu là chữ ký vẽ từ canvas
+        if ($request->filled('signature_pad_data')) {
+            if (Storage::disk('public')->exists($canvasFilePath)) {
+                Storage::disk('public')->delete($canvasFilePath);
             }
+
+            $base64 = $request->input('signature_pad_data');
+            $image = base64_decode(preg_replace('#^data:image/\w+;base64,#i', '', $base64));
+            Storage::disk('public')->put($canvasFilePath, $image);
+
+            $message = 'Chữ ký đã được lưu thành công.';
+        }
+        // Nếu là upload ảnh từ input file
+        elseif ($request->hasFile('signature')) {
+            $file = $request->file('signature');
+            $extension = $file->getClientOriginalExtension();
+            $uploadFilePath = 'signatures/admin_signature.' . $extension;
+
+            // Xóa chữ ký cũ (mọi định dạng)
+            $existingFiles = Storage::disk('public')->files('signatures');
+            foreach ($existingFiles as $filePath) {
+                if (str_starts_with($filePath, 'signatures/admin_signature')) {
+                    Storage::disk('public')->delete($filePath);
+                }
+            }
+
+            // Lưu file mới
+            $file->storeAs('signatures', 'admin_signature.' . $extension, 'public');
+            $message = 'Chữ ký đã được lưu thành công.';
+        } else {
+            $message = 'Bạn phải chọn hoặc vẽ chữ ký.';
+
+            // Trả về phù hợp với loại request
+            return $request->expectsJson()
+                ? response()->json(['success' => false, 'message' => $message])
+                : back()->with('error', $message);
         }
 
-        // Lưu file mới
-        $file->storeAs('signatures', 'admin_signature.' . $extension, 'public');
-    }
-    else {
-        return back()->with('error', 'Bạn phải chọn hoặc vẽ chữ ký.');
-    }
+        // Trả kết quả thành công
+        return $request->expectsJson()
+            ? response()->json(['success' => true, 'message' => $message])
+            : back()->with('success', $message);
+    } catch (\Exception $e) {
+        $errorMsg = 'Đã xảy ra lỗi khi lưu chữ ký.';
 
-    return back()->with('success', 'Chữ ký đã được lưu thành công.');
+        return $request->expectsJson()
+            ? response()->json(['success' => false, 'message' => $errorMsg])
+            : back()->with('error', $errorMsg);
+    }
 }
+
+
 
     }

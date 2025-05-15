@@ -45,6 +45,10 @@ use App\Models\Notification;
  * @property-read int|null $support_tickets_count
  * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $unreadNotifications
  * @property-read int|null $unread_notifications_count
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany notifications()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany unreadNotifications()
+ * @method \Illuminate\Database\Eloquent\Relations\HasMany assignedTickets()
+ * 
  * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
  * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
@@ -67,6 +71,7 @@ use App\Models\Notification;
  * @mixin \Eloquent
  */
 
+ 
 
 class User extends Authenticatable
 {

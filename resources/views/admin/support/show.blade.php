@@ -1,7 +1,41 @@
 @extends('layouts.admin')
 
 @section('title', 'Chi tiết yêu cầu hỗ trợ')
-
+@push('scripts')
+@if(session('success'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'success',
+        title: '{{ session('success') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@endif
+@if(session('error'))
+<script>
+    Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon: 'error',
+        title: '{{ session('error') }}',
+        showConfirmButton: false,
+        timer: 2500,
+        timerProgressBar: true,
+        customClass: {
+            popup: 'rounded-md shadow-md px-4 py-2 text-sm'
+        }
+    });
+</script>
+@endif
+@endpush
 @push('styles')
 <style>
     /* Chat bubble animations */
@@ -18,10 +52,9 @@
     }
     .typing-indicator {
         display: flex;
-        justify-content: flex-end;
+        justify-content: flex-start;
         margin: 10px;
         display: none;
-        padding-right: 13px;
     }
     .typing-indicator span {
         height: 8px;
@@ -49,20 +82,12 @@
     .customer-chat-bubble {
         background-color: #f3f4f6;
         border-radius: 18px 18px 18px 4px;
-        max-width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
     }
     .staff-chat-bubble {
         background-color: #dbeafe;
         border-radius: 18px 18px 4px 18px;
-        max-width: 100%;
-        word-wrap: break-word;
-        overflow-wrap: break-word;
-        hyphens: auto;
+        
     }
-    
     .message-time {
         font-size: 0.7rem;
         color: #6b7280;
@@ -215,7 +240,7 @@
                     
                     <!-- Typing indicator -->
                     <div class="typing-indicator" id="typing-indicator">
-                        <div class="flex items-center bg-gray-200 rounded-full py-1 px-3 staff-chat-bubble">
+                        <div class="flex items-center bg-gray-200 rounded-full py-1 px-3">
                             <span></span>
                             <span></span>
                             <span></span>
