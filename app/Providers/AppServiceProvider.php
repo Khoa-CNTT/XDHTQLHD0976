@@ -16,6 +16,7 @@ class AppServiceProvider extends ServiceProvider
         \App\Models\Service::class => \App\Policies\ServicePolicy::class,
         \App\Models\Contract::class => \App\Policies\ContractPolicy::class,
         \App\Models\ContractAmendment::class => \App\Policies\ContractAmendmentPolicy::class,
+        \App\Models\SupportTicket::class => \App\Policies\SupportTicketPolicy::class,
      
         
     ];

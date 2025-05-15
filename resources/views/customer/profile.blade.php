@@ -39,9 +39,12 @@
                         <input type="file" name="avatar" id="avatar-upload" class="hidden" onchange="document.getElementById('avatar-form').submit()">
                     </form>
                     
-                    <h2 class="text-2xl font-bold text-gray-800 mb-1">{{ $user->name }}</h2>
-                    <p class="text-gray-600 mb-1">{{ $user->email }}</p>
-                    <p class="text-gray-600">{{ $customer->company_name }} | MST: {{ $customer->tax_code }}</p>
+                   <h2 class="text-2xl font-bold text-gray-800 mb-1">{{ $user->name }}</h2>
+<p class="text-gray-600 mb-1">{{ $user->email }}</p>
+<p class="text-gray-600">
+    {{ $customer ? $customer->company_name : 'Chưa cập nhật' }} 
+    | MST: {{ $customer ? $customer->tax_code : 'Chưa cập nhật' }}
+</p>
                 </div>
 
                 <!-- Thông tin cơ bản và Form cập nhật -->
@@ -71,7 +74,7 @@
 </div>
 <div>
     <label class="block text-sm font-medium text-gray-600">Năm sinh</label>
-      <p class="mt-1 text-gray-900">{{ $user->dob }}</p>
+     <p class="mt-1 text-gray-900">{{ \Carbon\Carbon::parse($user->dob)->format('d/m/Y') }}</p>
 </div>
                         </div>
                     </div>

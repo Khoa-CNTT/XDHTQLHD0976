@@ -26,9 +26,19 @@
                 </div>
 
                 <div class="mb-4">
-                    <label for="logo" class="block">Logo:</label>
+                    <label for="logo" class="block">Logo hiện tại:</label>
+                    @if(config('app.logo'))
+                        <img src="{{ asset(config('app.logo')) }}" alt="Logo" class="w-32 h-32 mb-4">
+                    @else
+                        <p>Chưa có logo nào được tải lên.</p>
+                    @endif
+                </div>
+
+                <div class="mb-4">
+                    <label for="logo" class="block">Tải lên logo mới:</label>
                     <input type="file" name="logo" class="w-full">
                 </div>
+
 
                 <div class="mb-4">
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Lưu</button>

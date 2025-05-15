@@ -18,9 +18,10 @@
     }
     .typing-indicator {
         display: flex;
-        justify-content: flex-start;
+        justify-content: flex-end;
         margin: 10px;
         display: none;
+        padding-right: 13px;
     }
     .typing-indicator span {
         height: 8px;
@@ -48,11 +49,20 @@
     .customer-chat-bubble {
         background-color: #f3f4f6;
         border-radius: 18px 18px 18px 4px;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
     .staff-chat-bubble {
         background-color: #dbeafe;
         border-radius: 18px 18px 4px 18px;
+        max-width: 100%;
+        word-wrap: break-word;
+        overflow-wrap: break-word;
+        hyphens: auto;
     }
+    
     .message-time {
         font-size: 0.7rem;
         color: #6b7280;
@@ -74,15 +84,17 @@
                 </svg>
                 Quay lại danh sách
             </a>
-            <h2 class="text-2xl font-semibold mt-2">Yêu cầu hỗ trợ #{{ $ticket->id }}</h2>
+            <h2 class="text-2xl font-semibold mt-2">{{ $ticket->title }}</h2>
         </div>
         
+
+
+
         <div class="flex space-x-3">
-            <form action="{{ route('admin.support.update', $ticket->id) }}" method="POST">
+<form action="{{ route('admin.support.update', $ticket->id) }}" method="POST">
                 @csrf
                 @method('PUT')
                 <select name="status" class="mr-2 border border-gray-300 rounded-lg text-sm px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                    <option value="Chờ xử lý" {{ $ticket->status === 'Chờ xử lý' ? 'selected' : '' }}>Chờ xử lý</option>
                     <option value="Đang xử lý" {{ $ticket->status === 'Đang xử lý' ? 'selected' : '' }}>Đang xử lý</option>
                     <option value="Đã giải quyết" {{ $ticket->status === 'Đã giải quyết' ? 'selected' : '' }}>Đã giải quyết</option>
                     <option value="Đã huỷ" {{ $ticket->status === 'Đã huỷ' ? 'selected' : '' }}>Đã huỷ</option>
@@ -91,11 +103,13 @@
                     Cập nhật trạng thái
                 </button>
             </form>
+          
         </div>
     </div>
 
+
+    @if(!in_array($ticket->status, ['Đã giải quyết', 'Đã huỷ']))
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <!-- Trò chuyện hỗ trợ -->
         <div class="md:col-span-2">
             <div class="bg-white rounded-lg shadow-md overflow-hidden">
                 <!-- Header của chat box -->
@@ -154,48 +168,54 @@
                     
                     <!-- Responses -->
                     <div id="responses-container">
-                        @foreach($ticket->responses as $response)
-                        <div class="flex mb-4 @if($response->isStaff()) justify-end @endif chat-bubble" data-response-id="{{ $response->id }}">
-                            @if(!$response->isStaff())
-                            <div class="flex-shrink-0 mr-3">
-                                <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                            </div>
-                            @endif
-                            
-                            <div class="@if($response->isStaff()) staff-chat-bubble @else customer-chat-bubble @endif p-3 shadow-sm max-w-3xl">
-                                <div class="flex justify-between items-center mb-1">
-                                    <span class="font-medium text-gray-900">
-                                        {{ $response->user->name }}
-                                        @if($response->isStaff())
-                                        <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">Nhân viên</span>
-                                        @else
-                                        <span class="ml-2 px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">Khách hàng</span>
-                                        @endif
-                                    </span>
-                                    <span class="text-xs text-gray-500">{{ $response->created_at->format('d/m/Y H:i') }}</span>
-                                </div>
-                                <div class="text-gray-700 whitespace-pre-wrap">
-                                    {!! nl2br(e($response->content)) !!}
-                                </div>
-                                <div class="message-time">
-                                    @if($response->created_at->diffInMinutes(now()) < 60)
-                                        {{ $response->created_at->diffForHumans() }}
-                                    @endif
-                                </div>
-                            </div>
-                            
-                            @if($response->isStaff())
-                            <div class="flex-shrink-0 ml-3">
-                                <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
-                            </div>
-                            @endif
-                        </div>
-                        @endforeach
+                      @foreach($ticket->responses as $response)
+    <div class="flex mb-4 @if($response->isStaff()) justify-end @endif chat-bubble" data-response-id="{{ $response->id }}">
+        @if(!$response->isStaff())
+            <div class="flex-shrink-0 mr-3">
+                <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
+            </div>
+        @endif
+
+        <div class="@if($response->isStaff()) staff-chat-bubble @else customer-chat-bubble @endif p-3 shadow-sm max-w-3xl">
+            <div class="flex justify-between items-center mb-1">
+                <span class="font-medium text-gray-900">
+                    @if($response->user->role === 'admin')
+                        Admin
+                    @elseif($response->user->role === 'employee')
+                        {{ $response->user->name }}
+                    @else
+                        {{ $response->user->name }}
+                    @endif
+                    @if($response->isStaff())
+                        <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-800 text-xs rounded-full">Nhân viên</span>
+                    @else
+                        <span class="ml-2 px-2 py-0.5 bg-purple-100 text-purple-800 text-xs rounded-full">Khách hàng</span>
+                    @endif
+                </span>
+                <span class="text-xs text-gray-500">{{ $response->created_at->format('d/m/Y H:i') }}</span>
+            </div>
+            <div class="text-gray-700 whitespace-pre-wrap">
+                {!! nl2br(e($response->content)) !!}
+            </div>
+            <div class="message-time">
+                @if($response->created_at->diffInMinutes(now()) < 60)
+                    {{ $response->created_at->diffForHumans() }}
+                @endif
+            </div>
+        </div>
+
+        @if($response->isStaff())
+            <div class="flex-shrink-0 ml-3">
+                <img src="{{ $response->user->getAvatarUrl() }}" alt="Avatar" class="w-10 h-10 rounded-full">
+            </div>
+        @endif
+    </div>
+@endforeach
                     </div>
                     
                     <!-- Typing indicator -->
                     <div class="typing-indicator" id="typing-indicator">
-                        <div class="flex items-center bg-gray-200 rounded-full py-1 px-3">
+                        <div class="flex items-center bg-gray-200 rounded-full py-1 px-3 staff-chat-bubble">
                             <span></span>
                             <span></span>
                             <span></span>
@@ -204,6 +224,7 @@
                 </div>
                 
                 <!-- Form phản hồi kiểu chatbox -->
+                @can('respond', $ticket)
                 <div class="border-t p-4 bg-white">
                     <form id="response-form" action="{{ route('admin.support.respond', $ticket->id) }}" method="POST">
                         @csrf
@@ -225,6 +246,7 @@
                         </div>
                     </form>
                 </div>
+                @endcan
             </div>
         </div>
         
@@ -309,6 +331,11 @@
             </div>
         </div>
     </div>
+    @else
+    <div class="text-gray-500 italic mt-4">
+        Yêu cầu {{ strtolower($ticket->status) }}.
+    </div>
+@endif
 </div>
 
 @push('scripts')

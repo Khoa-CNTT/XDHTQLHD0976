@@ -26,36 +26,31 @@ class SettingController extends Controller
     }
 
     public function update(Request $request)
-    {
-        $request->validate([
-            'system_name' => 'required|string|max:255',
-            'contact_email' => 'required|email',
-            'logo' => 'nullable|image|max:2048',
-            'smtp_host' => 'required|string',
-            'smtp_port' => 'required|numeric',
-        ]);
+{
+    $request->validate([
+        'system_name' => 'required|string|max:255',
+        'contact_email' => 'required|email',
+        'logo' => 'nullable|image|max:2048',
+        'smtp_host' => 'required|string',
+        'smtp_port' => 'required|numeric',
+    ]);
 
-        if ($request->hasFile('logo')) {
-            $logoPath = $request->file('logo')->store('logos', 'public');
-            $settings['logo'] = 'storage/' . $logoPath;
-        }
-
-        return redirect()->back()->with('success', 'Cập nhật cài đặt thành công!');
+    // Xử lý upload logo nếu có
+    if ($request->hasFile('logo')) {
+        $logoPath = $request->file('logo')->store('logos', 'public');
+        config(['app.logo' => 'storage/' . $logoPath]); // Cập nhật cấu hình tạm thời
+        // Lưu đường dẫn logo vào file config để hiển thị
+        file_put_contents(config_path('app.php'), preg_replace(
+            "/'logo' => '.*'/",
+            "'logo' => 'storage/$logoPath'",
+            file_get_contents(config_path('app.php'))
+        ));
     }
 
-    public function backup()
-    {
-        $backupFile = 'backup_' . date('Ymd_His') . '.sql';
-        Storage::disk('local')->put($backupFile, 'Nội dung bản sao lưu');
+    config(['app.name' => $request->input('system_name')]);
+    config(['mail.from.address' => $request->input('contact_email')]);
 
-        return redirect()->back()->with('success', 'Sao lưu thành công!');
-    }
+    return redirect()->back()->with('success', 'Cập nhật cài đặt thành công!');
+}
 
-    public function restore(Request $request)
-    {
-        $request->validate(['backup_file' => 'required|string']);
-        Storage::disk('local')->delete($request->input('backup_file'));
-
-        return redirect()->back()->with('success', 'Khôi phục thành công!');
-    }
 }

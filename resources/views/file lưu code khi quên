@@ -1,216 +1,325 @@
-Tạo và triển khai module Dịch vụ (Services).
+mixin newMessage(avatarUrl, nickName, messages, type)
+	.chat__conversation-board__message-container(class={reversed: type === "me"})
+		.chat__conversation-board__message__person
+			.chat__conversation-board__message__person__avatar
+				img(src=avatarUrl alt=nickName)
+			span.chat__conversation-board__message__person__nickname= nickName
+		.chat__conversation-board__message__context
+			each message in messages
+				.chat__conversation-board__message__bubble 
+					span= message
+		.chat__conversation-board__message__options
+			button.btn-icon.chat__conversation-board__message__option-button.option-item.emoji-button
+				svg( class="feather feather-smile sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true")
+					circle( cx="12" cy="12" r="10")
+					path( d="M8 14s1.5 2 4 2 4-2 4-2")
+					line( x1="9" y1="9" x2="9.01" y2="9")
+					line( x1="15" y1="9" x2="15.01" y2="9")
+			button.btn-icon.chat__conversation-board__message__option-button.option-item.more-button
+				svg( class="feather feather-more-horizontal sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true")
+					circle( cx="12" cy="12" r="1")
+					circle( cx="19" cy="12" r="1")
+					circle( cx="5" cy="12" r="1")
 
-Tạo và triển khai module Hợp đồng (Contracts) – bao gồm cả bảng phụ nếu cần.
-
-Tạo và triển khai module Thanh toán (Payments).
-
-Tích hợp module Chữ ký số (nếu có yêu cầu).
-
-Phân quyền và bảo mật các route cho Admin, Staff và Khách hàng.
-
-Tự tay tạo giao diện cho từng chức năng (form, danh sách, chi tiết…).
-
-Kiểm tra kỹ các chức năng và bảo mật.
-
-
-
-
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Dashboard</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    /* Reset & font */
-    body, html {
-      margin: 0;
-      padding: 0;
-      font-family: 'Roboto', sans-serif;
-      background: #f4f7f9;
-      color: #333;
-    }
-    /* Header */
-    header {
-      background: #667eea;
-      padding: 1rem;
-      color: #fff;
-      text-align: center;
-    }
-    /* Layout container */
-    .container {
-      display: flex;
-      min-height: calc(100vh - 70px);
-    }
-    /* Sidebar menu */
-    .sidebar {
-      width: 250px;
-      background: #2d3748;
-      color: #fff;
-      padding: 1rem;
-    }
-    .sidebar h2 {
-      font-size: 1.2rem;
-      margin-bottom: 1rem;
-    }
-    .sidebar ul {
-      list-style: none;
-      padding: 0;
-    }
-    .sidebar li {
-      margin-bottom: 0.5rem;
-    }
-    .sidebar a {
-      color: #cbd5e0;
-      text-decoration: none;
-      display: block;
-      padding: 0.5rem;
-      border-radius: 4px;
-      transition: background 0.3s;
-    }
-    .sidebar a:hover {
-      background: #4a5568;
-      color: #fff;
-    }
-    /* Logout button style */
-    .logout-button {
-      background: #e53e3e;
-      color: #fff;
-      border: none;
-      padding: 0.5rem 1rem;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .logout-button:hover {
-      background: #c53030;
-    }
-    /* Content area */
-    .content {
-      flex: 1;
-      padding: 2rem;
-    }
-    .card {
-      background: #fff;
-      padding: 1.5rem;
-      margin-bottom: 1.5rem;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .card h2 {
-      margin-top: 0;
-      font-size: 1.5rem;
-    }
-  </style>
-</head>
-<body>
-  <header>
-    <h1>Dashboard</h1>
-    <p>Chào mừng, {{ auth()->user()->name }}! </p>
-  </header>
-  <div class="container">
-    <div class="sidebar">
-      <h2>Menu</h2>
-      <ul>
-        @if(auth()->user()->role == 'admin')
-          <li><a href="{{ route('admin.users.index') }}">Quản lý khách hàng & nhân viên</a></li>
-          <li><a href="{{ route('admin.contracts.index') }}">Quản lý hợp đồng</a></li>
-          <li><a href="">Quản lý dịch vụ</a></li>
-          <li><a href="{{ route('admin.payments.index') }}">Quản lý thanh toán</a></li>
-          <li><a href="#">Báo cáo thống kê</a></li>
-        @elseif(auth()->user()->role == 'staff')
-          <li><a href="{{ route('staff.contracts.index') }}">Quản lý hợp đồng</a></li>
-          <li><a href="">Quản lý dịch vụ</a></li>
-          <li><a href="#">Quản lý thông tin cá nhân</a></li>
-          <li><a href="#">Báo cáo thống kê</a></li>
-        @elseif(auth()->user()->role == 'customer')
-          <li><a href="{{ route('services.index') }}">Xem & lựa chọn dịch vụ</a></li>
-          <li><a href="{{ route('my.contracts') }}">Quản lý hợp đồng</a></li>
-          <li><a href="#">Quản lý thông tin cá nhân</a></li>
-          <li><a href="#">Thay đổi mật khẩu</a></li>
-        @else
-          <li><a href="">Xem dịch vụ</a></li>
-          <li><a href="{{ route('register') }}">Đăng ký tài khoản</a></li>
-        @endif
-        <li>
-          <form action="{{ route('logout') }}" method="POST">
-            @csrf
-            <button type="submit" class="logout-button">Đăng xuất</button>
-          </form>
-        </li>
-      </ul>
-    </div>
-    <div class="content">
-      <div class="card">
-        <h2>Thông tin chung</h2>
-        <p>Đây là dashboard tổng quan của hệ thống quản lý hợp đồng cung cấp dịch vụ CNTT điện tử.</p>
-      </div>
-      <div class="card">
-        <h2>Hướng dẫn sử dụng</h2>
-        <p>Chọn mục trong menu bên trái để quản lý các chức năng hệ thống.</p>
-      </div>
-    </div>
-  </div>
-</body>
-</html>
-    
+#chat.--dark-theme
+	.chat__conversation-board
+		
+		+newMessage(
+		'https://randomuser.me/api/portraits/women/44.jpg', 
+		'Monika Figi', 
+		[`Somewhere stored deep, deep in my memory banks is the phrase "It really whips the llama's ass".`])
+		
+		+newMessage(
+		'https://randomuser.me/api/portraits/men/32.jpg', 
+		'Thomas Rogh', 
+		[`Think the guy that did the voice has a Twitter?`])
+		
+		+newMessage(
+		'https://randomuser.me/api/portraits/women/44.jpg', 
+		'Monika Figi', 
+		[`WE MUST FIND HIM!!`, `Wait ...`])
+		
+		+newMessage(
+		'https://randomuser.me/api/portraits/men/9.jpg', 
+		'Dennis Mikle', 
+		[`Winamp's still an essential.`], 
+		'me')
+					
+		
+	.chat__conversation-panel
+		.chat__conversation-panel__container
+			button.chat__conversation-panel__button.panel-item.btn-icon.add-file-button
+				svg(class="feather feather-plus sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true")
+					line( x1="12" y1="5" x2="12" y2="19")
+					line( x1="5" y1="12" x2="19" y2="12")
+				
+			button.chat__conversation-panel__button.panel-item.btn-icon.emoji-button
+				svg( class="feather feather-smile sc-dnqmqq jxshSx" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true")
+					circle( cx="12" cy="12" r="10")
+					path( d="M8 14s1.5 2 4 2 4-2 4-2")
+					line( x1="9" y1="9" x2="9.01" y2="9")
+					line( x1="15" y1="9" x2="15.01" y2="9")
+			
+			
+			input.chat__conversation-panel__input.panel-item(placeholder="Type a message...")
+			button.chat__conversation-panel__button.panel-item.btn-icon.send-message-button
+				svg(xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" data-reactid="1036")
+					line( x1="22" y1="2" x2="11" y2="13")
+					polygon( points="22 2 15 22 11 13 2 9 22 2")
+			
+			
+				
+			
 
 
-<!-- Thanh Banner-->
-<section 
-x-data="{
-        images: [
-            '{{ asset('images/ba.webp') }}',
-            'https://www.vietnamworks.com/hrinsider/wp-content/uploads/2023/12/hinh-nen-laptop-full-hd-002.jpg',
-        '{{ asset('images/banner1.png') }}',
-        '{{ asset('images/banner2.png') }}',
-        '{{ asset('images/picture1.png') }}',
-        '{{ asset('images/picture1.png') }}'
-        ],
-        currentIndex: 0,
-        next() { this.currentIndex = (this.currentIndex + 1) % this.images.length },
-        prev() { this.currentIndex = (this.currentIndex - 1 + this.images.length) % this.images.length },
-        startSlider() { setInterval(() => this.next(), 5000); }
-    }"
-x-init="startSlider"
-class="relative overflow-hidden rounded-xl shadow-lg h-[300px]"
->
+          .--dark-theme
+	--chat-background: rgba(10, 14, 14, 0.95)
+	--chat-panel-background: #131719
+	--chat-bubble-background: #14181a
+	--chat-add-button-background: #212324
+	--chat-send-button-background: #8147fc
+	--chat-text-color: #a3a3a3
+	--chat-options-svg: #a3a3a3
 
-<!-- Khung ảnh -->
-<div 
-    class="flex h-full transition-transform duration-[1200ms] ease-[cubic-bezier(0.65,0,0.35,1)]"
-    :style="`transform: translateX(-${currentIndex * 100}%);`"
->
-    <template x-for="(image, index) in images" :key="index">
-        <div class="w-full flex-shrink-0 h-full">
-            <img :src="image" class="w-full h-full object-cover" />
-        </div>
-    </template>
-</div>
+@mixin centered 
+	position: absolute
+	top: 50%
+	left: 50%
+	transform: translate(-50%, -50%)
 
-<!-- Button trái -->
-<button @click="prev"
-    class="absolute left-3 top-1/2 transform -translate-y-1/2 
-        w-9 h-9 flex items-center justify-center 
-        rounded-full border border-white/50 
-        bg-white/10 text-white hover:bg-white/20 
-        transition">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
-    </svg>
-</button>
+body
+	background: url(https://images.unsplash.com/photo-1495808985667-ba4ce2ef31b3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80)
+	background-size: cover
+	
 
-<!-- Button phải -->
-<button @click="next"
-    class="absolute right-3 top-1/2 transform -translate-y-1/2 
-        w-9 h-9 flex items-center justify-center 
-        rounded-full border border-white/50 
-        bg-white/10 text-white hover:bg-white/20 
-        transition">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none"
-        viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
-    </svg>
-</button>
-</section>
+#chat
+	background: var(--chat-background)
+	max-width: 600px
+	margin: 25px auto
+	box-sizing: border-box
+	padding: 1em
+	border-radius: 12px
+	position: relative
+	overflow: hidden
+	&::before
+		content: ""
+		position: absolute
+		top: 0
+		left: 0
+		width: 100%
+		height: 100%
+		background: url(https://images.unsplash.com/photo-1495808985667-ba4ce2ef31b3?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1050&q=80) fixed
+		z-index: -1
+
+	.btn-icon
+		position: relative
+		cursor: pointer
+		svg
+			stroke: #FFF
+			fill: #FFF
+			width: 50%
+			height: auto
+			@include centered
+
+	.chat
+		&__conversation-board
+			padding: 1em 0 2em
+			height: calc(100vh - 55px - 2em - 25px * 2 - .5em - 3em)
+			overflow: auto
+	
+			&__message-container.reversed
+				flex-direction: row-reverse
+				
+				.chat__conversation-board__message__bubble 
+					position: relative
+	
+					span
+						&:not(:last-child)
+							margin: 0 0 2em 0
+		
+				.chat__conversation-board__message__person
+					margin: 0 0 0 1.2em
+	
+				.chat__conversation-board__message__options
+					align-self: center
+					position: absolute
+					left: 0
+					display: none
+	
+	
+			&__message-container
+				position: relative
+				display: flex
+				flex-direction: row
+				
+				&:hover 
+					.chat__conversation-board__message__options
+						display: flex
+						align-items: center
+					
+					.option-item:not(:last-child)
+						margin: 0 .5em 0 0
+	
+				&:not(:last-child)
+					margin: 0 0 2em 0
+		
+			&__message__person
+				text-align: center
+				margin: 0 1.2em 0 0
+	
+				&__avatar
+					height: 35px
+					width: 35px
+					overflow: hidden
+					border-radius: 50%
+					user-select: none
+					ms-user-select: none
+					position: relative
+	
+					&::before
+						content: ""
+						position: absolute
+						height: 100%
+						width: 100%
+	
+					img
+						height: 100%
+						width: auto
+		
+				&__nickname
+					font-size: 9px
+					color: #484848
+					user-select: none
+					display: none
+		
+			&__message__context
+				max-width: 55%
+				align-self: flex-end
+	
+			&__message__options
+				align-self: center
+				position: absolute
+				right: 0
+				display: none
+				
+				.option-item
+					border: 0
+					background: 0
+					padding: 0
+					margin: 0
+					height: 16px
+					width: 16px
+					outline: none
+	
+				.emoji-button
+					svg
+						stroke: var(--chat-options-svg)
+						fill: transparent
+						width: 100%
+		
+				.more-button
+					svg
+						stroke: var(--chat-options-svg)
+						fill: transparent
+						width: 100%
+	
+			&__message__date
+		
+			&__message__bubble
+		
+				span
+					width: fit-content
+					display: inline-table
+					word-wrap: break-word
+					background: var(--chat-bubble-background)
+					font-size: 13px
+					color: var(--chat-text-color)
+					padding: .5em .8em
+					line-height: 1.5
+					border-radius: 6px
+					font-family: 'Lato', sans-serif
+					
+				&:not(:last-child)
+					margin: 0 0 .3em
+	
+				&:active
+					background: var(--chat-bubble-active-background)
+				
+		&__conversation-panel
+			background: var(--chat-panel-background)
+			border-radius: 12px
+			padding: 0 1em
+			height: 55px
+			margin: .5em 0 0
+
+			&__container
+				display: flex
+				flex-direction: row
+				align-items: center
+				height: 100%
+				
+				.panel-item:not(:last-child)
+					margin: 0 1em 0 0
+
+			&__button
+				background: grey
+				height: 20px
+				width: 30px
+				border: 0
+				padding: 0
+				outline: none
+				cursor: pointer
+		
+			.add-file-button
+				height: 23px
+				min-width: 23px
+				width: 23px
+				background: var(--chat-add-button-background)
+				border-radius: 50%
+				svg
+					width: 70%
+					stroke: #54575c
+	
+			.emoji-button
+				min-width: 23px
+				width: 23px
+				height: 23px
+				background: transparent
+				border-radius: 50%
+				svg
+					width: 100%
+					fill: transparent
+					stroke: #54575c
+		
+			.send-message-button
+				background: var(--chat-send-button-background)
+				height: 30px
+				min-width: 30px
+				border-radius: 50%
+				transition: .3s ease
+				&:active
+					transform: scale(.97)
+				
+				svg
+					margin: 1px -1px
+	
+			&__input
+				width: 100%
+				height: 100%
+				outline: none
+				position: relative
+				color: var(--chat-text-color)
+				font-size: 13px
+				background: transparent
+				border: 0
+				font-family: 'Lato', sans-serif
+				resize: none
+
+@media only screen and (max-width: 600px)
+	#chat
+		margin: 0
+		border-radius: 0
+		.chat__conversation-board
+			height: calc(100vh - 55px - 2em - .5em - 3em)
+		.chat__conversation-board__message__options
+			display: none !important

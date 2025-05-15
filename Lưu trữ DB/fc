@@ -1,0 +1,64 @@
+CREATE TABLE `support_responses` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `support_ticket_id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `content` text NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Cấu trúc bảng cho bảng `support_tickets`
+--
+
+CREATE TABLE `support_tickets` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `content` text NOT NULL,
+  `status` enum('Chờ xử lý','Đang xử lý','Đã trả lời','Đã đóng') DEFAULT 'Chờ xử lý',
+  `created_at` timestamp NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+
+CREATE TABLE `users` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `identity_card` varchar(12) NOT NULL,
+  `dob` date NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('admin','employee','customer') NOT NULL,
+  `status` enum('active','banned') NOT NULL DEFAULT 'active',
+  `phone` varchar(255) DEFAULT NULL,
+  `address` varchar(255) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `remember_token` varchar(100) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+CREATE TABLE `employees` (
+  `id` bigint(20) UNSIGNED NOT NULL,
+  `user_id` bigint(20) UNSIGNED NOT NULL,
+  `position` varchar(255) NOT NULL,
+  `department` varchar(255) NOT NULL,
+  `salary` decimal(10,2) NOT NULL,
+  `hired_date` date NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+
+
+->còn quản lý yêu cầu của admin ( có cả employee nữa ) ,xử lý lại logic ,admin mà nhắn thì hiển thị tên admin,còn nhân viên nhắn cho khách hàng thì hiển thị tên đầy đủ của nhân viên (form show support của admin)
+
+bên form customer
+-> chỗ icon thông báo chỉ hiển thị các thông báo từ admin gửi về,không nhận thông báo gửi yêu cầu của admin(nhân viên), hạn chế có 3 thông báo (rút gọn lại và hiển thị nút xem tất cả) : file customer.blade.php là chứa icon thông báo
+
+-bạn hãy xử lý loggic chuẩn ,không bị lỗi ,code sạch,dễ bảo trì ,dễ đọc,không được fix lỗi này xong thì hiện ra lỗi khác

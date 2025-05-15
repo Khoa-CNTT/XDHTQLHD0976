@@ -8,8 +8,9 @@ use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
 use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
 use App\Http\Controllers\Customer\SignatureController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
-use App\Http\Controllers\CustomerProfileController;
+use App\Http\Controllers\Customer\CustomerProfileController ;
 use App\Http\Controllers\Customer\NotificationController;
+use App\Http\Controllers\Customer\SupportTicketController as CustomerSupportTicketController;
 
 use App\Http\Controllers\Admin\ContractAmendmentController as AdminContractAmendmentController;
 use App\Http\Controllers\Admin\ServiceCategoryController;
@@ -190,6 +191,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('/support/{id}', [AdminSupportTicketController::class, 'show'])->name('support.show');
         Route::put('/support/{id}', [AdminSupportTicketController::class, 'update'])->name('support.update');
         Route::post('/support/{id}/respond', [AdminSupportTicketController::class, 'respond'])->name('support.respond');
+        Route::post('support-tickets/{id}/assign', [AdminSupportTicketController::class, 'assignStaff'])->name('support.assign');
         Route::get('/support/{id}/check-typing', [AdminSupportTicketController::class, 'checkTypingStatus'])->name('support.check-typing');
         Route::get('/support/{id}/check-responses', [AdminSupportTicketController::class, 'checkNewResponses'])->name('support.check-responses');
         
@@ -238,13 +240,13 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
         Route::get('contracts', [CustomerContractController::class, 'index'])->name('contracts.index');
         Route::get('contracts/{id}', [CustomerContractController::class, 'show'])->name('contracts.show');
       
-        Route::post('/support/create', [CustomerProfileController::class, 'createSupportTicket'])->name('support.create');
-        Route::get('/support', [CustomerProfileController::class, 'listSupportTickets'])->name('support.index');
-        Route::get('/support/{id}', [CustomerProfileController::class, 'viewSupportTicket'])->name('support.show');
-        Route::post('/support/{id}/respond', [CustomerProfileController::class, 'respondToSupportTicket'])->name('support.respond');
-        Route::post('/support/{id}/typing', [CustomerProfileController::class, 'updateTypingStatus'])->name('support.typing');
-        Route::get('/support/{id}/check-responses', [CustomerProfileController::class, 'checkNewResponses'])->name('support.check-responses');
-        Route::post('/support/{id}/close', [CustomerProfileController::class, 'closeSupportTicket'])->name('support.close');
+        Route::post('/support/create', [CustomerSupportTicketController::class, 'createSupportTicket'])->name('support.create');
+        Route::get('/support', [CustomerSupportTicketController::class, 'listSupportTickets'])->name('support.index');
+        Route::get('/support/{id}', [CustomerSupportTicketController::class, 'viewSupportTicket'])->name('support.show');
+        Route::post('/support/{id}/respond', [CustomerSupportTicketController::class, 'respondToSupportTicket'])->name('support.respond');
+        Route::post('/support/{id}/typing', [CustomerSupportTicketController::class, 'updateTypingStatus'])->name('support.typing');
+        Route::get('/support/{id}/check-responses', [CustomerSupportTicketController::class, 'checkNewResponses'])->name('support.check-responses');
+        Route::post('/support/{id}/close', [CustomerSupportTicketController::class, 'closeSupportTicket'])->name('support.close');
 
         Route::get('/profile', [CustomerProfileController::class, 'profile'])->name('profile');
         Route::post('/profile', [CustomerProfileController::class, 'updateProfile'])->name('profile.update');

@@ -6,6 +6,44 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Duration;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property string $service_name
+ * @property string $description
+ * @property string|null $content
+ * @property string|null $image
+ * @property int|null $created_by
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property int $is_hot
+ * @property int|null $category_id
+ * @property string|null $deleted_at
+ * @property-read \App\Models\ServiceCategory|null $category
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ContractDuration> $contractDurations
+ * @property-read int|null $contract_durations_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Contract> $contracts
+ * @property-read int|null $contracts_count
+ * @property-read \App\Models\Employee|null $employee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\ServiceReview> $reviews
+ * @property-read int|null $reviews_count
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereCategoryId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereContent($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereCreatedBy($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereDeletedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereDescription($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereImage($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereIsHot($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereServiceName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Service whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 class Service extends Model
 {
     use HasFactory;

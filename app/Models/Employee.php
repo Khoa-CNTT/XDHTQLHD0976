@@ -5,6 +5,33 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+/**
+ * 
+ *
+ * @property int $id
+ * @property int $user_id
+ * @property string $position
+ * @property string $department
+ * @property string $salary
+ * @property string $hired_date
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Service> $services
+ * @property-read int|null $services_count
+ * @property-read \App\Models\User|null $user
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereDepartment($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereHiredDate($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee wherePosition($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereSalary($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereUpdatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|Employee whereUserId($value)
+ * @mixin \Eloquent
+ */
 class Employee extends Model
 {
     use HasFactory;

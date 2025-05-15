@@ -12,7 +12,60 @@ use App\Models\ActivityLog;
 use App\Models\SupportTicket;
 use App\Models\Notification;
 
-
+/**
+ * App\Models\User
+ *
+ * @property int $id
+ * @property string $name
+ * @property string $email
+ * @property string $identity_card
+ * @property string $dob
+ * @property string $password
+ * @property string $role
+ * @property string $status
+ * @property string|null $phone
+ * @property string|null $address
+ * @property \Illuminate\Support\Carbon|null $email_verified_at
+ * @property \Illuminate\Support\Carbon|null $created_at
+ * @property \Illuminate\Support\Carbon|null $updated_at
+ * @property string|null $avatar
+ * @property string|null $remember_token
+ * @property string|null $last_login_at
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, ActivityLog> $activityLogs
+ * @property-read int|null $activity_logs_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, SupportTicket> $assignedTickets
+ * @property-read int|null $assigned_tickets_count
+ * @property-read Customer|null $customer
+ * @property-read Employee|null $employee
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $notifications
+ * @property-read int|null $notifications_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Permission> $permissions
+ * @property-read int|null $permissions_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, SupportTicket> $supportTickets
+ * @property-read int|null $support_tickets_count
+ * @property-read \Illuminate\Database\Eloquent\Collection<int, Notification> $unreadNotifications
+ * @property-read int|null $unread_notifications_count
+ * @method static \Database\Factories\UserFactory factory($count = null, $state = [])
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newModelQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User newQuery()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User query()
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAddress($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereAvatar($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereCreatedAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereDob($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereEmail($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereId($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereIdentityCard($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereLastLoginAt($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereName($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePassword($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User wherePhone($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRememberToken($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereRole($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereStatus($value)
+ * @method static \Illuminate\Database\Eloquent\Builder<static>|User whereUpdatedAt($value)
+ * @mixin \Eloquent
+ */
 
 
 class User extends Authenticatable
@@ -83,17 +136,20 @@ class User extends Authenticatable
     }
 
     public function supportTickets()
-    {
-        return $this->hasMany(SupportTicket::class);
-    }
+{
+    return $this->hasMany(SupportTicket::class, 'user_id', 'id');
+}
 
     
-     public function getAvatarUrl()
-    {
-        return $this->avatar
-            ? asset('storage/avatars/' . $this->avatar)
-            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name ?? 'User') . '&color=7F9CF5&background=EBF4FF';
-    }
+         
+      
+public function getAvatarUrl()
+{
+    return $this->avatar 
+        ? asset('storage/' . $this->avatar) 
+        : asset('images/default-avatar.png');
+}
+
 public function notifications()
 {
     return $this->hasMany(Notification::class);
@@ -103,14 +159,10 @@ public function unreadNotifications()
 {
     return $this->hasMany(Notification::class)->where('is_read', false);
 }
-
+public function assignedTickets()
+{
+    return $this->hasMany(SupportTicket::class, 'assigned_employee_id');
+}
 
 }
 
-//Model này dùng để xác định các trường trong bảng users
-//ví dụ: protected $fillable = ['name', 'email', 'password', 'role'];
-//các trường này sẽ được lấy từ form và lưu vào database
-//ví dụ: protected $hidden = ['password', 'remember_token'];
-//các trường này sẽ không được hiển thị khi trả về dữ liệu
-//ví dụ: protected function casts(): array
-//các trường này sẽ được chuyển đổi sang kiểu dữ liệu khác  

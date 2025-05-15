@@ -6,6 +6,8 @@
   <title>@yield('title', 'Admin')</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
   @stack('styles')
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -40,30 +42,31 @@
   <div class="dashboard-container">
     <div class="sidebar">
       <h2 class="text-xl font-semibold mb-4">Menu</h2>
-      <ul>
-        @if(auth()->user()->role == 'admin')
-          
-        <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700">Trang Chủ</a></li>
-        <li><a href="{{ route('admin.customers.index') }}" class="hover:bg-gray-700">Quản lý khách hàng</a></li>
-        <li><a href="{{ route('admin.employees.index') }}" class="hover:bg-gray-700">Quản lý nhân viên</a></li>
-        <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
-        <li><a href="{{ route('admin.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>
-        <li><a href="{{ route('admin.payments.index') }}" class="hover:bg-gray-700">Quản lý thanh toán</a></li>
-        <li><a href="{{ route('admin.notifications.index') }}" class="hover:bg-gray-700">Quản lý thông báo</a></li>
-        <li><a href="{{ route('admin.customer-signatures.index') }}" class="hover:bg-gray-700">Quản lý chữ ký khách hàng</a></li>
-        <li><a href="{{ route('admin.support.index') }}" class="hover:bg-gray-700">Quản lý yêu cầu hỗ trợ</a></li>
-        <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
-        <li><a href="{{ route('admin.settings') }}" class="hover:bg-gray-700">Cài đặt hệ thống</a></li>
-        @elseif(auth()->user()->role == 'employee')
-        <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700">Trang chủ</a></li>
-        <li><a href="{{ route('admin.employee.contracts.index') }}" class="hover:bg-gray-700">Quản lý hợp đồng</a></li>
-        <li><a href="{{ route('admin.employee.services.index') }}" class="hover:bg-gray-700">Quản lý dịch vụ</a></li>
-        <li><a href="{{ route('admin.employee.payments.index') }}" class="hover:bg-gray-700">Quản lý thanh toán</a></li>
-        <li><a href="{{ route('admin.employee.support.index') }}" class="hover:bg-gray-700">Quản lý yêu cầu hỗ trợ</a></li>
-          <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700">Báo cáo thống kê</a></li>
-        <li><a href="{{ route('admin.profile.show') }}" class="hover:bg-gray-700">Thông tin cá nhân</a></li>
-        @endif
-      </ul>
+     <ul>
+    @if(auth()->user()->role == 'admin')
+        <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700"><i class="fas fa-home"></i> Trang Chủ</a></li>
+        <li><a href="{{ route('admin.customers.index') }}" class="hover:bg-gray-700"><i class="fas fa-users"></i> Quản lý khách hàng</a></li>
+        <li><a href="{{ route('admin.employees.index') }}" class="hover:bg-gray-700"><i class="fas fa-user-tie"></i> Quản lý nhân viên</a></li>
+        <li><a href="{{ route('admin.contracts.index') }}" class="hover:bg-gray-700"><i class="fas fa-file-contract"></i> Quản lý hợp đồng</a></li>
+        <li><a href="{{ route('admin.services.index') }}" class="hover:bg-gray-700"><i class="fas fa-concierge-bell"></i> Quản lý dịch vụ</a></li>
+        <li><a href="{{ route('admin.payments.index') }}" class="hover:bg-gray-700"><i class="fas fa-credit-card"></i> Quản lý thanh toán</a></li>
+        <li><a href="{{ route('admin.notifications.index') }}" class="hover:bg-gray-700"><i class="fas fa-bell"></i> Quản lý thông báo</a></li>
+        <li><a href="{{ route('admin.customer-signatures.index') }}" class="hover:bg-gray-700"><i class="fas fa-pen-nib"></i> Quản lý chữ ký khách hàng</a></li>
+        <li><a href="{{ route('admin.support.index') }}" class="hover:bg-gray-700"><i class="fas fa-headset"></i> Quản lý yêu cầu hỗ trợ</a></li>
+        <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700"><i class="fas fa-chart-bar"></i> Báo cáo thống kê</a></li>
+        <li><a href="{{ route('admin.settings') }}" class="hover:bg-gray-700"><i class="fas fa-cog"></i> Hệ thống</a></li>
+    
+    @elseif(auth()->user()->role == 'employee')
+        <li><a href="{{ route('admin.dashboard') }}" class="hover:bg-gray-700"><i class="fas fa-home"></i> Trang chủ</a></li>
+        <li><a href="{{ route('admin.employee.contracts.index') }}" class="hover:bg-gray-700"><i class="fas fa-file-contract"></i> Quản lý hợp đồng</a></li>
+        <li><a href="{{ route('admin.employee.services.index') }}" class="hover:bg-gray-700"><i class="fas fa-concierge-bell"></i> Quản lý dịch vụ</a></li>
+        <li><a href="{{ route('admin.employee.payments.index') }}" class="hover:bg-gray-700"><i class="fas fa-credit-card"></i> Quản lý thanh toán</a></li>
+        <li><a href="{{ route('admin.employee.support.index') }}" class="hover:bg-gray-700"><i class="fas fa-headset"></i> Quản lý yêu cầu hỗ trợ</a></li>
+        <li><a href="{{ route('admin.reports.index') }}" class="hover:bg-gray-700"><i class="fas fa-chart-bar"></i> Báo cáo thống kê</a></li>
+        <li><a href="{{ route('admin.profile.show') }}" class="hover:bg-gray-700"><i class="fas fa-user"></i> Thông tin cá nhân</a></li>
+    @endif
+</ul>
+
     </div>
     <div class="content">
       @yield('content')

@@ -160,7 +160,6 @@
                                 </td>
                                 <td class="px-6 py-4">
                                     <div class="text-sm font-medium text-gray-900 truncate max-w-xs">{{ $ticket->title }}</div>
-                                    <div class="text-xs text-gray-500 truncate max-w-xs">{{ Str::limit($ticket->content, 50) }}</div>
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-center">
                                     <span class="status-badge inline-flex items-center px-3 py-1 rounded-full text-xs font-medium 

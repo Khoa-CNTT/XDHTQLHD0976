@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
+
 class SupportTicketController extends Controller
 {
     public function index(Request $request)
@@ -18,7 +19,8 @@ class SupportTicketController extends Controller
             return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập.');
         }
         
-        $query = SupportTicket::with('user');
+       $query = SupportTicket::with('user')
+        ->where('assigned_employee_id', Auth::id());
         
         // Tìm kiếm theo tiêu đề hoặc nội dung
         if ($request->has('search') && !empty($request->search)) {
@@ -39,28 +41,25 @@ class SupportTicketController extends Controller
             $query->where('user_id', $request->user_id);
         }
         
-        // Sắp xếp theo thời gian, mới nhất lên đầu
-        $query->orderBy('created_at', 'desc');
-        
-        $tickets = $query->paginate(10);
+       $tickets = $query->orderBy('created_at', 'desc')->paginate(10);
         $customers = User::where('role', 'customer')->get();
-        
         return view('admin.support.index', compact('tickets', 'customers'));
     }
     
-    public function show($id)
-    {
-        // Kiểm tra quyền
-        if (!Auth::user()->isEmployee()) {
-            return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập.');
-        }
-        
-        $ticket = SupportTicket::with(['user', 'responses' => function($query) {
-            $query->orderBy('created_at', 'asc');
-        }])->findOrFail($id);
-        
-        return view('admin.support.show', compact('ticket'));
+   public function show($id)
+{
+    if (!Auth::user()->isEmployee()) {
+        return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập.');
     }
+
+    $ticket = SupportTicket::with(['user', 'responses' => function($query) {
+        $query->orderBy('created_at', 'asc');
+    }])
+    ->where('assigned_employee_id', Auth::id())
+    ->findOrFail($id);
+
+    return view('admin.support.show', compact('ticket'));
+}
     
     public function update(Request $request, $id)
     {
@@ -71,10 +70,9 @@ class SupportTicketController extends Controller
         
         $ticket = SupportTicket::findOrFail($id);
         
-        $validator = Validator::make($request->all(), [
-            'status' => 'required|in:Chờ xử lý,Đang xử lý,Đã giải quyết,Đã huỷ',
-        ]);
-        
+       $validator = Validator::make($request->all(), [
+    'status' => 'required|in:Đang xử lý,Đã giải quyết,Đã huỷ',
+]);
         if ($validator->fails()) {
             return redirect()->back()->with('error', 'Trạng thái không hợp lệ');
         }
@@ -82,57 +80,52 @@ class SupportTicketController extends Controller
         $ticket->status = $request->status;
         $ticket->save();
         
-        return redirect()->back()->with('success', 'Cập nhật trạng thái yêu cầu hỗ trợ thành công');
+    if ($ticket->status === 'Đã giải quyết') {
+        $message = 'Yêu cầu đã giải quyết thành công';
+    } elseif ($ticket->status === 'Đã huỷ') {
+        $message = 'Yêu cầu đã huỷ';
+    } else {
+        $message = 'Cập nhật trạng thái yêu cầu hỗ trợ thành công';
     }
-    
+
+        return redirect()->back()->with('success', $message);
+    }
     public function respond(Request $request, $id)
-    {
-        // Kiểm tra quyền
-        if (!Auth::user()->isEmployee()) {
-            return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập.');
-        }
-        
-        $ticket = SupportTicket::findOrFail($id);
-        
-        $validator = Validator::make($request->all(), [
-            'response' => 'required|string',
-        ], [
-            'response.required' => 'Vui lòng nhập nội dung phản hồi',
-        ]);
-        
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput()
-                ->with('error', 'Vui lòng nhập đầy đủ thông tin');
-        }
-        
-        // Tạo phản hồi mới
-        $response = new \App\Models\SupportResponse([
-            'support_ticket_id' => $ticket->id,
-            'user_id' => Auth::id(), // ID của nhân viên đang đăng nhập
-            'content' => $request->response,
-        ]);
-        
-        $response->save();
-        
-        // Nếu trạng thái vẫn là "Chờ xử lý", cập nhật thành "Đang xử lý"
-        if ($ticket->status === 'Chờ xử lý') {
-            $ticket->status = 'Đang xử lý';
-            $ticket->save();
-        }
-        
-        // Tạo thông báo cho khách hàng
-        $user = $ticket->user;
-        $notification = new \App\Models\Notification([
-            'user_id' => $user->id,
-            'title' => 'Phản hồi yêu cầu hỗ trợ',
-            'message' => 'Yêu cầu hỗ trợ "' . $ticket->title . '" đã được phản hồi.',
-            'is_read' => false
-        ]);
-        
-        $notification->save();
-        
-        return redirect()->back()->with('success', 'Đã gửi phản hồi thành công');
+{
+    if (!Auth::user()->isEmployee()) {
+        return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập.');
     }
+
+    $ticket = SupportTicket::where('assigned_employee_id', Auth::id())->findOrFail($id);
+    $this->authorize('respond', $ticket);
+
+    $validator = Validator::make($request->all(), [
+        'response' => 'required|string',
+    ], [
+        'response.required' => 'Vui lòng nhập nội dung phản hồi',
+    ]);
+
+    if ($validator->fails()) {
+        return redirect()->back()
+            ->withErrors($validator)
+            ->withInput()
+            ->with('error', 'Vui lòng nhập đầy đủ thông tin');
+    }
+
+    $response = new \App\Models\SupportResponse([
+        'support_ticket_id' => $ticket->id,
+        'user_id' => Auth::id(),
+        'content' => $request->response,
+    ]);
+    $response->save();
+
+    if ($ticket->status === 'Đang xử lý') {
+        $ticket->status = 'Đang xử lý';
+        $ticket->save();
+    }
+
+  
+
+    return redirect()->back()->with('success', 'Đã gửi phản hồi thành công');
+}
 } 

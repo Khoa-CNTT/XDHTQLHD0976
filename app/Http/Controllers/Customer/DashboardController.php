@@ -9,10 +9,7 @@ use App\Models\Contract;
 use App\Models\Service;
 class DashboardController extends Controller
 {
-    // public function index()
-    // {
-    //     return view('customer.dashboard'); // Trả về view customer/dashboard.blade.php
-    // }
+   
 
     public function index()
     {
@@ -21,7 +18,7 @@ class DashboardController extends Controller
         
         // Get services without the price column
         $services = Service::select('id', 'image', 'service_name', 'description', 'created_by', 'created_at', 'is_hot','category_id') 
-            ->with('category')   // Add this to load categories
+            ->with('category')  
             ->orderByDesc('is_hot')        
             ->orderByDesc('created_at')      
             ->paginate(9);                  

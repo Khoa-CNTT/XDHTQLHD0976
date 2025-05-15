@@ -24,7 +24,13 @@
                 
                 <form id="avatar-form" action="{{ route('admin.profile.update-avatar') }}" method="POST" enctype="multipart/form-data" class="hidden">
                     @csrf
-                    <input type="file" name="avatar" id="avatar-upload" class="hidden" onchange="document.getElementById('avatar-form').submit()">
+                   <input 
+    type="file" 
+    name="avatar" 
+    id="avatar-upload" 
+    class="hidden"
+    onchange="if(this.files.length) document.getElementById('avatar-form').submit();"
+>
                 </form>
                 
                 <h2 class="text-xl font-bold text-gray-800 mb-3">{{ $user->name }}</h2>

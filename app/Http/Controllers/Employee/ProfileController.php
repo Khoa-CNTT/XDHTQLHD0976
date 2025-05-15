@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Storage;
+
 
 class ProfileController extends Controller
 {
@@ -141,7 +143,7 @@ class ProfileController extends Controller
         if ($request->hasFile('avatar')) {
             // Xóa avatar cũ nếu có
             if ($user->avatar) {
-                \Storage::disk('public')->delete($user->avatar);
+                Storage::disk('public')->delete($user->avatar);
             }
             
             // Lưu avatar mới
