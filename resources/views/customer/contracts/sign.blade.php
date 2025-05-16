@@ -107,7 +107,7 @@
         @csrf
         <input type="hidden" id="signature-data" name="signature_data">
         <input type="hidden" name="duration" value="{{ $duration }}">
-        <input type="hidden" name="duration_id" value="{{ $durationInfo->duration_id }}">
+       <input type="hidden" name="contract_duration_id" value="{{ $durationInfo->id }}">
         <input type="hidden" name="price" value="{{ $durationInfo->price }}">
 
         <div class="flex flex-col items-center">

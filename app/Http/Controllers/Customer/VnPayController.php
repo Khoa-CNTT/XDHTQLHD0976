@@ -421,6 +421,7 @@ class VNPayController extends Controller
     }
 }
 
+
 private function getAdminSignatureBase64()
 {
     $folder = 'signatures';

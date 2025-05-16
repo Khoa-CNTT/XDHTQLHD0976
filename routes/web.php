@@ -36,12 +36,23 @@ use App\Http\Controllers\Employee\PaymentController as EmployeePaymentController
 use App\Http\Controllers\Employee\SupportTicketController as EmployeeSupportTicketController;
 use App\Http\Controllers\Employee\ProfileController as EmployeeProfileController;
 
+
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\VerificationController;
 use App\Http\Controllers\Auth\ConfirmPasswordController;    
+
+
+
+
+
+
+
+
+Route::view('/offline', 'offline')->name('offline'); 
+
 
 Route::get('/customer/dashboard', [CustomerDashboardController::class, 'index'])->name('customer.dashboard');
 Route::get('/services/{id}', [CustomerServiceController::class, 'show'])->name('customer.services.show');
@@ -262,7 +273,7 @@ Route::middleware([\App\Http\Middleware\Authenticate::class, \App\Http\Middlewar
      
         Route::post('/contracts/{id}/vnpay-payment', [VNPayPaymentController::class, 'createPayment'])->name('vnpay.payment');
         Route::get('/vnpay/return', [VNPayPaymentController::class, 'return'])->name('vnpay.success');
-        Route::post('/vnpay/ipn', [VNPayPaymentController::class, 'ipn'])->name('vnpay.ipn');
+        Route::match(['get', 'post'], '/vnpay/ipn', [VNPayPaymentController::class, 'ipn'])->name('vnpay.ipn');
         
         Route::get('/', [CustomerContractAmendmentController::class, 'index'])->name('index');
 
