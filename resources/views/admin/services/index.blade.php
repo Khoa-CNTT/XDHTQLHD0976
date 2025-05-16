@@ -21,6 +21,7 @@
 
     <div class="flex flex-col md:flex-row md:justify-between mb-6 gap-4">
         <div class="flex flex-wrap gap-2">
+               @if(auth()->user()->role === 'admin')
             <a href="{{ route('admin.services.create') }}" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
                 <i class="fas fa-plus mr-2"></i> Thêm dịch vụ mới
             </a>
@@ -30,6 +31,7 @@
             <a href="{{ route('admin.durations.index') }}" class="bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded-lg transition duration-200">
                 <i class="fas fa-clock mr-2"></i> Quản lý thời hạn
             </a>
+        @endif
            
         </div>
     </div>

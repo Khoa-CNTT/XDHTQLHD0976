@@ -129,26 +129,28 @@
                 @forelse ($notifications as $notification)
                 <tr class="hover:bg-gray-50">
                     <td class="py-3 px-4 whitespace-nowrap">{{ $notification->id }}</td>
-                    <td class="py-3 px-4">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
-                                @if($notification->user)
-                                    <span class="text-blue-800 font-bold">{{ substr($notification->user->name, 0, 1) }}</span>
-                                @else
-                                    <span class="text-blue-800 font-bold">?</span>
-                                @endif
-                            </div>
-                            <div class="ml-4">
-                                @if($notification->user)
-                                    <div class="text-sm font-medium text-gray-900">{{ $notification->user->name }}</div>
-                                    <div class="text-sm text-gray-500">{{ $notification->user->email }}</div>
-                                @else
-                                    <div class="text-sm font-medium text-gray-900">Người dùng đã xóa</div>
-                                    <div class="text-sm text-gray-500">Không có thông tin</div>
-                                @endif
-                            </div>
-                        </div>
-                    </td>
+                  <td class="py-3 px-4">
+    <div class="flex items-center">
+        <div class="flex-shrink-0 h-10 w-10 rounded-full overflow-hidden bg-blue-100 flex items-center justify-center">
+            @if($notification->user && $notification->user->avatar)
+                <img src="{{ asset('storage/' . $notification->user->avatar) }}" alt="{{ $notification->user->name }}" class="h-10 w-10 object-cover rounded-full">
+            @elseif($notification->user)
+                <span class="text-blue-800 font-bold text-lg">{{ substr($notification->user->name, 0, 1) }}</span>
+            @else
+                <span class="text-blue-800 font-bold">?</span>
+            @endif
+        </div>
+        <div class="ml-4">
+            @if($notification->user)
+                <div class="text-sm font-medium text-gray-900">{{ $notification->user->name }}</div>
+                <div class="text-sm text-gray-500">{{ $notification->user->email }}</div>
+            @else
+                <div class="text-sm font-medium text-gray-900">Người dùng đã xóa</div>
+                <div class="text-sm text-gray-500">Không có thông tin</div>
+            @endif
+        </div>
+    </div>
+</td>
                     <td class="py-3 px-4">{{ $notification->title }}</td>
                     <td class="py-3 px-4">
                         <span class="text-sm text-gray-600">{{ Str::limit($notification->message, 50) }}</span>

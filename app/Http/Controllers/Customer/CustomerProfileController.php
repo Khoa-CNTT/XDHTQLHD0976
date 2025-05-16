@@ -64,26 +64,33 @@ class CustomerProfileController extends Controller
         $oldAddress = $user->address;
         $hasChanges = false;
         $changeDescription = 'Bạn đã cập nhật thông tin cá nhân';
+        $inputPhone = preg_replace('/\D/', '', $request->phone); 
+$currentPhone = preg_replace('/\D/', '', $user->phone);
         
         // Cập nhật số điện thoại nếu có thay đổi
-        if ($request->phone !== $user->phone) {
-            // Kiểm tra xem số điện thoại này đã từng được sử dụng trước đó bởi người dùng này không
-            $oldPhones = \App\Models\ActivityLog::where('user_id', $user->id)
-                ->where('action', 'Cập nhật thông tin cá nhân')
-                ->where('description', 'LIKE', '%đã thay đổi số điện thoại từ ' . $request->phone . ' thành%')
-                ->count();
-                
-            if ($oldPhones > 0) {
-                return redirect()->back()
-                    ->withInput()
-                    ->with('error', 'Số điện thoại này đã được bạn sử dụng trước đó. Vui lòng sử dụng số điện thoại khác.')
-                    ->with('tab', 'info');
-            }
-            
-            $user->phone = $request->phone;
-            $hasChanges = true;
-            $changeDescription .= ', đã thay đổi số điện thoại từ ' . $oldPhone . ' thành ' . $request->phone;
-        }
+       if ($request->phone !== $user->phone) {
+    // Kiểm tra số điện thoại này đã có ai khác dùng chưa
+    $phoneExists = \App\Models\User::where('phone', $request->phone)
+        ->where('id', '!=', $user->id)
+        ->exists();
+
+    if ($inputPhone !== $currentPhone) {
+    $phoneExists = \App\Models\User::where('phone', $inputPhone)
+        ->where('id', '!=', $user->id)
+        ->exists();
+
+    if ($phoneExists) {
+        return redirect()->back()
+            ->withInput()
+            ->with('error', 'Số điện thoại này đã được sử dụng bởi tài khoản khác.')
+            ->with('tab', 'info');
+    }
+}
+
+    $user->phone = $request->phone;
+    $hasChanges = true;
+    $changeDescription .= ', đã thay đổi số điện thoại từ ' . $oldPhone . ' thành ' . $request->phone;
+}
         
         // Cập nhật địa chỉ nếu có thay đổi
         if ($request->address !== $user->address) {
