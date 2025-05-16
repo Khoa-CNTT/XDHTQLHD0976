@@ -135,6 +135,7 @@
         <div class="mb-4 signature-preview">
             <p>Chữ ký hiện tại:</p>
             <img src="{{ $signaturePath }}" alt="Chữ ký hiện tại">
+            <p>DEBUG: {{ $signaturePath }}</p>
         </div>
         @else
         <p class="text-gray-500">Chưa có chữ ký nào được lưu.</p>

@@ -7,19 +7,26 @@ use Illuminate\Support\Facades\Storage;
 
 class AdminSignatureController extends Controller
 {
-    public function showForm()
-    {
-        $signaturePath = null;
-        if (Storage::disk('local')->exists('company_signature_path.txt')) {
-            $path = trim(Storage::disk('local')->get('company_signature_path.txt'));
-            if ($path && !str_starts_with($path, 'data:image')) {
-                $signaturePath = asset('storage/' . $path);
-            } else {
-                $signaturePath = $path;
-            }
+  public function showForm()
+{
+    $signaturePath = null;
+    $defaultSignature = 'signatures/admin_signature.png';
+
+   
+    if (Storage::disk('local')->exists('company_signature_path.txt')) {
+        $path = trim(Storage::disk('local')->get('company_signature_path.txt'));
+        if ($path && !str_starts_with($path, 'data:image')) {
+            $signaturePath = asset('storage/' . $path);
+        } else {
+            $signaturePath = $path;
         }
-        return view('admin.signatures.form', compact('signaturePath'));
+    } elseif (Storage::disk('public')->exists($defaultSignature)) {
+      
+        $signaturePath = asset('storage/' . $defaultSignature);
     }
+
+    return view('admin.signatures.form', compact('signaturePath'));
+}
 
     public function save(Request $request)
 {

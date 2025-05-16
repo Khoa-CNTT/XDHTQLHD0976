@@ -55,7 +55,6 @@ class DashboardController extends Controller
         $contractStatusLabels = ['Hoàn thành', 'Đang hoạt động', 'Đã huỷ', 'Chờ xử lý'];
         $contractStatusData = [
             Contract::where('status', 'Hoàn thành')->count(),
-            Contract::where('status', 'Đang hoạt động')->count(),
             Contract::where('status', 'Đã huỷ')->count(),
             Contract::where('status', 'Chờ xử lý')->count(),
         ];
