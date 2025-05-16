@@ -13,11 +13,31 @@ class AdminCustomerSignatureController extends Controller
     /**
      * Hiển thị danh sách chữ ký của khách hàng
      */
-    public function index()
-    {
-        $customers = Customer::with(['user', 'contracts.signatures'])->get();
-        return view('admin.customer_signatures.index', compact('customers'));
+   public function index(Request $request)
+{
+    $query = Customer::with(['user', 'contracts.signatures']);
+
+    // Tìm theo tên hoặc email
+    if ($request->filled('search')) {
+        $query->whereHas('user', function ($q) use ($request) {
+            $q->where('name', 'like', '%' . $request->search . '%')
+              ->orWhere('email', 'like', '%' . $request->search . '%');
+        });
     }
+
+    // Lọc theo trạng thái chữ ký nếu có chọn
+    if ($request->filled('signature_status')) {
+        $query->whereHas('contracts.signatures', function ($q) use ($request) {
+            $q->where('status', $request->signature_status);
+        });
+    }
+
+    $customers = $query->get();
+
+    return view('admin.customer_signatures.index', compact('customers'));
+}
+
+
 
     /**
      * Hiển thị form xem và quản lý chữ ký của một khách hàng cụ thể

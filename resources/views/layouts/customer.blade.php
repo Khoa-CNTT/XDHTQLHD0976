@@ -252,12 +252,21 @@
             </nav>
         </div>
     </header>
-        <!-- Sidebar và Nội Dung -->
-        <div class="flex">
+
+
+    
+        <!-- Sidebar và Nội Dung 
+        thêm flex-1 để nội dung chiếm toàn bộ chiều cao còn lại -->
+        <div class="flex-1"> 
         <main class="container mx-auto px-4 py-6">
             @yield('content') 
         </main>
         </div>
+
+
+
+
+
     <!-- Footer -->
     <footer class="bg-gray-800 text-white py-8">
         <div class="container mx-auto px-4 text-center">

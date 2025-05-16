@@ -1,3 +1,4 @@
+
 @extends('layouts.admin')
 @section('title', 'Tải lên chữ ký tay')
 
@@ -38,121 +39,73 @@
 @endpush
 
 <style>
-    #signature-pad {
-        border: 1px solid #ccc;
-        border-radius: 5px;
-        background-color: #fff;
-        width: 100%;
-        height: 200px; /* Đặt chiều cao cố định */
-        display: block;
+    body {
+        background: #f3f6fa;
     }
-
-    .signature-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .signature-actions {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-
     .signature-preview img {
-        max-height: 100px;
+        max-height: 120px;
         width: auto;
         border: 1px solid #ccc;
-        border-radius: 5px;
+        border-radius: 8px;
+        background: #fff;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        padding: 8px;
     }
-
-    .upload-container {
-        display: flex;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    /* Popup styles */
-    .popup {
-        display: none;
-        position: fixed;
-        top: 0;
-        left: 0;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.5);
-        justify-content: center;
-        align-items: center;
-    }
-
-    .popup-content {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        text-align: center;
-        max-width: 400px;
+    #signature-pad {
+        border: 2px dashed #2563eb;
+        border-radius: 8px;
+        background-color: #f8fafc;
         width: 100%;
-    }
-
-    .popup button {
-        background: #3490dc;
-        color: white;
-        padding: 10px;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
+        height: 180px;
+        display: block;
+        cursor: crosshair;
     }
 </style>
 
 @section('content')
+<div class="flex justify-center items-center min-h-[80vh]">
+    <div class="w-full max-w-2xl mx-auto bg-white shadow-lg rounded-xl p-10">
+        <h2 class="text-2xl font-bold mb-6 text-blue-700 flex items-center gap-2">
+            <svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M16.862 3.487a2.25 2.25 0 0 1 3.182 3.182l-9.193 9.193a2.25 2.25 0 0 1-1.06.59l-4.13 1.032a.75.75 0 0 1-.91-.91l1.032-4.13a2.25 2.25 0 0 1 .59-1.06l9.193-9.193z"></path></svg>
+            Quản lý chữ ký công ty
+        </h2>
 
-<div class="container mx-auto mt-8">
-    <h2 class="text-2xl font-semibold mb-6">Tải lên chữ ký tay</h2>
 
-    @if(session('success'))
-        <div class="alert alert-success">{{ session('success') }}</div>
-    @endif
+        <form id="signature-form" action="{{ route('admin.signature.save') }}" method="POST" enctype="multipart/form-data" class="space-y-6">
+            @csrf
 
-    <form id="signature-form" action="{{ route('admin.signature.save') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="mb-4">
-            <label for="signature" class="block text-sm font-medium text-gray-700">Chọn file chữ ký:</label>
-            <input type="file" name="signature" id="signature" class="w-full border border-gray-300 rounded-md px-3 py-2">
-        </div>
-
-        <div class="upload-container">
-            <label class="block text-sm font-medium text-gray-700">Hoặc vẽ chữ ký:</label>
-            <div class="border rounded-md bg-gray-100 p-4">
-                <canvas id="signature-pad"></canvas>
+            <div>
+                <label for="signature" class="block text-sm font-medium text-gray-700 mb-1">Chọn file chữ ký (ảnh PNG/JPG):</label>
+                <input type="file" name="signature" id="signature" accept="image/png,image/jpeg" class="block w-full border border-gray-300 rounded-md px-3 py-2 focus:ring-blue-500 focus:border-blue-500">
             </div>
-            <input type="hidden" name="signature_pad_data" id="signature-pad-data">
-            <div class="signature-actions mt-2">
-                <button type="button" id="clear-signature" class="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700">Xóa chữ ký</button>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Hoặc vẽ chữ ký trực tiếp:</label>
+                <div class="rounded-lg bg-gray-50 border border-blue-200 p-3">
+                    <canvas id="signature-pad"></canvas>
+                </div>
+                <input type="hidden" name="signature_pad_data" id="signature-pad-data">
+                <div class="flex gap-2 mt-2">
+                    <button type="button" id="clear-signature" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">Xóa chữ ký</button>
+                </div>
             </div>
-        </div>
 
-        @if($signaturePath)
-        <div class="mb-4 signature-preview">
-            <p>Chữ ký hiện tại:</p>
-            <img src="{{ $signaturePath }}" alt="Chữ ký hiện tại">
-            <p>DEBUG: {{ $signaturePath }}</p>
-        </div>
-        @else
-        <p class="text-gray-500">Chưa có chữ ký nào được lưu.</p>
-        @endif
+            @if($signaturePath)
+            <div class="signature-preview mt-4">
+                <p class="text-sm text-gray-600 mb-1">Chữ ký hiện tại:</p>
+                <img src="{{ $signaturePath }}" alt="Chữ ký hiện tại">
+            </div>
+            @else
+            <p class="text-gray-500 mt-4">Chưa có chữ ký nào được lưu.</p>
+            @endif
 
-        <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu chữ ký tay</button>
-    </form>
-</div>
-
-<!-- Popup Notification -->
-<div class="popup" id="popup">
-    <div class="popup-content">
-        <p id="popup-message"></p>
-        <button id="popup-close">Đóng</button>
+            <div class="flex flex-col sm:flex-row gap-3 mt-6">
+                <a href="{{ route('admin.contracts.index') }}" class="w-full sm:w-auto px-4 py-2 bg-gray-200 text-gray-700 rounded-lg text-center hover:bg-gray-300 transition">← Quay lại</a>
+                <button type="submit" class="w-full sm:w-auto px-4 py-2 bg-blue-600 text-white rounded-lg font-semibold hover:bg-blue-700 transition">Lưu chữ ký tay</button>
+            </div>
+        </form>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
@@ -163,29 +116,23 @@
     const signaturePadData = document.getElementById('signature-pad-data');
     const clearButton = document.getElementById('clear-signature');
     const form = document.getElementById('signature-form');
-    const popup = document.getElementById('popup');
-    const popupMessage = document.getElementById('popup-message');
-    const popupClose = document.getElementById('popup-close');
 
     // Đặt kích thước cho canvas
     function resizeCanvas() {
         const ratio = Math.max(window.devicePixelRatio || 1, 1);
         const width = canvas.offsetWidth;
-        const height = canvas.offsetHeight;
-
-        if (canvas.width !== width * ratio || canvas.height !== height * ratio) {
-            canvas.width = width * ratio;
-            canvas.height = height * ratio;
-            canvas.getContext('2d').scale(ratio, ratio);
-        }
+        const height = 180;
+        canvas.width = width * ratio;
+        canvas.height = height * ratio;
+        canvas.getContext('2d').scale(ratio, ratio);
+        canvas.style.height = height + 'px';
     }
-
     window.addEventListener('resize', resizeCanvas);
     resizeCanvas();
 
     clearButton.addEventListener('click', () => {
         signaturePad.clear();
-        signaturePadData.value = ''; // Xóa dữ liệu khi nhấn "Xóa chữ ký"
+        signaturePadData.value = '';
     });
 
     form.addEventListener('submit', function (e) {
@@ -193,50 +140,12 @@
         const hasFile = document.getElementById('signature').files.length > 0;
         if (!hasDraw && !hasFile) {
             e.preventDefault();
-            showPopup('Bạn phải chọn hoặc vẽ chữ ký.');
+            alert('Bạn phải chọn hoặc vẽ chữ ký.');
             return false;
         }
         if (hasDraw) {
             signaturePadData.value = signaturePad.toDataURL('image/png');
         }
-    });
-
-    // Lắng nghe sự kiện chọn file chữ ký
-    document.getElementById('signature').addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if (file) {
-            const formData = new FormData();
-            formData.append('signature', file);
-
-            // Gửi dữ liệu lên server
-            fetch("{{ route('admin.signature.save') }}", {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').getAttribute('content'),
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    showPopup('Ảnh chữ ký đã được lưu thành công.');
-                } else {
-                    showPopup('Có lỗi xảy ra khi lưu ảnh chữ ký.');
-                }
-            })
-            .catch(error => {
-                showPopup('Có lỗi xảy ra khi gửi yêu cầu.');
-            });
-        }
-    });
-
-    function showPopup(message) {
-        popupMessage.textContent = message;
-        popup.style.display = 'flex';
-    }
-
-    popupClose.addEventListener('click', function() {
-        popup.style.display = 'none';
     });
 </script>
 @endpush

@@ -149,7 +149,15 @@
             </tbody>
         </table>
         @else
-            <div class="text-center py-10 text-gray-500">Không tìm thấy yêu cầu hỗ trợ nào</div>
+            <div class="text-center py-10 text-gray-500">
+                Không tìm thấy yêu cầu hỗ trợ nào
+                <div class="mt-4">
+                    <a href="{{ route('admin.support.index') }}"
+                       class="inline-block bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition duration-200">
+                        Xem tất cả yêu cầu
+                    </a>
+                </div>
+            </div>
         @endif
     </div>
 

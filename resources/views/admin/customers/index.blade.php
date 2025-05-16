@@ -62,7 +62,10 @@
     </div>
     @endif
 
+    
+
     <div class="overflow-x-auto bg-white shadow-md rounded-lg border border-gray-300">
+        
         <table class="min-w-full leading-normal">
             <thead class="bg-gray-100 text-gray-700 text-sm uppercase">
                 <tr>
@@ -114,7 +117,20 @@
                         </form>                        
                     </td>
                 </tr>
+                
                 @endforeach
+                @if($customers->isEmpty())
+        <tr>
+            <td colspan="5" class="text-center py-6 text-gray-500">
+                Không có khách hàng nào phù hợp.
+                <div class="mt-3">
+                    <a href="{{ route('admin.customers.index') }}" class="inline-block px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                        Xem tất cả khách hàng
+                    </a>
+                </div>
+            </td>
+        </tr>
+    @endif
             </tbody>
         </table>
     </div>

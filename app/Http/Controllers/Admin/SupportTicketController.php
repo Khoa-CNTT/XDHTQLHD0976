@@ -3,7 +3,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\SupportTicket;
-use App\Models\SupportResponse;  // Đảm bảo thêm model này nếu chưa có
+use App\Models\SupportResponse;  
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -12,15 +12,40 @@ use Illuminate\Support\Facades\Cache;
 
 class SupportTicketController extends Controller
 {
-     public function index(Request $request)
+   public function index(Request $request)
 {
     $user = auth()->user();
+    $tickets = SupportTicket::query()->with('user');
+
+    // Nếu là nhân viên chỉ xem ticket được giao
     if ($user->role === 'employee') {
-        $tickets = SupportTicket::where('assigned_employee_id', $user->id)->paginate(10);
-    } else {
-        $tickets = SupportTicket::paginate(10);
+        $tickets->where('assigned_employee_id', $user->id);
     }
+
+    // Lọc theo tên hoặc tiêu đề
+    if ($request->filled('search')) {
+        $search = $request->search;
+        $tickets->where(function($q) use ($search) {
+            $q->where('title', 'like', "%$search%")
+              ->orWhereHas('user', function($u) use ($search) {
+                  $u->where('name', 'like', "%$search%");
+              });
+        });
+    }
+
+    // Lọc theo trạng thái
+    if ($request->filled('status')) {
+        $tickets->where('status', $request->status);
+    }
+
+    // Lọc theo khách hàng
+    if ($request->filled('user_id')) {
+        $tickets->where('user_id', $request->user_id);
+    }
+
+    $tickets = $tickets->orderByDesc('created_at')->paginate(10);
     $customers = User::where('role', 'customer')->get();
+
     return view('admin.support.index', compact('tickets', 'customers'));
 }
 

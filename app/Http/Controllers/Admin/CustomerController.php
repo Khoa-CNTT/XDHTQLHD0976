@@ -8,27 +8,42 @@ use Illuminate\Http\Request;
 class CustomerController extends Controller
 {
     public function index(Request $request)
-    {
-        $query = User::where('role', 'customer');
+{
+    $query = User::where('role', 'customer');
+    
+    // Xử lý điều kiện tìm kiếm bắt buộc
+    if ($request->has('search') && !empty($request->search)) {
+        $search = $request->search;
         
-        // Xử lý tìm kiếm
-        if ($request->has('search') && !empty($request->search)) {
-            $search = $request->search;
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('email', 'like', "%{$search}%")
-                  ->orWhere('phone', 'like', "%{$search}%");
+        // Kiểm tra nếu từ khóa có dấu "@" -> Tìm kiếm email
+        if (strpos($search, '@') !== false) {
+            $query->where('email', 'like', "%{$search}%");
+        } else {
+            // Tách từ khóa thành mảng các từ
+            $searchTerms = explode(' ', $search);
+            
+            $query->where(function($q) use ($searchTerms) {
+                foreach ($searchTerms as $term) {
+                    $q->where('name', 'like', "%{$term}%")
+                      ->orWhere('phone', 'like', "%{$term}%");
+                }
             });
         }
-        
-        // Lọc theo trạng thái
-        if ($request->has('status') && !empty($request->status)) {
-            $query->where('status', $request->status);
-        }
-        
-        $customers = $query->paginate(10);
-        return view('admin.customers.index', compact('customers'));
+    } else {
+        // Nếu không có từ khóa tìm kiếm, có thể trả về thông báo lỗi hoặc chỉ cho phép tìm kiếm với điều kiện khác
+        // Ví dụ: return back()->with('error', 'Vui lòng nhập từ khóa tìm kiếm.');
     }
+
+    // Lọc theo trạng thái
+    if ($request->has('status') && !empty($request->status)) {
+        $query->where('status', $request->status);
+    }
+
+    // Lấy danh sách khách hàng
+    $customers = $query->paginate(10);
+    
+    return view('admin.customers.index', compact('customers'));
+}
 
     public function ban($id)
     {

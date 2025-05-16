@@ -170,7 +170,7 @@ class SignatureController extends Controller
                 'signature_data' => $request->signature_data,
                 'signature_image' => $request->signature_data,
                 'contract_duration_id' => $durationInfo->id,
-                'status' => 'Đang xử lý',
+                'status' => 'Đã ký',
                 'signed_at' => now(),
                 'otp_verified_at' => now(),
             ]);

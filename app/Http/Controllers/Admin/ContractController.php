@@ -18,46 +18,55 @@ use Barryvdh\DomPDF\Facade\Pdf;
 class ContractController extends Controller
 {
     public function index(Request $request)
-    {
-        // Khởi tạo query để lấy danh sách hợp đồng với các quan hệ
-        $query = Contract::with('service', 'customer');
-    
-       if ($request->filled('contract_number')) {
-    $query->where('contract_number', 'like', '%' . trim($request->contract_number) . '%');
-}
+{
+    // Khởi tạo query để lấy danh sách hợp đồng với các quan hệ
+    $query = Contract::with(['service', 'customer.user']);
 
-if ($request->filled('status')) {
-    $query->where('status', $request->status);
-}
-
-if ($request->filled('service_id')) {
-    $query->where('service_id', $request->service_id);
-}
-
-if ($request->filled('date_from')) {
-    $query->whereDate('start_date', '>=', $request->date_from);
-}
-
-if ($request->filled('date_to')) {
-    $query->whereDate('end_date', '<=', $request->date_to);
-}
-
-if ($request->filled('customer_name')) {
-    $query->whereHas('customer', function($q) use ($request) {
-        $q->where('name', 'like', '%' . trim($request->customer_name) . '%');
-    });
-}
-        
-        // Phân trang kết quả
-        $contracts = $query->paginate(10);
-        
-        // Lấy danh sách dịch vụ cho dropdown filter
-        $services = Service::all();
-        
-        // Trả về view hiển thị danh sách hợp đồng
-        return view('admin.contracts.index', compact('contracts', 'services'));
+    // Tìm kiếm theo mã hợp đồng (partial match)
+    if ($request->filled('contract_number')) {
+        $query->where('contract_number', 'like', '%' . trim($request->contract_number) . '%');
     }
 
+    // Tìm kiếm theo trạng thái
+    if ($request->filled('status')) {
+        $query->where('status', $request->status);
+    }
+
+    // Tìm kiếm theo dịch vụ
+    if ($request->filled('service_id')) {
+        $query->where('service_id', $request->service_id);
+    }
+
+    // Tìm kiếm theo ngày bắt đầu (từ ngày)
+    if ($request->filled('date_from')) {
+        $query->whereDate('start_date', '>=', $request->date_from);
+    }
+
+    // Tìm kiếm theo ngày kết thúc (đến ngày)
+    if ($request->filled('date_to')) {
+        $query->whereDate('end_date', '<=', $request->date_to);
+    }
+
+    // Tìm kiếm theo tên khách hàng (có thể nhập 1 phần hoặc đầy đủ)
+    if ($request->filled('customer_name')) {
+        $name = trim($request->customer_name);
+        $query->whereHas('customer.user', function($q) use ($name) {
+            $q->where('name', 'like', '%' . $name . '%');
+        });
+    }
+
+    // Sắp xếp theo ngày tạo mới nhất
+    $query->orderByDesc('created_at');
+
+    // Phân trang kết quả
+    $contracts = $query->paginate(10);
+
+    // Lấy danh sách dịch vụ cho dropdown filter
+    $services = \App\Models\Service::all();
+
+    // Trả về view hiển thị danh sách hợp đồng
+    return view('admin.contracts.index', compact('contracts', 'services'));
+}
     public function create()
     {
         $customers = \App\Models\Customer::all();

@@ -12,7 +12,11 @@
             <select name="customer_id" class="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500" required>
                 <option value="">-- Chọn khách hàng --</option>
                 @foreach(\App\Models\Customer::with('user')->get() as $customer)
-                    <option value="{{ $customer->id }}">{{ $customer->user->name }} - {{ $customer->company_name }}</option>
+                    @if($customer->user)
+                        <option value="{{ $customer->id }}">{{ $customer->user->name }} - {{ $customer->company_name }}</option>
+                    @else
+                        <option value="{{ $customer->id }}">[Không có tài khoản] - {{ $customer->company_name }}</option>
+                    @endif
                 @endforeach
             </select>
         </div>
@@ -63,8 +67,8 @@
             <p class="text-sm text-gray-500 mt-1">Điều khoản mặc định sẽ được áp dụng nếu bỏ trống.</p>
         </div>
 
-        <div class="mt-6 flex justify-end space-x-3">
-            <a href="{{ route('admin.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
+        <div class="mt-6 flex justify-between space-x-3">
+            <a href="{{ route('admin.contracts.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">← Quay lại</a>
             <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Lưu</button>
         </div>
         

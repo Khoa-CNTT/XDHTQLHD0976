@@ -70,17 +70,18 @@
                 <input type="hidden" id="selected_price" name="selected_price" value="">
 
                 <div class="flex flex-col space-y-3 mt-4">
-                    <a href="{{ route('customer.dashboard') }}"
-                       class="w-full text-center bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 hover:scale-105 transition">
-                        ← Quay Lại
-                    </a>
-            
+                  
                     <button type="submit" 
                             class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 hover:scale-105 transition transform duration-300 ease-in-out text-center block"
                             {{ $availableDurations->count() == 0 ? 'disabled' : '' }}
                             {{ $availableDurations->count() == 0 ? 'style=opacity:0.5;cursor:not-allowed' : '' }}>
                         📝 Gửi Yêu Cầu Hợp Đồng
                     </button>
+                      <a href="{{ route('customer.dashboard') }}"
+                       class="w-full text-center bg-gray-600 text-white py-2 rounded-lg hover:bg-gray-700 hover:scale-105 transition">
+                        ← Quay Lại
+                    </a>
+            
                 </div>
             </form>
             

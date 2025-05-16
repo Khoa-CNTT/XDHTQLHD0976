@@ -9,33 +9,40 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
 
 class EmployeeController extends Controller
+{public function index(Request $request)
 {
-    public function index(Request $request)
-    {
-        $query = Employee::query()->with('user');
+    // Khởi tạo query builder
+    $query = Employee::query()->with('user');
+    
+    // Kiểm tra nếu có từ khóa tìm kiếm và không rỗng
+    if ($request->filled('search')) {
+        $search = trim($request->search);
         
-        // Xử lý tìm kiếm
-        if ($request->filled('search')) {
-    $search = trim($request->search);
-    $query->whereHas('user', function($q) use ($search) {
-        $q->where('name', 'like', "%{$search}%")
-          ->orWhere('email', 'like', "%{$search}%");
-    })
-    ->orWhere('position', 'like', "%{$search}%")
-    ->orWhere('department', 'like', "%{$search}%");
+        // Tìm kiếm trong bảng 'user' (tên, email)
+        $query->whereHas('user', function($q) use ($search) {
+            $q->where('name', 'like', "%{$search}%")
+              ->orWhere('email', 'like', "%{$search}%");
+        });
+
+        // Tìm kiếm trong các trường khác của bảng Employee (position, department)
+        $query->orWhere('position', 'like', "%{$search}%")
+              ->orWhere('department', 'like', "%{$search}%");
+    }
+
+    // Nếu có lọc theo phòng ban (department)
+    if ($request->filled('department')) {
+        $query->where('department', $request->department);
+    }
+
+    // Lấy danh sách nhân viên theo thứ tự mới nhất và phân trang
+    $employees = $query->latest()->paginate(10);
+    
+    // Lấy danh sách phòng ban để hiển thị trong dropdown
+    $departments = Employee::select('department')->distinct()->get();
+    
+    return view('admin.employees.index', compact('employees', 'departments'));
 }
 
-if ($request->filled('department')) {
-    $query->where('department', $request->department);
-}
-        
-        $employees = $query->latest()->paginate(10);
-        
-        // Lấy danh sách phòng ban để hiển thị trong dropdown
-        $departments = Employee::select('department')->distinct()->get();
-        
-        return view('admin.employees.index', compact('employees', 'departments'));
-    }
 
     public function create()
     {

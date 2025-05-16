@@ -16,127 +16,114 @@
 @endif
 
 @section('content')
-<div class="container mx-auto">
-    <div class="bg-white p-6 rounded-lg shadow-md border border-gray-200">
-        <h2 class="text-2xl font-semibold mb-6">Chỉnh sửa dịch vụ</h2>
+<div class="max-w-5xl mx-auto px-4 py-6">
+    <div class="bg-white rounded-xl shadow-lg border border-gray-200 p-6">
         
-        <form action="{{ route('admin.services.update', $service->id) }}" method="POST" enctype="multipart/form-data">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6 border-b pb-2">
+            ✏️ Chỉnh sửa dịch vụ
+        </h1>
+        
+        <form action="{{ route('admin.services.update', $service->id) }}" method="POST" enctype="multipart/form-data" class="space-y-6">
             @csrf
             @method('PUT')
+
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Tên dịch vụ -->
                 <div>
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium">Tên dịch vụ <span class="text-red-500">*</span></label>
-                        <input type="text" name="service_name" class="w-full border border-gray-300 rounded px-4 py-2" value="{{ old('service_name', $service->service_name) }}" required>
-                        
-                        @error('service_name')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium">Mô tả <span class="text-red-500">*</span></label>
-                        <textarea name="description" rows="3" class="w-full border border-gray-300 rounded px-4 py-2" required>{{ old('description', $service->description) }}</textarea>
-                        @error('description')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium">Danh mục <span class="text-red-500">*</span></label>
-                        <select name="category_id" id="category_id" class="w-full border border-gray-300 rounded px-4 py-2" required>
-                            <option value="">-- Chọn danh mục --</option>
-                            @foreach ($categories as $category)
-                                <option value="{{ $category->id }}" {{ old('category_id', $service->category_id) == $category->id ? 'selected' : '' }}>{{ $category->name }}</option>
-                            @endforeach
-                        </select>
-                        @error('category_id')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Tên dịch vụ <span class="text-red-500">*</span></label>
+                    <input type="text" name="service_name" required
+                           class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"
+                           value="{{ old('service_name', $service->service_name) }}">
+                    @error('service_name')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
-                
+
+                <!-- Danh mục -->
                 <div>
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium">Ảnh dịch vụ</label>
-                        @if($service->image)
-                            <div class="mb-2">
-                                <img src="{{ asset('storage/' . $service->image) }}" alt="{{ $service->service_name }}" class="max-h-40 rounded">
-                                <p class="text-sm text-gray-500 mt-1">Ảnh hiện tại</p>
-                            </div>
-                        @endif
-                        <input type="file" name="image" class="w-full border border-gray-300 rounded px-4 py-2">
-                        <p class="text-sm text-gray-500 mt-1">Để trống nếu không muốn thay đổi ảnh</p>
-                        @error('image')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
-                    
-                    <div class="mb-4">
-                        <label class="block mb-1 font-medium">Nội dung chi tiết <span class="text-red-500">*</span></label>
-                        <textarea name="content" class="w-full border border-gray-300 rounded px-4 py-2" rows="5" required>{{ old('content', $service->content) }}</textarea>
-                        @error('content')
-                            <p class="text-red-600 text-sm mt-1">{{ $message }}</p>
-                        @enderror
-                    </div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Danh mục <span class="text-red-500">*</span></label>
+                    <select name="category_id" required
+                            class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-purple-400 focus:border-purple-400">
+                        <option value="">-- Chọn danh mục --</option>
+                        @foreach ($categories as $category)
+                            <option value="{{ $category->id }}" {{ old('category_id', $service->category_id) == $category->id ? 'selected' : '' }}>
+                                {{ $category->name }}
+                            </option>
+                        @endforeach
+                    </select>
+                    @error('category_id')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Mô tả -->
+                <div class="md:col-span-2">
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Mô tả <span class="text-red-500">*</span></label>
+                    <textarea name="description" rows="3" required
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400">{{ old('description', $service->description) }}</textarea>
+                    @error('description')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Ảnh dịch vụ -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Ảnh dịch vụ</label>
+                    @if($service->image)
+                        <img src="{{ asset('storage/' . $service->image) }}" alt="Ảnh dịch vụ" class="mb-2 h-28 rounded shadow">
+                        <p class="text-xs text-gray-500 mb-1">Ảnh hiện tại</p>
+                    @endif
+                    <input type="file" name="image" class="w-full px-3 py-2 border border-gray-300 rounded-lg file:mr-3 file:py-1 file:px-3 file:border-0 file:bg-blue-100 file:text-blue-700 hover:file:bg-blue-200">
+                    <p class="text-xs text-gray-500 mt-1">Để trống nếu không thay đổi ảnh</p>
+                    @error('image')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                <!-- Nội dung chi tiết -->
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Nội dung chi tiết <span class="text-red-500">*</span></label>
+                    <textarea name="content" rows="5" required
+                              class="w-full px-4 py-2 border border-gray-300 rounded-lg shadow-sm focus:ring-2 focus:ring-blue-400">{{ old('content', $service->content) }}</textarea>
+                    @error('content')
+                        <p class="text-red-500 text-sm mt-1">{{ $message }}</p>
+                    @enderror
                 </div>
             </div>
-            
-            <!-- Phần cấu hình giá theo thời hạn -->
-            <div class="mt-6 mb-6 border-t pt-6">
-                <h3 class="text-lg font-semibold mb-3 border-b pb-2">Cấu hình giá theo thời hạn</h3>
-                <p class="text-sm text-gray-600 mb-4">
-                    <i class="fas fa-info-circle text-blue-500 mr-1"></i>
-                    <strong>Lưu ý quan trọng:</strong> Dịch vụ chỉ sử dụng giá theo thời hạn. Để dịch vụ hoạt động đúng, vui lòng thiết lập giá cho ít nhất một thời hạn dưới đây.
-                </p>
-                
-                <div class="flex justify-between items-center mb-4">
-                    <div></div> <!-- Spacer -->
-                    <a href="{{ route('admin.services.contract-durations.edit', $service->id) }}" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        <i class="fas fa-cogs mr-2"></i>Quản lý giá chi tiết
-                    </a>
-                </div>
-                
+
+            <!-- Giá theo thời hạn -->
+            <div>
+                <h3 class="text-lg font-semibold text-gray-800 mt-6 mb-2">💰 Cấu hình giá theo thời hạn</h3>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                     @foreach($durations as $duration)
-                    <div class="p-4 border rounded-lg">
-                        <label class="block mb-2 font-medium">{{ $duration->label }} ({{ $duration->months }} tháng)</label>
+                    @php
+                        $price = $service->contractDurations->firstWhere('duration_id', $duration->id)->price ?? null;
+                    @endphp
+                    <div>
+                        <label class="block text-sm font-medium text-gray-700 mb-1">{{ $duration->label }} ({{ $duration->months }} tháng)</label>
                         <div class="relative">
-                            @php
-                                $durationPrice = null;
-                                foreach($service->contractDurations as $contractDuration) {
-                                    if($contractDuration->duration_id == $duration->id) {
-                                        $durationPrice = $contractDuration->price;
-                                        break;
-                                    }
-                                }
-                            @endphp
-                            <input 
-                                type="text" 
-                                name="duration_prices[{{ $duration->id }}]" 
-                                class="price-format w-full px-4 py-2 border border-gray-300 rounded"
-                                placeholder="Nhập giá cho {{ $duration->label }}"
-                                value="{{ old('duration_prices.'.$duration->id, $durationPrice) }}"
-                            >
-                            <div class="absolute top-1/2 transform -translate-y-1/2 right-3 text-gray-500 pointer-events-none">
-                                VNĐ
-                            </div>
+                            <input type="text" name="duration_prices[{{ $duration->id }}]"
+                                   value="{{ old('duration_prices.'.$duration->id, $price) }}"
+                                   class="price-format w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-purple-400 focus:border-purple-400">
+                            <span class="absolute right-3 top-2 text-gray-500 text-sm">VNĐ</span>
                         </div>
                     </div>
                     @endforeach
                 </div>
             </div>
-            
-            <div class="mt-4">
+
+            <!-- HOT -->
+            <div class="pt-2">
                 <label class="inline-flex items-center">
-                    <input type="checkbox" name="is_hot" value="1" class="form-checkbox h-5 w-5" {{ old('is_hot', $service->is_hot) ? 'checked' : '' }}>
-                    <span class="ml-2 text-gray-700 font-medium"><span class="text-red-600 font-semibold">HOT 🔥</span></span>
+                    <input type="checkbox" name="is_hot" value="1" class="form-checkbox h-5 w-5 text-red-500" {{ old('is_hot', $service->is_hot) ? 'checked' : '' }}>
+                    <span class="ml-2 text-sm font-medium text-red-600">Đánh dấu dịch vụ HOT 🔥</span>
                 </label>
             </div>
-            
-            <div class="flex justify-end space-x-3 mt-6">
-                <a href="{{ route('admin.services.index') }}" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600">Trở lại</a>
-                <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">Cập nhật</button>
+
+            <!-- Nút -->
+            <div class="flex justify-end gap-3 pt-4">
+                <a href="{{ route('admin.services.index') }}" class="px-4 py-2 text-sm bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition">Quay lại</a>
+                <button type="submit" class="px-5 py-2 text-sm bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-md transition">Cập nhật</button>
             </div>
         </form>
     </div>
