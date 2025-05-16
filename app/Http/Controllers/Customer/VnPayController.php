@@ -15,11 +15,15 @@ use App\Models\Duration;
 use App\Models\ContractDuration;
 use Exception;
 
-class VNPayController extends Controller
+class VnPayController extends Controller
 {
     public function createPayment(Request $request)
     {
         try {
+             Log::info('VNPay - createPayment called', [
+            'request' => $request->all(),
+            'config' => config('vnpay'),
+        ]);
             if (empty(config('vnpay.tmn_code')) || empty(config('vnpay.hash_secret'))) {
                 Log::error('VNPay - Missing required configuration. Please check vnpay.php config file and your .env file.');
                 return redirect()->back()->with('error', 'Cấu hình thanh toán VNPay chưa được thiết lập. Vui lòng liên hệ quản trị viên.');

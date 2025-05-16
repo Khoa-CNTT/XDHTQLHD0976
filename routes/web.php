@@ -4,7 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Customer\DashboardController as CustomerDashboardController;
 use App\Http\Controllers\Customer\ServiceController as CustomerServiceController;
 use App\Http\Controllers\Customer\ContractController as CustomerContractController;
-use App\Http\Controllers\Customer\VNPayController as VNPayPaymentController;
+use App\Http\Controllers\Customer\VnPayController as VNPayPaymentController;
 use App\Http\Controllers\Customer\ContractAmendmentController as CustomerContractAmendmentController;
 use App\Http\Controllers\Customer\SignatureController;
 use App\Http\Controllers\Customer\PaymentController as CustomerPaymentController;
