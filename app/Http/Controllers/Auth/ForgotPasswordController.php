@@ -15,13 +15,17 @@ class ForgotPasswordController extends Controller
     | Password Reset Controller
     |--------------------------------------------------------------------------
     |
-    | This controller is responsible for handling password reset emails and
-    | includes a trait which assists in sending these notifications from
-    | your application to your users. Feel free to explore this trait.
-    |
+    |quên mật khẩu
+    | Đây là nơi bạn có thể định nghĩa các phương thức để xử lý việc gửi email đặt lại mật khẩu.
     */
 
     use SendsPasswordResetEmails;
+      /**
+     * 
+     *
+     * @return \Illuminate\View\View
+     */
+    
     public function showLinkRequestForm()
 {
     return view('auth.passwords.email');
@@ -35,7 +39,7 @@ class ForgotPasswordController extends Controller
 
     public function sendResetLinkEmail(Request $request)
     {
-        
+        // Kiểm tra xem email có tồn tại trong hệ thống không
         $request->validate([
             'email' => 'required|email|exists:users,email',
         ], [
@@ -44,17 +48,20 @@ class ForgotPasswordController extends Controller
             'email.exists' => 'Email không tồn tại trong hệ thống.',
         ]);
 
-
-
         // Gửi email reset mật khẩu
-        $response = Password::sendResetLink(
-            $request->only('email')
-        );
-          // Xử lý kết quả sau khi gửi email
-        return $response == Password::RESET_LINK_SENT
-        ? back()->with('status', 'Đã gửi liên kết đặt lại mật khẩu đến email của bạn.')
-        : back()->withErrors(['email' => 'Có lỗi xảy ra, vui lòng thử lại sau.']);
-    }
+        try {
+            $response = Password::sendResetLink(
+                $request->only('email')
+            );
 
+            // Xử lý kết quả sau khi gửi email
+            return $response == Password::RESET_LINK_SENT
+                ? back()->with('status', 'Đã gửi liên kết đặt lại mật khẩu đến email của bạn.')
+                : back()->withErrors(['email' => 'Có lỗi xảy ra, vui lòng thử lại sau.']);
+        } catch (\Exception $e) {
+            // Nếu có lỗi trong quá trình gửi email, bạn có thể ghi log hoặc trả về thông báo lỗi chi tiết hơn
+            return back()->withErrors(['email' => 'Có lỗi khi gửi email. Vui lòng thử lại sau.']);
+        }
+    }
  
 }

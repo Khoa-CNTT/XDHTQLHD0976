@@ -81,6 +81,13 @@
     <p class="mt-2 text-center">
       <a href="{{ route('password.request') }}" class="text-sm text-indigo-500 hover:underline">Quên mật khẩu?</a>
     </p>
+    <div class="mt-4 text-center">
+      <a 
+        href="{{ route('customer.dashboard') }}" 
+        class="text-indigo-600 font-semibold hover:underline text-sm">
+        Quay lại
+      </a>
+    </div>
   </div>
 
   <!-- Tailwind animation -->

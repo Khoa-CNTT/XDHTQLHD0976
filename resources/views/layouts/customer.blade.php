@@ -110,24 +110,23 @@
 </script>
 @endif
 <body class="bg-gray-50 flex flex-col min-h-screen">
-    <header class="bg-blue-600 text-white py-4 shadow-md">
-        <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
-            <div class="flex items-center space-x-4">
-                <div class="logo">
-                    <a href="{{ route('customer.dashboard') }}">
-                        <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-16 md:h-20 max-w-full">
-                    </a>
-                </div>
-                <h1 class="text-lg md:text-2xl font-bold">Dịch Vụ Công Nghệ Thông Tin</h1>
+<header class="bg-blue-600 text-white py-4 shadow-md">
+    <div class="container mx-auto px-4 flex flex-wrap justify-between items-center">
+        <div class="flex items-center space-x-2 md:space-x-4">
+            <div class="logo">
+                <a href="{{ route('customer.dashboard') }}">
+                    <img src="{{ asset('images/logo1.png') }}" alt="Logo" class="h-10 md:h-16 max-w-full">
+                </a>
             </div>
-            <nav class="flex flex-wrap items-center space-x-4 mt-4 md:mt-0">
-                <ul class="flex flex-wrap space-x-4">
-                    <li><a href="{{ route('customer.dashboard') }}" class="hover:text-blue-200 text-sm md:text-base">Trang Chủ</a></li>
-                    <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200 text-sm md:text-base">Dịch Vụ</a></li>
-                    <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Về Chúng Tôi</a></li>
-                    <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Liên Hệ</a></li>
-                </ul>
-                
+            <h1 class="text-base md:text-2xl font-bold">Dịch Vụ Công Nghệ Thông Tin</h1>
+        </div>
+        <nav class="w-full md:w-auto mt-4 md:mt-0 flex flex-col md:flex-row items-center md:space-x-4">
+            <ul class="flex flex-col md:flex-row w-full md:w-auto justify-center items-center space-y-2 md:space-y-0 space-x-0 md:space-x-4">
+                <li><a href="{{ route('customer.dashboard') }}" class="hover:text-blue-200 text-sm md:text-base">Trang Chủ</a></li>
+                <li><a href="{{ route('customer.services.index') }}" class="hover:text-blue-200 text-sm md:text-base">Dịch Vụ</a></li>
+                <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Về Chúng Tôi</a></li>
+                <li><a href="#" class="hover:text-blue-200 text-sm md:text-base">Liên Hệ</a></li>
+            </ul>
              
                 
                 @if(auth()->check())
